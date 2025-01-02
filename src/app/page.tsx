@@ -1,11 +1,14 @@
-import { LoginForm } from "@/features/user/components/form/login-form";
+import LandingPageAppshell from "@/components/appshell/landing-page-appshell";
+import { Slideshow } from "@/features/slideshow/component/Slideshow";
 
 export default function Login() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold">Login</h1>
-
-      <LoginForm />
-    </div>
+    <LandingPageAppshell>
+      {/* start of image slideshow */}
+      <section>
+        <Slideshow />
+      </section>
+      {/* end of image slideshow */}
+    </LandingPageAppshell>
   );
 }

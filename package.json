@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mantine/carousel": "^7.15.2",
     "@mantine/core": "^7.15.2",
     "@mantine/dates": "^7.15.2",
     "@mantine/hooks": "^7.15.2",
@@ -21,6 +22,7 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.38.3",
+    "embla-carousel-react": "7.1.0",
     "mantine-react-table": "2.0.0-beta.7",
     "next": "15.1.3",
     "nextjs-toploader": "^3.7.15",

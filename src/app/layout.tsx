@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Unbounded } from "next/font/google";
 import "./globals.css";
 
+import "@mantine/carousel/styles.css";
 // Mantine styles
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
@@ -23,8 +24,8 @@ import { Notifications } from "@mantine/notifications";
 import NextTopLoader from "nextjs-toploader";
 import { Suspense } from "react";
 
-const inter = Inter({
-  variable: "--font-inter",
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
   subsets: ["latin"],
 });
 
@@ -37,9 +38,9 @@ export const metadata: Metadata = {
 };
 
 const mantineTheme = createTheme({
-  fontFamily: `${inter.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
+  fontFamily: `${unbounded.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
   headings: {
-    fontFamily: `${inter.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
+    fontFamily: `${unbounded.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
   },
 });
 
@@ -55,7 +56,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${inter.variable} font-sans antialiased`}
+        className={`${unbounded.variable} font-sans antialiased`}
       >
         <NextTopLoader />
 
