@@ -59,7 +59,7 @@ export default function Login() {
 
       {/* start of program latihan section */}
       <section className="space-y-28 bg-[#bb000e] px-20 py-28 text-white">
-        <h1 className="text-center text-4xl font-bold uppercase">
+        <h1 className="text-center text-4xl font-black uppercase">
           program latihan
         </h1>
         <div className="flex flex-row justify-between gap-10">
@@ -110,6 +110,42 @@ export default function Login() {
         </div>
       </section>
       {/* end of program latihan section */}
+
+      {/* start of fasilitas section */}
+      <section className="space-y-28 px-40 py-72">
+        <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
+          fasilitas
+        </h1>
+        <div className="flex flex-row justify-between gap-10">
+          {[...Array(5)].map((_, index) => {
+            return (
+              <div
+                key={index}
+                className="flex flex-col items-center space-y-28 text-center"
+              >
+                <Image
+                  src="/fasilitas-1.png"
+                  alt=""
+                  width={350}
+                  height={650}
+                  className="rounded-2xl shadow-xl"
+                />
+                <div className="w-3/4 space-y-4">
+                  <p className="text-xl font-bold capitalize">
+                    pelatih berlisensi PSSI
+                  </p>
+                  <p className="text-base font-extralight capitalize">
+                    Our data-driven analytics provide an in-depth look at every
+                    play, allowing you to quickly assess, monitor, and improve
+                    performance.
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+      {/* end of fasilitas section */}
     </LandingPageAppshell>
   );
 }
