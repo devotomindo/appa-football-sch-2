@@ -25,6 +25,7 @@ export default function LandingPageAppshell({
       styles={{
         header: {
           backgroundColor: "black",
+          borderBottomColor: "black",
         },
       }}
     >
