@@ -7,7 +7,7 @@ export const Slideshow = () => {
   return (
     <Carousel
       height={600}
-      className="bg-sky-300"
+      className=""
       loop
       withIndicators
       styles={{

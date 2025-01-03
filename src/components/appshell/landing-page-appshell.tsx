@@ -34,22 +34,22 @@ export default function LandingPageAppshell({
           <Image src="/logo-with-text.png" alt="Logo" width={120} height={40} />
           <Group className="capitalize" justify="space-between">
             <Link href={"#Home"} className="hover:text-red-600">
-              <Text fw={"bold"} size="md">
+              <Text fw={""} size="md">
                 home
               </Text>
             </Link>
             <Link href={"#Program"} className="hover:text-red-600">
-              <Text fw={"bold"} size="md">
+              <Text fw={""} size="md">
                 program
               </Text>
             </Link>
             <Link href={"#Fasilitas"} className="hover:text-red-600">
-              <Text fw={"bold"} size="md">
+              <Text fw={""} size="md">
                 fasilitas
               </Text>
             </Link>
             <Link href={"#Kontak"} className="hover:text-red-600">
-              <Text fw={"bold"} size="md">
+              <Text fw={""} size="md">
                 kontak
               </Text>
             </Link>
