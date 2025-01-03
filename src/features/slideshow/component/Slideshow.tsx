@@ -1,15 +1,22 @@
 "use client";
 
 import { Carousel } from "@mantine/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
+import { useRef } from "react";
 
 export const Slideshow = () => {
+  const autoplay = useRef(Autoplay({ delay: 2000 }));
+
   return (
     <Carousel
       height={600}
       className=""
       loop
       withIndicators
+      plugins={[autoplay.current]}
+      onMouseEnter={autoplay.current.stop}
+      onMouseLeave={autoplay.current.reset}
       styles={{
         indicator: {
           backgroundColor: "white",

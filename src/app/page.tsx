@@ -1,6 +1,11 @@
 import LandingPageAppshell from "@/components/appshell/landing-page-appshell";
 import { Slideshow } from "@/features/slideshow/component/Slideshow";
 import TestimoniCarousel from "@/features/slideshow/component/TestimoniCarousel";
+import {
+  IconBrandInstagram,
+  IconBrandTiktok,
+  IconBrandWhatsapp,
+} from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -207,6 +212,55 @@ export default function Login() {
         </div>
       </section>
       {/* end of informasi & berita section */}
+
+      {/* start of footer section */}
+      <footer className="flex flex-row items-center justify-between gap-14 bg-[#000000] px-20 py-20 text-white">
+        <div className="relative h-[250px] w-[250px]">
+          <Image src={"/logo.png"} alt="" fill className="object-contain" />
+        </div>
+        <div className="flex flex-col gap-10">
+          <div className="">
+            <p className="text-2xl font-black uppercase text-[#bb000e]">
+              appa football school
+            </p>
+            <p className="text-xl font-bold uppercase">kediri</p>
+          </div>
+
+          <div className="">
+            <p className="capitalize">homebase</p>
+            <p className="text-sm font-extralight">
+              Lapangan Jongbiru, Desa Jongbiru, Kecamatan Gampengrejo, Kabupaten
+              Kediri
+            </p>
+          </div>
+          <div className="">
+            <p className="capitalize">maps</p>
+            <p className="text-sm font-extralight">
+              https://maps.app.goo.gl/mtyc8S6BK4x8gP4c6
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <p className="capitalize">kontak</p>
+          <div className="flex flex-row items-center">
+            <IconBrandWhatsapp />
+            <p>0855098702022</p>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <p className="capitalize">Kunjungi Sosial Media Kami</p>
+          <div className="flex flex-row items-center">
+            <IconBrandInstagram />
+            <p>@appafootballschool</p>
+          </div>
+          <div className="flex flex-row items-center">
+            <IconBrandTiktok />
+            <p>@appafootball</p>
+          </div>
+        </div>
+      </footer>
+      {/* end of footer section */}
     </LandingPageAppshell>
   );
 }

@@ -2,14 +2,21 @@
 
 import { Carousel } from "@mantine/carousel";
 import { IconQuoteFilled } from "@tabler/icons-react";
+import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
+import { useRef } from "react";
 
 export default function TestimoniCarousel() {
+  const autoplay = useRef(Autoplay({ delay: 2000 }));
+
   return (
     <Carousel
       //   height={400}
       className="relative text-center"
       loop
+      plugins={[autoplay.current]}
+      onMouseEnter={autoplay.current.stop}
+      onMouseLeave={autoplay.current.reset}
       styles={{
         controls: {
           position: "absolute",
