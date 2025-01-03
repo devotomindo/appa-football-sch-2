@@ -2,6 +2,7 @@ import LandingPageAppshell from "@/components/appshell/landing-page-appshell";
 import { Slideshow } from "@/features/slideshow/component/Slideshow";
 import TestimoniCarousel from "@/features/slideshow/component/TestimoniCarousel";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Login() {
   return (
@@ -170,8 +171,40 @@ export default function Login() {
       {/* end of testimoni section */}
 
       {/* start of informasi & berita section */}
-      <section>
-        <h1>informasi & berita</h1>
+      <section className="space-y-32 px-40 py-20">
+        <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
+          informasi & berita
+        </h1>
+        <div className="flex flex-row justify-between gap-24">
+          {[...Array(3)].map((_, index) => {
+            return (
+              <div className="space-y-5" key={index}>
+                <div className="relative aspect-video w-full">
+                  <Image
+                    src={"/news-1.png"}
+                    alt=""
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <p>Asiana Kampiun Piala Soeratin DKI Jakarta U15</p>
+                <p className="font-extralight">20 Juli 2024</p>
+                <p className="font-extralight">
+                  Usai melalui tahapan group, 16 besar, 8 besar dan semifinal
+                  akhirnya Asiana berhasil berdiri di babak final. Ini menjadi
+                  satu langkah menuju jenjang Piala Soeratin U15 2024 tingkat
+                  nasional. Berlangsung di Stadion Madya Gelora Bung Karno,
+                  Senayan Jakarta, pada 5 Desember 2024.
+                </p>
+                <Link href={"/"} className="">
+                  selengkapnya{">"}
+                  {">"}
+                  {">"}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
       </section>
       {/* end of informasi & berita section */}
     </LandingPageAppshell>
