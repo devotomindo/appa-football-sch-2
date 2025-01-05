@@ -13,7 +13,7 @@ export default function Login() {
   return (
     <LandingPageAppshell>
       {/* start of image slideshow */}
-      <section className="max-sm:hidden">
+      <section>
         <Slideshow />
       </section>
       {/* end of image slideshow */}
