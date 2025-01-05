@@ -1,6 +1,6 @@
 "use client";
 
-import { AppShell, Burger, Button, Group, Text } from "@mantine/core";
+import { AppShell, Burger, Button, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,58 +27,110 @@ export default function LandingPageAppshell({
           backgroundColor: "black",
           borderBottomColor: "black",
         },
+        navbar: {},
       }}
     >
-      <AppShell.Header className="text-white">
-        <Group h="100%" px="md" justify="space-between">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Image src="/logo-with-text.png" alt="Logo" width={120} height={40} />
-          <Group className="capitalize" justify="space-between">
-            <Link href={"#Home"} className="hover:text-red-600">
-              <Text fw={""} size="md">
-                home
-              </Text>
+      <AppShell.Header className="px-4 text-white">
+        <div className="flex h-full flex-row items-center justify-between gap-4">
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            hiddenFrom="sm"
+            size="sm"
+            color="white"
+          />
+          <div className="relative h-10 w-32 md:h-10 md:w-32 lg:h-20 lg:w-36 xl:h-24 xl:w-44">
+            <Image
+              src="/logo-with-text.png"
+              alt="Logo"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="hidden flex-row items-center gap-6 capitalize md:flex lg:gap-12 xl:gap-28">
+            <Link
+              href={"#Home"}
+              className="transition-all duration-100 ease-in-out hover:text-red-600"
+            >
+              <p className="text-xs font-medium lg:text-lg">home</p>
             </Link>
-            <Link href={"#Program"} className="hover:text-red-600">
-              <Text fw={""} size="md">
-                program
-              </Text>
+            <Link
+              href={"#Program"}
+              className="transition-all duration-100 ease-in-out hover:text-red-600"
+            >
+              <p className="text-xs font-medium lg:text-lg">program</p>
             </Link>
-            <Link href={"#Fasilitas"} className="hover:text-red-600">
-              <Text fw={""} size="md">
-                fasilitas
-              </Text>
+            <Link
+              href={"#Fasilitas"}
+              className="transition-all duration-100 ease-in-out hover:text-red-600"
+            >
+              <p className="text-xs font-medium lg:text-lg">fasilitas</p>
             </Link>
-            <Link href={"#Kontak"} className="hover:text-red-600">
-              <Text fw={""} size="md">
-                kontak
-              </Text>
+            <Link
+              href={"#Kontak"}
+              className="transition-all duration-100 ease-in-out hover:text-red-600"
+            >
+              <p className="text-xs font-medium lg:text-lg">kontak</p>
             </Link>
-          </Group>
-          <Group className="capitalize" gap={"xl"}>
+          </div>
+          <div className="hidden flex-row items-center gap-4 md:flex xl:gap-8">
             <Link href={"/sign-up"}>
-              <Text>daftar trial</Text>
+              {/* <Text>daftar trial</Text> */}
+              <p className="text-xs font-medium capitalize lg:text-lg">
+                daftar trial
+              </p>
             </Link>
             <Link href={"/login"}>
-              <Button
-                radius={"md"}
-                styles={{
-                  root: {
-                    backgroundColor: "#FB2201",
-                    "&:hover": {
-                      backgroundColor: "#FB2201",
-                    },
-                  },
-                }}
-                className="capitalize"
-              >
+              <button className="rounded-lg bg-[#FB2201] p-2 text-sm font-medium capitalize transition-all duration-300 ease-in-out hover:bg-[#fb2201b2] md:px-5 md:py-1 lg:px-7 lg:text-lg xl:px-10">
                 login
-              </Button>
+              </button>
             </Link>
-          </Group>
-        </Group>
+          </div>
+        </div>
       </AppShell.Header>
-      <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+      <AppShell.Navbar p="md">
+        <div className="flex h-full flex-col gap-10 capitalize">
+          <Link href={"#Home"} className="hover:text-red-600">
+            <Text fw={""} size="md">
+              home
+            </Text>
+          </Link>
+          <Link href={"#Program"} className="hover:text-red-600">
+            <Text fw={""} size="md">
+              program
+            </Text>
+          </Link>
+          <Link href={"#Fasilitas"} className="hover:text-red-600">
+            <Text fw={""} size="md">
+              fasilitas
+            </Text>
+          </Link>
+          <Link href={"#Kontak"} className="hover:text-red-600">
+            <Text fw={""} size="md">
+              kontak
+            </Text>
+          </Link>
+          <Link href={"/sign-up"}>
+            <Text>daftar trial</Text>
+          </Link>
+          <Link href={"/login"}>
+            <Button
+              radius={"md"}
+              styles={{
+                root: {
+                  backgroundColor: "#FB2201",
+                  "&:hover": {
+                    backgroundColor: "#FB2201",
+                  },
+                },
+              }}
+              className="capitalize"
+            >
+              login
+            </Button>
+          </Link>
+        </div>
+      </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );
