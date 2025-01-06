@@ -19,25 +19,22 @@ export default function Login() {
       {/* end of image slideshow */}
 
       {/* start of first big header */}
-      <section className="bg-[#111111]">
-        <div className="flex flex-row items-start gap-20 px-8 py-20 leading-loose max-lg:flex-col max-lg:px-14">
+      <section className="relative overflow-hidden bg-[#111111]">
+        <div className="relative z-10 flex flex-row items-start gap-20 px-8 py-20 leading-loose max-lg:flex-col max-lg:px-14">
           <div className="flex h-full w-full flex-1 items-center justify-center lg:pt-8">
-            <div className="h-full">
+            <div className="">
               <Image
                 src="/logo.png"
                 alt="logo"
-                width={400}
+                width={500}
                 height={400}
                 className=""
               />
             </div>
           </div>
-          {/* <div className="relative h-full w-full">
-            <Image src="/logo.png" alt="logo" fill className="object-contain" />
-          </div> */}
-          <div className="flex flex-1 flex-col justify-between text-white">
+          <div className="relative z-10 flex flex-1 flex-col justify-between text-white">
             <div className="flex h-full flex-col justify-between gap-10">
-              <h1 className="text-center text-[52px] font-black uppercase lg:text-justify xl:w-[90%]">
+              <h1 className="text-[52px] font-black uppercase max-lg:text-center xl:w-[90%]">
                 appa football school
               </h1>
               <p className="text-justify font-extralight xl:w-3/4">
@@ -67,6 +64,8 @@ export default function Login() {
             </div>
           </div>
         </div>
+        <div className="bulat-2 absolute -top-52 z-0 h-[500px] w-[500px] rounded-full sm:right-[5%] xl:right-[5%]"></div>
+        <div className="bulat absolute -bottom-52 z-0 h-[500px] w-[500px] rounded-full lg:left-[5%] 2xl:left-[20%]"></div>
       </section>
       {/* end of first big header */}
 

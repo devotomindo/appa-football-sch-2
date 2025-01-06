@@ -22,3 +22,21 @@
     @apply col-[1_/_4] w-full;
   }
 }
+
+.bulat {
+  background: rgb(122, 122, 122);
+  background: linear-gradient(
+    90deg,
+    rgba(122, 122, 122, 1) 0%,
+    rgba(0, 0, 0, 1) 60%
+  );
+}
+
+.bulat-2 {
+  background: rgb(122, 122, 122);
+  background: linear-gradient(
+    0deg,
+    rgba(122, 122, 122, 1) 0%,
+    rgba(0, 0, 0, 1) 70%
+  );
+}
