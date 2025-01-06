@@ -9,6 +9,94 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
+const programLatihanData = [
+  {
+    image: "/banner-alt-1.png",
+    programName: "fun, play & move",
+    ageGroup: "5 - 8 tahun",
+    description:
+      "Pada kelompok ini, pemain dikenalkan tentang sepak bola dengan cara memperbanyak sesi bermain dan menciptakan suasana agar peserta merasa senang",
+    programList: ["teknik dasar", "circuit game", "4v4 game", "fair play"],
+    schedule: ["minggu 07.00 - 08.30 WIB"],
+  },
+  {
+    image: "/banner-alt-1.png",
+    programName: "LEARN & DEVELOP",
+    ageGroup: "ku 10 tahun",
+    description:
+      "Pada kelompok ini, pemain sudah mulai dikenalkan dengan teknik kombinasi, pemahaman formasi serta mulai mengikuti kompetisi.",
+    programList: [
+      "Teknik Dasar",
+      "Kombinasi Permainan",
+      "Circuit Game",
+      "7v7 Game",
+      "Fair Play",
+      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
+      "Evaluasi",
+    ],
+    schedule: ["minggu 07.00 - 08.30 WIB"],
+  },
+  {
+    image: "/banner-alt-2.png",
+    programName: "LEARN & DEVELOP",
+    ageGroup: "ku 13 tahun",
+    description:
+      "Pada kelompok ini, pemain diharapkan dapat memiliki kemampuan dasar yang terlatih serta pemahaman formasi yang baik.",
+    programList: [
+      "Teknik Dasar",
+      "Spesialisasi Posisi",
+      "Kombinasi Permainan",
+      "Transisi Permainan",
+      "Circuit Game",
+      "11v11 Game",
+      "Fair Play",
+      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
+      "Evaluasi",
+    ],
+    schedule: ["Rabu 15.30 - 17.30 WIB", "Sabtu 07.00 - 09.00 WIB"],
+  },
+  {
+    image: "/banner-alt-2.png",
+    programName: "FIGHT, WIN & PRIZE",
+    ageGroup: "ku 15 tahun",
+    description:
+      "Pada kelompok ini, pemain dilatih untuk memiliki mental pejuang dan harus bisa memenangkan pertandingan.",
+    programList: [
+      "Teknik Dasar",
+      "Spesialisasi Posisi",
+      "Kombinasi Permainan",
+      "Transisi Permainan",
+      "Circuit Game",
+      "11v11 Game",
+      "Analisis Pertandingan",
+      "Fair Play",
+      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
+      "Evaluasi",
+    ],
+    schedule: ["Selasa 15.30 - 17.30 WIB", "Jumat 15.30 - 17.30 WIB"],
+  },
+  {
+    image: "/banner-alt-2.png",
+    programName: "FIGHT, WIN & PRIZE",
+    ageGroup: "ku 17 tahun",
+    description:
+      "Pada kelompok ini, pemain dilatih untuk memiliki mental pejuang , harus bisa memenangkan pertandingan dan bersiap menuju karir profesional",
+    programList: [
+      "Teknik Dasar",
+      "Spesialisasi Posisi",
+      "Kombinasi Permainan",
+      "Transisi Permainan",
+      "Circuit Game",
+      "11v11 Game",
+      "Analisis Pertandingan",
+      "Fair Play",
+      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
+      "Evaluasi",
+    ],
+    schedule: ["Selasa 15.30 - 17.30 WIB", "Jumat 15.30 - 17.30 WIB"],
+  },
+];
+
 export default function Login() {
   return (
     <LandingPageAppshell>
@@ -75,14 +163,14 @@ export default function Login() {
           program latihan
         </h1>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {[...Array(5)].map((_, index) => {
+          {programLatihanData.map((data, index) => {
             return (
               <div
                 className="flex flex-col items-center gap-10 rounded-3xl bg-black px-2 pb-32 pt-2 text-center"
                 key={index}
               >
                 <Image
-                  src={"/banner-alt-1.png"}
+                  src={data.image}
                   alt=""
                   width={"350"}
                   height={"350"}
@@ -90,29 +178,28 @@ export default function Login() {
                 />
                 <div className="space-y-2">
                   <p className="text-xl font-bold uppercase text-[#bb000e]">
-                    fun, play & move
+                    {data.programName}
                   </p>
-                  <p className="font-bold">5 - 8 tahun</p>
+                  <p className="font-bold">{data.ageGroup}</p>
                 </div>
-                <p className="font-light">
-                  Pada kelompok ini, pemain dikenalkan tentang sepak bola dengan
-                  cara memperbanyak sesi bermain dan menciptakan suasana agar
-                  peserta merasa senang
-                </p>
-                <div className="mt-10 space-y-2 capitalize">
+                <p className="h-[250px] font-light">{data.description}</p>
+                <div className="mt-10 h-[250px] space-y-2 capitalize">
                   <p className="font-bold underline">program</p>
                   <div className="font-light">
-                    <p>teknik dasar</p>
-                    <p>circuit game</p>
-                    <p>4v4 game</p>
-                    <p>fair play</p>
+                    {data.programList.map((program, index) => {
+                      return <p key={index}>{program}</p>;
+                    })}
                   </div>
                 </div>
                 <div className="mt-44">
                   <p className="font-light capitalize">sesi berlatih :</p>
-                  <p className="font-bold capitalize">
-                    minggu 07.00 - 08.30 WIB
-                  </p>
+                  {data.schedule.map((schedule, index) => {
+                    return (
+                      <p key={index} className="font-bold capitalize">
+                        {schedule}
+                      </p>
+                    );
+                  })}
                 </div>
               </div>
             );
