@@ -1,6 +1,7 @@
 import LandingPageAppshell from "@/components/appshell/landing-page-appshell";
 import { Slideshow } from "@/features/slideshow/component/Slideshow";
 import TestimoniCarousel from "@/features/slideshow/component/TestimoniCarousel";
+import { AspectRatio } from "@mantine/core";
 import {
   IconBrandInstagram,
   IconBrandTiktok,
@@ -97,6 +98,39 @@ const programLatihanData = [
   },
 ];
 
+const fasilitasData = [
+  {
+    image: "/fasilitas-1.png",
+    title: "Pelatih Berlisensi PSSI",
+    description:
+      "Our data-driven analytics provide an in-depth look at every play, allowing you to quickly assess, monitor, and improve performance.",
+  },
+  {
+    image: "/amorim.jpg",
+    title: "rapor individu",
+    description:
+      "Our data-driven analytics provide an in-depth look at every play, allowing you to quickly assess, monitor, and improve performance.",
+  },
+  {
+    image: "/mo salah.jpeg",
+    title: "sport technology",
+    description:
+      "Our data-driven analytics provide an in-depth look at every play, allowing you to quickly assess, monitor, and improve performance.",
+  },
+  {
+    image: "/bruno.jpg",
+    title: "kompetisi rutin",
+    description:
+      "Our data-driven analytics provide an in-depth look at every play, allowing you to quickly assess, monitor, and improve performance.",
+  },
+  {
+    image: "/ronaldo.jpeg",
+    title: "training ground",
+    description:
+      "Our data-driven analytics provide an in-depth look at every play, allowing you to quickly assess, monitor, and improve performance.",
+  },
+];
+
 export default function Login() {
   return (
     <LandingPageAppshell>
@@ -182,7 +216,7 @@ export default function Login() {
                   </p>
                   <p className="font-bold">{data.ageGroup}</p>
                 </div>
-                <p className="h-[250px] font-light">{data.description}</p>
+                <p className="h-[200px] font-light">{data.description}</p>
                 <div className="mt-10 h-[250px] space-y-2 capitalize">
                   <p className="font-bold underline">program</p>
                   <div className="font-light">
@@ -216,28 +250,26 @@ export default function Login() {
         <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
           fasilitas
         </h1>
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {[...Array(5)].map((_, index) => {
+        <div className="grid grid-cols-1 gap-10 drop-shadow-2xl sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {fasilitasData.map((data, index) => {
             return (
               <div
                 key={index}
                 className="flex flex-col items-center space-y-8 text-center"
               >
-                <Image
-                  src="/fasilitas-1.png"
-                  alt=""
-                  width={350}
-                  height={650}
-                  className="w-full rounded-2xl shadow-xl"
-                />
+                <div className="relative h-[500px]">
+                  <Image
+                    src={data.image}
+                    alt=""
+                    width={350}
+                    height={650}
+                    className="size-full rounded-2xl object-cover shadow-xl"
+                  />
+                </div>
                 <div className="w-full space-y-4 px-4">
-                  <p className="text-xl font-bold capitalize">
-                    pelatih berlisensi PSSI
-                  </p>
+                  <p className="text-xl font-bold capitalize">{data.title}</p>
                   <p className="text-base font-extralight capitalize">
-                    Our data-driven analytics provide an in-depth look at every
-                    play, allowing you to quickly assess, monitor, and improve
-                    performance.
+                    {data.description}
                   </p>
                 </div>
               </div>
@@ -270,7 +302,7 @@ export default function Login() {
         <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
           informasi & berita
         </h1>
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-12 drop-shadow-xl md:grid-cols-2 lg:grid-cols-3">
           {[...Array(3)].map((_, index) => {
             return (
               <div className="space-y-5" key={index}>
@@ -279,7 +311,7 @@ export default function Login() {
                     src={"/news-1.png"}
                     alt=""
                     fill
-                    className="object-cover"
+                    className="rounded-2xl object-cover"
                   />
                 </div>
                 <p>Asiana Kampiun Piala Soeratin DKI Jakarta U15</p>
@@ -304,9 +336,17 @@ export default function Login() {
       {/* end of informasi & berita section */}
 
       {/* start of footer section */}
-      <footer className="grid grid-cols-1 gap-8 bg-[#000000] px-8 py-20 text-white md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:items-center">
-        <div className="relative h-[250px] w-[250px] justify-self-center md:justify-self-start">
-          <Image src={"/logo.png"} alt="" fill className="object-contain" />
+      <footer className="grid grid-cols-1 gap-8 bg-[#000000] px-8 py-20 text-white md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:items-start">
+        <div className="relative flex h-full w-full items-center justify-center md:justify-self-start">
+          <div className="relative h-1/2 w-1/2">
+            <Image
+              src={"/logo.png"}
+              alt=""
+              width={100}
+              height={100}
+              className="h-full w-full object-contain"
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-10">
           <div className="">
@@ -325,13 +365,17 @@ export default function Login() {
           </div>
           <div className="">
             <p className="capitalize">maps</p>
-            <p className="text-sm font-extralight">
-              https://maps.app.goo.gl/mtyc8S6BK4x8gP4c6
-            </p>
+            <AspectRatio ratio={16 / 9}>
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4905.243936192186!2d112.00310237591702!3d-7.787783577284272!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7850d4012de11b%3A0x17e7332d77c4aa26!2sLapangan%20Jongbiru!5e1!3m2!1sen!2sid!4v1736155749466!5m2!1sen!2sid"
+                title="Google map"
+                style={{ border: 0, borderRadius: ".5rem" }}
+              />
+            </AspectRatio>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="mx-auto space-y-4">
           <p className="capitalize">kontak</p>
           <div className="flex flex-row items-center gap-2">
             <IconBrandWhatsapp />
