@@ -13,16 +13,16 @@ export default function Login() {
   return (
     <LandingPageAppshell>
       {/* start of image slideshow */}
-      <section>
+      <section className="max-md:hidden">
         <Slideshow />
       </section>
       {/* end of image slideshow */}
 
       {/* start of first big header */}
       <section className="bg-[#111111]">
-        <div className="flex flex-row items-start gap-8 px-8 py-10">
-          <div className="flex h-[700px] flex-1 items-center justify-center">
-            <div className="h-full pt-10">
+        <div className="flex flex-row items-start gap-20 px-8 py-20 leading-loose max-lg:flex-col max-lg:px-14">
+          <div className="flex h-full w-full flex-1 items-center justify-center lg:pt-8">
+            <div className="h-full">
               <Image
                 src="/logo.png"
                 alt="logo"
@@ -32,12 +32,15 @@ export default function Login() {
               />
             </div>
           </div>
+          {/* <div className="relative h-full w-full">
+            <Image src="/logo.png" alt="logo" fill className="object-contain" />
+          </div> */}
           <div className="flex flex-1 flex-col justify-between text-white">
-            <div className="flex h-full w-[90%] flex-col justify-between gap-10">
-              <h1 className="text-[52px] font-black uppercase">
+            <div className="flex h-full flex-col justify-between gap-10">
+              <h1 className="text-center text-[52px] font-black uppercase lg:text-justify xl:w-[90%]">
                 appa football school
               </h1>
-              <p className="text-justify font-extralight">
+              <p className="text-justify font-extralight xl:w-3/4">
                 Merupakan sekolah sepak bola yang menggabungkan pelatihan
                 sepakbola tradisional dengan teknologi canggih untuk
                 meningkatkan keterampilan dan performa pemain. Siswa dapat
@@ -45,7 +48,7 @@ export default function Login() {
                 akademi sepak bola modern untuk mendapatkan wawasan mendalam
                 tentang teknik bermain mereka.
               </p>
-              <p className="text-justify font-extralight">
+              <p className="text-justify font-extralight xl:w-3/4">
                 <span className="text-left font-bold">
                   APPA Football School
                 </span>{" "}
@@ -55,7 +58,7 @@ export default function Login() {
                 posisi mereka dan meningkatkan kekuatan serta kelemahan mereka
                 dengan lebih efisien.
               </p>
-              <p className="text-justify font-extralight">
+              <p className="text-justify font-extralight xl:w-3/4">
                 Kombinasi dari metode pelatihan tradisional dengan inovasi
                 teknologi membuat APPA Football School menjadi tempat yang ideal
                 bagi pemain yang ingin mencapai potensi maksimal mereka dan

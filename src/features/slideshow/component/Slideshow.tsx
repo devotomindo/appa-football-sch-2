@@ -29,12 +29,15 @@ export const Slideshow = () => {
     >
       <Carousel.Slide className="relative">
         <Image src={"/header-1.jpg"} alt="" fill className="object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
       </Carousel.Slide>
       <Carousel.Slide className="relative">
         <Image src={"/header-2.jpg"} alt="" fill className="object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
       </Carousel.Slide>
       <Carousel.Slide className="relative">
         <Image src={"/header-3.jpg"} alt="" fill className="object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
       </Carousel.Slide>
     </Carousel>
   );
