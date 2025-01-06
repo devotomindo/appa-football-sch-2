@@ -180,11 +180,11 @@ export default function Login() {
       {/* end of testimoni section */}
 
       {/* start of informasi & berita section */}
-      <section className="space-y-32 px-40 py-20">
+      <section className="space-y-32 px-8 py-20 md:px-20 lg:px-40">
         <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
           informasi & berita
         </h1>
-        <div className="flex flex-row justify-between gap-24">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(3)].map((_, index) => {
             return (
               <div className="space-y-5" key={index}>
