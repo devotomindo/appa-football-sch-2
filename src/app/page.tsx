@@ -126,25 +126,25 @@ export default function Login() {
       {/* end of program latihan section */}
 
       {/* start of fasilitas section */}
-      <section className="space-y-28 px-40 py-72">
+      <section className="space-y-28 px-8 py-28 md:px-20">
         <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
           fasilitas
         </h1>
-        <div className="flex flex-row justify-between gap-10">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {[...Array(5)].map((_, index) => {
             return (
               <div
                 key={index}
-                className="flex flex-col items-center space-y-28 text-center"
+                className="flex flex-col items-center space-y-8 text-center"
               >
                 <Image
                   src="/fasilitas-1.png"
                   alt=""
                   width={350}
                   height={650}
-                  className="rounded-2xl shadow-xl"
+                  className="w-full rounded-2xl shadow-xl"
                 />
-                <div className="w-3/4 space-y-4">
+                <div className="w-full space-y-4 px-4">
                   <p className="text-xl font-bold capitalize">
                     pelatih berlisensi PSSI
                   </p>
