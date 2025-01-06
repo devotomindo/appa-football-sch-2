@@ -218,8 +218,8 @@ export default function Login() {
       {/* end of informasi & berita section */}
 
       {/* start of footer section */}
-      <footer className="flex flex-row items-center justify-between gap-14 bg-[#000000] px-20 py-20 text-white">
-        <div className="relative h-[250px] w-[250px]">
+      <footer className="grid grid-cols-1 gap-8 bg-[#000000] px-8 py-20 text-white md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:items-center">
+        <div className="relative h-[250px] w-[250px] justify-self-center md:justify-self-start">
           <Image src={"/logo.png"} alt="" fill className="object-contain" />
         </div>
         <div className="flex flex-col gap-10">
@@ -247,18 +247,18 @@ export default function Login() {
 
         <div className="space-y-4">
           <p className="capitalize">kontak</p>
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <IconBrandWhatsapp />
             <p>0855098702022</p>
           </div>
         </div>
         <div className="space-y-4">
           <p className="capitalize">Kunjungi Sosial Media Kami</p>
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <IconBrandInstagram />
             <p>@appafootballschool</p>
           </div>
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <IconBrandTiktok />
             <p>@appafootball</p>
           </div>
