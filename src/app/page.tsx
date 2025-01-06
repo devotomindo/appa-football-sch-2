@@ -71,11 +71,11 @@ export default function Login() {
       {/* end of first big header */}
 
       {/* start of program latihan section */}
-      <section className="space-y-28 bg-[#bb000e] px-20 py-28 text-white">
+      <section className="space-y-28 bg-[#bb000e] px-8 py-28 text-white md:px-20">
         <h1 className="text-center text-4xl font-black uppercase">
           program latihan
         </h1>
-        <div className="flex flex-row justify-between gap-10">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {[...Array(5)].map((_, index) => {
             return (
               <div
@@ -87,6 +87,7 @@ export default function Login() {
                   alt=""
                   width={"350"}
                   height={"350"}
+                  className="w-full"
                 />
                 <div className="space-y-2">
                   <p className="text-xl font-bold uppercase text-[#bb000e]">
