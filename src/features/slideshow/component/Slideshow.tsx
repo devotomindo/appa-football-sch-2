@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRef } from "react";
 
 export const Slideshow = () => {
-  const autoplay = useRef(Autoplay({ delay: 2000 }));
+  const autoplay = useRef(Autoplay({ delay: 5000 }));
 
   return (
     <Carousel

@@ -131,7 +131,7 @@ const fasilitasData = [
   },
 ];
 
-export default function Login() {
+export default function LandingPage() {
   return (
     <LandingPageAppshell>
       {/* start of image slideshow */}
