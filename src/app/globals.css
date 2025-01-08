@@ -40,3 +40,12 @@
     rgba(0, 0, 0, 1) 70%
   );
 }
+
+.bulat-3 {
+  background: rgb(122, 122, 122);
+  background: linear-gradient(
+    90deg,
+    rgba(122, 122, 122, 1) 0%,
+    rgba(0, 0, 0, 1) 80%
+  );
+}

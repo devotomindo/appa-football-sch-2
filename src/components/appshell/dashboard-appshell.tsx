@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconHome, IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -35,7 +36,11 @@ export function DashboardAppshell({
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: "lg", collapsed: { mobile: !opened } }}
+      navbar={{
+        width: 300,
+        breakpoint: "lg",
+        collapsed: { mobile: !opened },
+      }}
       padding="md"
     >
       <AppShell.Header>
@@ -89,17 +94,74 @@ export function DashboardAppshell({
       </AppShell.Header>
 
       {/* sidebar */}
-      <AppShell.Navbar p="xs">
+      <AppShell.Navbar p="xs" className="">
+        <div className="w-full space-y-4">
+          <div className="relative mx-auto h-44 w-44 rounded-full border-[8px] border-slate-400">
+            <Image
+              src={"/sty.jpg"}
+              alt=""
+              width={500}
+              height={500}
+              className="h-full w-full rounded-full object-cover"
+            />
+          </div>
+          <div className="space-y-1 text-center">
+            <p>Shin Tae-yong</p>
+            <p>Head Coach</p>
+          </div>
+        </div>
         <p className="p-2 text-xs text-gray-500">Menu</p>
 
-        <NavLink
-          label="Dashboard"
-          onClick={toggle}
-          component={Link}
-          href="/dashboard"
-          active={pathname === "/dashboard"}
-          leftSection={<IconHome size="1.25rem" stroke={1.5} />}
-        />
+        <div className="space-y-4">
+          <NavLink
+            label="Dashboard"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard"
+            active={pathname === "/dashboard"}
+            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+          />
+          <NavLink
+            label="Asesmen Pemain"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard/asesmen-pemain"
+            active={pathname === "/dashboard/asesmen-pemain"}
+            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+          />
+          <NavLink
+            label="Hasil Asesmen"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard/hasil-asesmen"
+            active={pathname === "/dashboard/hasil-asesmen"}
+            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+          />
+          <NavLink
+            label="Metode Latihan Kelompok"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard/metode-latihan-kelompok"
+            active={pathname === "/dashboard/metode-latihan-kelompok"}
+            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+          />
+          <NavLink
+            label="Metode Latihan Individu"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard/metode-latihan-individu"
+            active={pathname === "/dashboard/metode-latihan-individu"}
+            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+          />
+          <NavLink
+            label="Pengaturan"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard/pengaturan"
+            active={pathname === "/dashboard/pengaturan"}
+            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+          />
+        </div>
 
         {/* ADMIN MENU */}
         {isUserAdminValue ? (
