@@ -32,9 +32,9 @@ const unbounded = Unbounded({
 export const metadata: Metadata = {
   title: {
     template: "%s - Website Title",
-    default: "Website Title",
+    default: "APPA FOOTBALL SCHOOL",
   },
-  description: "Website Description",
+  description: "APPA Football School merupakan sekolah sepak bola yang menggabungkan pelatihan sepakbola tradisional dengan teknologi canggih untuk meningkatkan keterampilan dan performa pemain.",
 };
 
 const mantineTheme = createTheme({
