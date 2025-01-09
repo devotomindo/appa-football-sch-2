@@ -49,8 +49,14 @@ export function DashboardAppshell({
       }}
       padding="md"
     >
-      <AppShell.Header>
-        <Group h="100%" px="md">
+      <AppShell.Header
+        styles={{
+          header: {
+            borderBottomColor: "black",
+          },
+        }}
+      >
+        <Group h="100%" px="md" className="bg-black text-white">
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center justify-center space-x-4">
               {/* burger menu and brand logo */}
@@ -66,7 +72,18 @@ export function DashboardAppshell({
                   Logo Mobile
                 </UnstyledButton>
 
-                <Box visibleFrom="lg">Logo Desktop</Box>
+                <Box visibleFrom="lg" className="h-[59px]">
+                  {/* Logo */}
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={"/logo-with-text.png"}
+                      alt="logo"
+                      width={500}
+                      height={500}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </Box>
               </div>
 
               {/* <DatetimeComponent /> */}
@@ -78,7 +95,7 @@ export function DashboardAppshell({
                 <Menu.Target>
                   <Button
                     variant="subtle"
-                    color="dark"
+                    color="white"
                     leftSection={<IconUserCircle stroke={1.5} />}
                     px={"0.25rem"}
                   >
