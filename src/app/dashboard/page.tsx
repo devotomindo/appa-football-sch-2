@@ -1,5 +1,5 @@
+import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import MemberCountContainer from "@/components/container/member-count-container";
 import { authGuard } from "@/features/user/guards/auth-guard";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -20,12 +20,21 @@ export default async function DashboardPage() {
 
   return (
     <DashboardSectionContainer>
-      <div className="flex flex-row items-center gap-10 rounded-xl p-8 shadow-lg">
-        <div className="relative h-full">
-          <Image src={"/garuda-mas.png"} alt="" width={100} height={100} />
+      <div
+        className="flex flex-col items-center gap-6 rounded-xl p-4 shadow-lg md:flex-row md:items-start md:gap-10 md:p-8"
+        id="banner"
+      >
+        <div className="relative">
+          <Image
+            src={"/garuda-mas.png"}
+            alt=""
+            width={80}
+            height={80}
+            className="md:w-[100px]"
+          />
         </div>
-        <div className="space-y-4">
-          <p className="text-2xl font-bold">SSB GARUDA MAS</p>
+        <div className="space-y-4 text-center md:text-left">
+          <p className="text-xl font-bold md:text-2xl">SSB GARUDA MAS</p>
           <div className="">
             <p>Jl. Lidah Wetan, Kec. Lakarsantri, Surabaya, Jawa Timur 60213</p>
             <p>0812-3456-4834</p>
@@ -34,16 +43,30 @@ export default async function DashboardPage() {
         </div>
       </div>
       <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
-        <MemberCountContainer>
-          <p className="text-8xl font-bold">5</p>
+        <BlackBackgroundContainer>
+          <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">5</p>
           <p className="relative z-10 font-bold capitalize">total pelatih</p>
-        </MemberCountContainer>
-        {/* <MemberCountContainer number={5} category="total pelatih" />
-        <MemberCountContainer number={60} category="pemain ku-8" />
-        <MemberCountContainer number={40} category="pemain ku-10" />
-        <MemberCountContainer number={35} category="pemain ku-13" />
-        <MemberCountContainer number={30} category="pemain ku-15" />
-        <MemberCountContainer number={35} category="pemain ku-17" /> */}
+        </BlackBackgroundContainer>
+        <BlackBackgroundContainer>
+          <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">60</p>
+          <p className="relative z-10 font-bold capitalize">pemain ku-8</p>
+        </BlackBackgroundContainer>
+        <BlackBackgroundContainer>
+          <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">40</p>
+          <p className="relative z-10 font-bold capitalize">pemain ku-10</p>
+        </BlackBackgroundContainer>
+        <BlackBackgroundContainer>
+          <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">35</p>
+          <p className="relative z-10 font-bold capitalize">pemain ku-13</p>
+        </BlackBackgroundContainer>
+        <BlackBackgroundContainer>
+          <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">30</p>
+          <p className="relative z-10 font-bold capitalize">pemain ku-15</p>
+        </BlackBackgroundContainer>
+        <BlackBackgroundContainer>
+          <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">35</p>
+          <p className="relative z-10 font-bold capitalize">pemain ku-17</p>
+        </BlackBackgroundContainer>
       </div>
     </DashboardSectionContainer>
   );

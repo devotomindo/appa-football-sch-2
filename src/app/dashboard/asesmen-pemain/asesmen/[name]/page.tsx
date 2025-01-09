@@ -1,5 +1,5 @@
+import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import MemberCountContainer from "@/components/container/member-count-container";
 import { PesertaAsesmenTable } from "@/features/assesmen-pemain/components/table/peserta-asesmen-table";
 import Image from "next/image";
 
@@ -35,7 +35,7 @@ export default function AsesmenDetail({
         <p className="text-xl font-bold uppercase">mekanisme asesmen</p>
         <div className="grid grid-cols-3 gap-5">
           {mekanismeAsesmen.map((item, index) => (
-            <MemberCountContainer key={index}>
+            <BlackBackgroundContainer key={index}>
               <div className="relative z-10 grid h-full grid-cols-2 items-center gap-10">
                 <div className="h-full w-full">
                   <Image
@@ -53,7 +53,7 @@ export default function AsesmenDetail({
                   </p>
                 </div>
               </div>
-            </MemberCountContainer>
+            </BlackBackgroundContainer>
           ))}
         </div>
       </div>
