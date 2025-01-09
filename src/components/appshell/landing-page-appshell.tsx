@@ -52,36 +52,36 @@ export default function LandingPageAppshell({
               href={"#Home"}
               className="transition-all duration-100 ease-in-out hover:text-red-600"
             >
-              <p className="text-xs font-medium lg:text-lg">home</p>
+              <p className="text-xs font-light lg:text-base">home</p>
             </Link>
             <Link
               href={"#Program"}
               className="transition-all duration-100 ease-in-out hover:text-red-600"
             >
-              <p className="text-xs font-medium lg:text-lg">program</p>
+              <p className="text-xs font-light lg:text-base">program</p>
             </Link>
             <Link
               href={"#Fasilitas"}
               className="transition-all duration-100 ease-in-out hover:text-red-600"
             >
-              <p className="text-xs font-medium lg:text-lg">fasilitas</p>
+              <p className="text-xs font-light lg:text-base">fasilitas</p>
             </Link>
             <Link
               href={"#Kontak"}
               className="transition-all duration-100 ease-in-out hover:text-red-600"
             >
-              <p className="text-xs font-medium lg:text-lg">kontak</p>
+              <p className="text-xs font-light lg:text-base">kontak</p>
             </Link>
           </div>
           <div className="hidden flex-row items-center gap-4 md:flex xl:gap-8">
             <Link href={"/sign-up"}>
               {/* <Text>daftar trial</Text> */}
-              <p className="text-xs font-medium capitalize lg:text-lg">
+              <p className="text-xs font-light capitalize lg:text-base">
                 daftar trial
               </p>
             </Link>
             <Link href={"/login"}>
-              <button className="rounded-lg bg-[#FB2201] p-2 text-sm font-medium capitalize transition-all duration-300 ease-in-out hover:bg-[#fb2201b2] md:px-5 md:py-1 lg:px-7 lg:text-lg xl:px-10">
+              <button className="rounded-lg bg-[#FB2201] p-2 text-sm font-medium capitalize transition-all duration-300 ease-in-out hover:bg-[#fb2201b2] md:px-5 md:py-1 lg:px-7 lg:text-base xl:px-10">
                 login
               </button>
             </Link>
@@ -111,7 +111,7 @@ export default function LandingPageAppshell({
             </Text>
           </Link>
           <Link href={"/sign-up"}>
-            <Text>daftar trial</Text>
+            <Text className="font-light">daftar trial</Text>
           </Link>
           <Link href={"/login"}>
             <Button

@@ -14,7 +14,7 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconHome, IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
+import { IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -32,6 +32,12 @@ export function DashboardAppshell({
   const pathname = usePathname();
 
   const isUserAdminValue = isUserAdmin(userData);
+
+  const navLinkStyles = {
+    body: {
+      paddingInline: ".5rem",
+    },
+  };
 
   return (
     <AppShell
@@ -94,9 +100,17 @@ export function DashboardAppshell({
       </AppShell.Header>
 
       {/* sidebar */}
-      <AppShell.Navbar p="xs" className="">
+      <AppShell.Navbar
+        className="space-y-8"
+        styles={{
+          navbar: {
+            backgroundColor: "#000000",
+            color: "#ffffff",
+          },
+        }}
+      >
         <div className="w-full space-y-4">
-          <div className="relative mx-auto h-44 w-44 rounded-full border-[8px] border-slate-400">
+          <div className="relative mx-auto mt-4 h-44 w-44 rounded-full border-[8px] border-slate-400">
             <Image
               src={"/sty.jpg"}
               alt=""
@@ -106,20 +120,51 @@ export function DashboardAppshell({
             />
           </div>
           <div className="space-y-1 text-center">
-            <p>Shin Tae-yong</p>
+            <p className="font-bold">Shin Tae-yong</p>
             <p>Head Coach</p>
           </div>
+          <div className="w-full bg-[#E92222] p-2 text-center text-white">
+            <p className="uppercase">premium 1 tahun</p>
+          </div>
         </div>
-        <p className="p-2 text-xs text-gray-500">Menu</p>
+
+        <div className="px-8">
+          <div className="h-[1px] w-full bg-black"></div>
+        </div>
 
         <div className="space-y-4">
           <NavLink
-            label="Dashboard"
+            label="Beranda"
             onClick={toggle}
             component={Link}
             href="/dashboard"
             active={pathname === "/dashboard"}
-            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+            color={pathname === "/dashboard" ? "#E92222" : ""}
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
+          />
+          <NavLink
+            label="Daftar Pemain"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard/daftar-pemain"
+            active={pathname === "/dashboard/daftar-pemain"}
+            color={pathname === "/dashboard/daftar-pemain" ? "#E92222" : ""}
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
+          />
+          <NavLink
+            label="Daftar Pelatih"
+            onClick={toggle}
+            component={Link}
+            href="/dashboard/daftar-pelatih"
+            active={pathname === "/dashboard/daftar-pelatih"}
+            color={pathname === "/dashboard/daftar-pelatih" ? "#E92222" : ""}
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
           />
           <NavLink
             label="Asesmen Pemain"
@@ -127,7 +172,10 @@ export function DashboardAppshell({
             component={Link}
             href="/dashboard/asesmen-pemain"
             active={pathname === "/dashboard/asesmen-pemain"}
-            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+            color={pathname === "/dashboard/asesmen-pemain" ? "#E92222" : ""}
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
           />
           <NavLink
             label="Hasil Asesmen"
@@ -135,7 +183,10 @@ export function DashboardAppshell({
             component={Link}
             href="/dashboard/hasil-asesmen"
             active={pathname === "/dashboard/hasil-asesmen"}
-            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+            color={pathname === "/dashboard/hasil-asesmen" ? "#E92222" : ""}
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
           />
           <NavLink
             label="Metode Latihan Kelompok"
@@ -143,7 +194,12 @@ export function DashboardAppshell({
             component={Link}
             href="/dashboard/metode-latihan-kelompok"
             active={pathname === "/dashboard/metode-latihan-kelompok"}
-            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+            color={
+              pathname === "/dashboard/metode-latihan-kelompok" ? "#E92222" : ""
+            }
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
           />
           <NavLink
             label="Metode Latihan Individu"
@@ -151,7 +207,12 @@ export function DashboardAppshell({
             component={Link}
             href="/dashboard/metode-latihan-individu"
             active={pathname === "/dashboard/metode-latihan-individu"}
-            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+            color={
+              pathname === "/dashboard/metode-latihan-individu" ? "#E92222" : ""
+            }
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
           />
           <NavLink
             label="Pengaturan"
@@ -159,7 +220,10 @@ export function DashboardAppshell({
             component={Link}
             href="/dashboard/pengaturan"
             active={pathname === "/dashboard/pengaturan"}
-            leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+            color={pathname === "/dashboard/pengaturan" ? "#E92222" : ""}
+            variant="filled"
+            styles={navLinkStyles}
+            className="hover:!bg-[#E92222] hover:text-white"
           />
         </div>
 
