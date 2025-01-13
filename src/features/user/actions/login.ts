@@ -11,7 +11,7 @@ import { zfd } from "zod-form-data";
 export async function login(prevState: any, formData: FormData) {
   const validationResult = await zfd
     .formData({
-      username: zfd.text(z.string().min(5)),
+      email: zfd.text(z.string().min(5)),
       password: zfd.text(z.string().min(6)),
     })
     .safeParseAsync(formData);
@@ -22,7 +22,7 @@ export async function login(prevState: any, formData: FormData) {
 
     return {
       error: {
-        username: errorFormatted.username?._errors,
+        email: errorFormatted.email?._errors,
         password: errorFormatted.password?._errors,
       },
     };
@@ -30,7 +30,7 @@ export async function login(prevState: any, formData: FormData) {
   // END OF VALIDATION
 
   // DATA PROCESSING
-  const userEmail = validationResult.data.username + "@email.com";
+  const userEmail = validationResult.data.email;
   const db = createDrizzleConnection();
   const supabase = await createServerClient();
 

@@ -45,11 +45,11 @@ export function LoginForm() {
 
       <div className="space-y-4">
         <TextInput
-          label="Username"
-          name="username"
+          label="Email"
+          name="email"
           required
           withAsterisk={false}
-          error={actionState?.error.username}
+          error={actionState?.error.email}
           className="text-[#333333] shadow-lg"
           radius="md"
         />
