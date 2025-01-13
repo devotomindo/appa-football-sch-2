@@ -11,6 +11,7 @@ import {
   Group,
   Menu,
   NavLink,
+  ScrollArea,
   UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -38,6 +39,8 @@ export function DashboardAppshell({
       paddingInline: ".5rem",
     },
   };
+
+  const member = true;
 
   return (
     <AppShell
@@ -73,7 +76,6 @@ export function DashboardAppshell({
                 </UnstyledButton>
 
                 <Box visibleFrom="lg" className="h-[59px]">
-                  {/* Logo */}
                   <div className="relative h-full w-full">
                     <Image
                       src={"/logo-with-text.png"}
@@ -118,13 +120,14 @@ export function DashboardAppshell({
 
       {/* sidebar */}
       <AppShell.Navbar
-        className="space-y-8"
+        className=""
         styles={{
           navbar: {
             backgroundColor: "#000000",
             color: "#ffffff",
           },
         }}
+        component={ScrollArea}
       >
         <div className="w-full space-y-4">
           <div className="relative mx-auto mt-4 h-44 w-44 rounded-full border-[8px] border-slate-400">
@@ -140,16 +143,22 @@ export function DashboardAppshell({
             <p className="font-bold">Shin Tae-yong</p>
             <p>Head Coach</p>
           </div>
+          {!member && (
+            <div className="text-center capitalize">
+              <p>paket gratis</p>
+            </div>
+          )}
           <div className="w-full bg-[#E92222] p-2 text-center text-white">
-            <p className="uppercase">premium 1 tahun</p>
+            {member && <p className="uppercase">premium 1 tahun</p>}
+            {!member && <Link href="/daftar">daftar disini</Link>}
           </div>
         </div>
 
-        <div className="px-8">
-          <div className="h-[1px] w-full bg-black"></div>
+        <div className="my-10 px-8">
+          <div className="h-[1px] w-full bg-white"></div>
         </div>
 
-        <div className="space-y-4">
+        <div className="relative space-y-4">
           <NavLink
             label="Beranda"
             onClick={toggle}
@@ -242,6 +251,18 @@ export function DashboardAppshell({
             styles={navLinkStyles}
             className="hover:!bg-[#E92222] hover:text-white"
           />
+          <div className="absolute left-[-25%] top-[10%] -z-10 h-3/4">
+            <div className="relative h-full w-1/2">
+              <Image
+                src={"/logo-tanpa-teks.png"}
+                alt=""
+                width={500}
+                height={500}
+                className="h-full opacity-15"
+                style={{ objectFit: "cover" }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* ADMIN MENU */}

@@ -267,7 +267,9 @@ export default function LandingPage() {
                   />
                 </div>
                 <div className="w-full space-y-4 px-4">
-                  <p className="text-xl font-bold capitalize">{data.title}</p>
+                  <p className="h-[56px] text-xl font-bold capitalize">
+                    {data.title}
+                  </p>
                   <p className="text-base font-extralight capitalize">
                     {data.description}
                   </p>

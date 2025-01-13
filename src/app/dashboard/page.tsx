@@ -24,7 +24,7 @@ export default async function DashboardPage() {
         className="flex flex-col items-center gap-6 rounded-xl p-4 shadow-lg md:flex-row md:items-start md:gap-10 md:p-8"
         id="banner"
       >
-        <div className="relative">
+        <div className="relative h-full">
           <Image
             src={"/garuda-mas.png"}
             alt=""
