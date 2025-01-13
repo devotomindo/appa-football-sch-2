@@ -3,8 +3,6 @@
 import Link from "next/link";
 
 export function DaftarLatihanKelompokView() {
-  const linkSelengkapnya = "selengkapnya";
-
   return (
     <div className="mt-10 space-y-4">
       <div className="flex items-center justify-between">
@@ -36,7 +34,7 @@ export function DaftarLatihanKelompokView() {
                 merebut bola
               </p>
               <Link
-                href={`/dashboard/admin/daftar-latihan-kelompok/${linkSelengkapnya}`}
+                href={`/dashboard/admin/daftar-latihan-kelompok/latihan/${index}`}
                 className="w-fit rounded-lg border-2 px-10 py-4 capitalize shadow-xl"
               >
                 Selengkapnya
