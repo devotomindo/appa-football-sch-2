@@ -52,6 +52,26 @@ export async function supabaseMiddleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // ONLY FOR ADMIN
+  if (user && request.nextUrl.pathname.startsWith("/dashboard/admin/")) {
+    const { data: userData, error: userError } = await supabase
+      .from("user_role_members")
+      .select("user_role_id")
+      .eq("user_id", user.id);
+
+    if (!userData || userError) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+
+    if (!userData.some((data) => data.user_role_id === 2)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+  }
+
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:

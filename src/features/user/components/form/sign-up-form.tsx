@@ -86,33 +86,6 @@ export function SignUpForm() {
         </p>
       </div>
 
-      {/* <TextInput
-        label="USERNAME"
-        name="username"
-        required
-        error={actionState?.error?.username}
-        withAsterisk={false}
-        className="shadow-lg"
-        labelProps={{ style: { marginBottom: "0.5rem" } }}
-      /> */}
-      {/* <TextInput
-        label="KOTA/KABUPATEN"
-        name="kota"
-        required
-        error={actionState?.error?.kota}
-        withAsterisk={false}
-        className="shadow-lg"
-        labelProps={{ style: { marginBottom: "0.5rem" } }}
-      /> */}
-      {/* <TextInput
-        label="NAMA SSB"
-        name="ssb"
-        required
-        error={actionState?.error?.ssb}
-        withAsterisk={false}
-        className="shadow-lg"
-        labelProps={{ style: { marginBottom: "0.5rem" } }}
-      /> */}
       <TextInput
         label="EMAIL"
         name="email"
