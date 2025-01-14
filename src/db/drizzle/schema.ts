@@ -1,5 +1,6 @@
 import {
   bigint,
+  boolean,
   jsonb,
   pgSchema,
   pgTable,
@@ -39,7 +40,40 @@ export const userProfiles = pgTable("user_profiles", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
+  avatar_path: text("avatar_path"),
   name: text("name"),
+});
+
+// SCHOOLS
+export const schools = pgTable("schools", {
+  id: smallint("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  address: text("address"),
+  image_path: text("image_path"),
+  isPremium: boolean("is_premium").notNull().default(false),
+  premiumExpiresAt: timestamp("premium_expires_at"),
+});
+
+export const schoolRoles = pgTable("school_roles", {
+  id: smallint("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const schoolRoleMembers = pgTable("school_role_members", {
+  id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => authUsers.id),
+  schoolId: smallint("school_id")
+    .notNull()
+    .references(() => schools.id),
+  schoolRoleId: smallint("school_role_id")
+    .notNull()
+    .references(() => schoolRoles.id),
 });
 
 export const userRoleMembers = pgTable("user_role_members", {

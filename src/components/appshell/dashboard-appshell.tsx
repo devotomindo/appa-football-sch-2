@@ -3,8 +3,11 @@
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { logout } from "@/features/user/actions/logout";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
+import { SchoolSession } from "@/lib/session";
+import { useSchoolStore } from "@/stores/school-store";
 import {
   AppShell,
+  Avatar,
   Box,
   Burger,
   Button,
@@ -24,10 +27,13 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { SchoolSwitcher } from "../school-switcher";
 
 type DashboardAppshellProps = {
   children: React.ReactNode | React.ReactNode[];
-  userData: GetUserByIdResponse;
+  userData: GetUserByIdResponse & { avatar_url?: string };
+  initialSchool: SchoolSession | null;
 };
 
 const navLinkStyles = {
@@ -67,9 +73,26 @@ function NavLinkComponent({
 export function DashboardAppshell({
   children,
   userData,
+  initialSchool,
 }: DashboardAppshellProps) {
   const [opened, { toggle }] = useDisclosure();
   const pathname = usePathname();
+  const { selectedSchool, setSelectedSchool } = useSchoolStore();
+
+  // Initialize store when component mounts
+  useEffect(() => {
+    const initializeSchool = async () => {
+      if (!selectedSchool) {
+        // Use initial school from session or first school in list
+        const schoolToSet = initialSchool || userData.schools[0];
+        if (schoolToSet) {
+          await setSelectedSchool(schoolToSet);
+        }
+      }
+    };
+
+    initializeSchool();
+  }, []); // Empty dependency array to run only once on mount
 
   const isUserAdminValue = isUserAdmin(userData);
 
@@ -110,20 +133,24 @@ export function DashboardAppshell({
                 </UnstyledButton>
 
                 <Box visibleFrom="lg" className="h-[59px]">
-                  <div className="relative h-full w-full">
-                    <Image
-                      src={"/logo-with-text.png"}
-                      alt="logo"
-                      width={500}
-                      height={500}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
+                  <Link href={"/"}>
+                    <div className="relative h-full w-full">
+                      <Image
+                        src={"/logo-with-text.png"}
+                        alt="logo"
+                        width={500}
+                        height={500}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  </Link>
                 </Box>
               </div>
 
               {/* <DatetimeComponent /> */}
             </div>
+
+            {/* Center: Add SchoolSwitcher */}
 
             {/* user avatar */}
             <div className="flex items-center space-x-1">
@@ -164,18 +191,24 @@ export function DashboardAppshell({
         component={ScrollArea}
       >
         <div className="w-full space-y-4">
-          <div className="relative mx-auto mt-4 h-44 w-44 rounded-full border-[8px] border-slate-400">
-            <Image
-              src={"/sty.jpg"}
-              alt=""
-              width={500}
-              height={500}
-              className="h-full w-full rounded-full object-cover"
-            />
-          </div>
+          <Avatar
+            src={userData.avatar_url ?? undefined}
+            size={"10rem"}
+            radius={"100%"}
+            alt={`Avatar ${userData.name}`}
+            name={userData.name ?? undefined}
+            color="initials"
+            className="mx-auto border-4 border-[#333333]"
+          />
           <div className="space-y-1 text-center">
-            <p className="font-bold">Shin Tae-yong</p>
-            <p>Head Coach</p>
+            <p className="font-bold">{userData.name}</p>
+            {isUserAdminValue && <p className="uppercase">Admin</p>}
+
+            <div className="flex justify-center">
+              {userData.schools.length > 0 && (
+                <SchoolSwitcher schools={userData.schools} />
+              )}
+            </div>
           </div>
           {!member && (
             <div className="text-center capitalize">
@@ -373,6 +406,27 @@ export function DashboardAppshell({
             </div>
           </div>
         </div>
+
+        {/* ADMIN MENU */}
+        {isUserAdminValue ? (
+          <>
+            <p className="p-2 text-xs text-gray-500">Admin</p>
+
+            <NavLink
+              label="User"
+              onClick={toggle}
+              component={Link}
+              href="/dashboard/admin/user"
+              active={pathname === "/dashboard/admin/user"}
+              color={pathname === "/dashboard/admin/user" ? "#E92222" : ""}
+              variant="filled"
+              styles={navLinkStyles}
+              className="hover:!bg-[#E92222] hover:text-white"
+              leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+            />
+          </>
+        ) : null}
+        {/* END OF ADMIN MENU */}
       </AppShell.Navbar>
       <AppShell.Main className="bg-gray-100 dark:bg-inherit">
         {children}

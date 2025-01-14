@@ -2,7 +2,9 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { authUsers, userProfiles } from "@/db/drizzle/schema";
+import { createServerClient } from "@/db/supabase/server";
 import { getUserRolesCTE } from "@/features/user/utils/get-user-roles-cte";
+import { getStorageBucketAndPath } from "@/lib/utils/supabase";
 import { and, eq, getTableColumns, isNull, sql } from "drizzle-orm";
 import { cache } from "react";
 
@@ -13,6 +15,8 @@ export const getUserById = cache(async function (id: string) {
 
   const userRolesCTE = getUserRolesCTE(db);
 
+  const supabase = await createServerClient();
+
   return await db
     .with(userRolesCTE)
     .select({
@@ -21,11 +25,51 @@ export const getUserById = cache(async function (id: string) {
       userRole: sql<
         { id: number; name: string }[]
       >`COALESCE(${userRolesCTE.roles}, '{}')`,
+      schools: sql<
+        {
+          id: number;
+          name: string;
+          role: string;
+        }[]
+      >`
+        COALESCE(
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', s.id,
+                'name', s.name,
+                'role', sr.name
+              )
+            )
+            FROM school_role_members srm
+            JOIN schools s ON s.id = srm.school_id
+            JOIN school_roles sr ON sr.id = srm.school_role_id
+            WHERE srm.user_id = ${authUsers.id}
+          ),
+          '[]'
+        )
+      `,
     })
     .from(authUsers)
     .innerJoin(userProfiles, eq(authUsers.id, userProfiles.id))
     .leftJoin(userRolesCTE, eq(authUsers.id, userRolesCTE.userId))
     .where(and(eq(authUsers.id, id), isNull(userProfiles.deletedAt)))
     .limit(1)
-    .then((res) => res[0]);
+    .then((res) => {
+      const user = res[0];
+
+      if (!user.avatar_path) {
+        return user;
+      }
+
+      const { bucket, path } = getStorageBucketAndPath(user.avatar_path);
+
+      // Fetch avatar from bucket
+      const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+
+      return {
+        ...user,
+        avatar_url: data.publicUrl,
+      };
+    });
 });

@@ -1,5 +1,6 @@
 import { DashboardAppshell } from "@/components/appshell/dashboard-appshell";
 import { authGuard } from "@/features/user/guards/auth-guard";
+import { getSchoolSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -7,7 +8,6 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // AUTH GUARD
   const authResponse = await authGuard();
 
   if (!authResponse.success || !authResponse.data) {
@@ -15,7 +15,11 @@ export default async function DashboardLayout({
   }
 
   const userData = authResponse.data;
-  // END OF AUTH GUARD
+  const schoolSession = await getSchoolSession();
 
-  return <DashboardAppshell userData={userData}>{children}</DashboardAppshell>;
+  return (
+    <DashboardAppshell userData={userData} initialSchool={schoolSession}>
+      {children}
+    </DashboardAppshell>
+  );
 }
