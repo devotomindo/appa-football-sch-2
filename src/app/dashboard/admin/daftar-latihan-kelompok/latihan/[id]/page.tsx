@@ -1,7 +1,7 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import LatihanView from "@/features/daftar-latihan-kelompok/components/view/latihan-view";
+import { DetailLatihanKelompokView } from "@/features/daftar-latihan-kelompok/components/view/detail-latihan-kelompok/detail-latihan-kelompok-view";
 
-export default function Latihan({
+export default async function DetailLatihanKelompok({
   params,
 }: {
   params: {
@@ -12,7 +12,7 @@ export default function Latihan({
 
   return (
     <DashboardSectionContainer>
-      <LatihanView />
+      <DetailLatihanKelompokView />
     </DashboardSectionContainer>
   );
 }
