@@ -338,7 +338,7 @@ export function DashboardAppshell({
           ) : null}
 
           {/* ADMIN MENU */}
-          {isUserAdminValue ? (
+          {isUserAdminValue && (
             <>
               <NavLinkComponent
                 label="Daftar Latihan Kelompok"
@@ -369,13 +369,6 @@ export function DashboardAppshell({
                 pathname={pathname}
               />
               <NavLinkComponent
-                label="Daftar Akun"
-                path="admin/user"
-                toggle={toggle}
-                leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
-                pathname={pathname}
-              />
-              <NavLinkComponent
                 label="Daftar Transaksi"
                 path="admin/daftar-transaksi"
                 toggle={toggle}
@@ -389,8 +382,24 @@ export function DashboardAppshell({
                 leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
                 pathname={pathname}
               />
+              <div>
+                <p className="p-2 text-xs text-gray-500">Admin</p>
+
+                <NavLink
+                  label="User"
+                  onClick={toggle}
+                  component={Link}
+                  href="/dashboard/admin/user"
+                  active={pathname === "/dashboard/admin/user"}
+                  color={pathname === "/dashboard/admin/user" ? "#E92222" : ""}
+                  variant="filled"
+                  styles={navLinkStyles}
+                  className="hover:!bg-[#E92222] hover:text-white"
+                  leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                />
+              </div>
             </>
-          ) : null}
+          )}
           {/* END OF ADMIN MENU */}
 
           <div className="absolute left-[-25%] top-[10%] -z-10 h-3/4">
@@ -406,27 +415,6 @@ export function DashboardAppshell({
             </div>
           </div>
         </div>
-
-        {/* ADMIN MENU */}
-        {isUserAdminValue ? (
-          <>
-            <p className="p-2 text-xs text-gray-500">Admin</p>
-
-            <NavLink
-              label="User"
-              onClick={toggle}
-              component={Link}
-              href="/dashboard/admin/user"
-              active={pathname === "/dashboard/admin/user"}
-              color={pathname === "/dashboard/admin/user" ? "#E92222" : ""}
-              variant="filled"
-              styles={navLinkStyles}
-              className="hover:!bg-[#E92222] hover:text-white"
-              leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
-            />
-          </>
-        ) : null}
-        {/* END OF ADMIN MENU */}
       </AppShell.Navbar>
       <AppShell.Main className="bg-gray-100 dark:bg-inherit">
         {children}

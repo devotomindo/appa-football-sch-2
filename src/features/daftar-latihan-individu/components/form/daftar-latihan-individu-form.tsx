@@ -14,7 +14,7 @@ import { startTransition, useActionState, useState } from "react";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-export function DaftarLatihanKelompokForm() {
+export function DaftarLatihanIndividuForm() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [alat, setAlat] = useState<string[]>([""]);
