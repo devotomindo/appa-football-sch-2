@@ -9,7 +9,7 @@ export default function TambahLatihanIndividu() {
     <DashboardSectionContainer>
       <Link href={"/dashboard/admin/daftar-latihan-individu"}>
         <Button
-          className="focus-visible:outline- indigo-600 flex w-32 flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-gray-600"
+          className="flex w-32 flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2"
           leftSection={<IconArrowLeft size={18} />}
         >
           back to daftar latihan individu
