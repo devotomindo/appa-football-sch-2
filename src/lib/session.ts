@@ -4,6 +4,7 @@ export type SchoolSession = {
   id: number;
   name: string;
   role: string;
+  imageUrl?: string;
 };
 
 export async function getSchoolSession(): Promise<SchoolSession | null> {

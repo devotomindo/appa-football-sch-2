@@ -1,3 +1,3 @@
-export default function Pengaturan() {
+export default function PengaturanPage() {
   return <div>Pengaturan</div>;
 }

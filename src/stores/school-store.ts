@@ -1,3 +1,4 @@
+import type { SchoolSession } from "@/lib/session";
 import { create } from "zustand";
 
 type School = {
@@ -7,12 +8,14 @@ type School = {
 };
 
 type SchoolStore = {
-  selectedSchool: School | null;
-  setSelectedSchool: (school: School | null) => Promise<void>;
+  selectedSchool: SchoolSession | null;
+  setSelectedSchool: (school: SchoolSession | null) => Promise<void>;
+  hydrate: (school: SchoolSession | null) => void;
 };
 
 export const useSchoolStore = create<SchoolStore>((set) => ({
   selectedSchool: null,
+  hydrate: (school) => set({ selectedSchool: school }),
   setSelectedSchool: async (school) => {
     try {
       const response = await fetch("/api/session", {
@@ -27,7 +30,6 @@ export const useSchoolStore = create<SchoolStore>((set) => ({
         throw new Error("Failed to update session");
       }
 
-      // Only update local state if server update was successful
       set({ selectedSchool: school });
     } catch (error) {
       console.error("Failed to update school:", error);

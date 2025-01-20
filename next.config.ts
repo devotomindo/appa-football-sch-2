@@ -14,16 +14,16 @@ const nextConfig: NextConfig = {
   }),
   // allow images from Supabase storage
   // ref: https://nextjs.org/docs/messages/next-image-unconfigured-host
-  //  images: {
-  //   remotePatterns: [
-  //     {
-  //       protocol: "https",
-  //       hostname: "utebebrolnerwfsiioep.supabase.co",
-  //       port: "",
-  //       pathname: "/**",
-  //     },
-  //   ],
-  // },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "academy-sb.appa-tech.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
   experimental: {
     // serverActions: {
     //   bodySizeLimit: "200mb",

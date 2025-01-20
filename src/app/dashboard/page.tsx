@@ -1,5 +1,6 @@
 import { DashboardView } from "@/features/dashboard/view/dashboard-view";
 import { authGuard } from "@/features/user/guards/auth-guard";
+import { getSchoolSession } from "@/lib/session";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -18,5 +19,12 @@ export default async function DashboardPage() {
   const userData = authResponse.data;
   // END OF AUTH GUARD
 
-  return <DashboardView userData={userData} />;
+  const schoolSession = await getSchoolSession();
+
+  return (
+    <DashboardView
+      userData={userData}
+      initialSchoolSession={schoolSession} // renamed prop
+    />
+  );
 }
