@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getCitiesByProvinceId } from ".";
 
-export const getCitiesByProvinceIdQueryOptions = (provinceId: number) =>
+export const getCitiesByProvinceIdQueryOptions = (provinceId: number | null) =>
   queryOptions({
     queryKey: ["citiesByProvinceId", { provinceId }],
     queryFn: () => getCitiesByProvinceId(provinceId),

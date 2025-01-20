@@ -7,6 +7,7 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { userProfiles } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -27,6 +28,8 @@ export async function updateProfile(prevState: any, formData: FormData) {
           })
           .optional(),
       ),
+      domisiliProvinsi: zfd.numeric(z.number().int()),
+      domisiliKota: zfd.numeric(z.number().int()),
     })
     .safeParseAsync(formData);
 
@@ -38,6 +41,8 @@ export async function updateProfile(prevState: any, formData: FormData) {
         general: errorFormatted.id?._errors,
         name: errorFormatted.name?._errors,
         profilePic: errorFormatted.profilePic?._errors,
+        domisiliProvinsi: errorFormatted.domisiliProvinsi?._errors,
+        domisiliKota: errorFormatted.domisiliKota?._errors,
       },
     };
   }
@@ -50,6 +55,8 @@ export async function updateProfile(prevState: any, formData: FormData) {
       // update user
       const userId = validationResult.data.id;
       const newName = validationResult.data.name;
+      const domisiliKota = validationResult.data.domisiliKota;
+      const domisiliProvinsi = validationResult.data.domisiliProvinsi;
       const updatedAt = new Date();
 
       if (validationResult.data.profilePic) {
@@ -73,15 +80,19 @@ export async function updateProfile(prevState: any, formData: FormData) {
             name: newName,
             avatarPath: data.fullPath,
             updatedAt: updatedAt,
+            domisiliProvinsi: domisiliProvinsi,
+            domisiliKota: domisiliKota,
           })
           .where(eq(userProfiles.id, userId));
       }
 
-      return await tx
+      await tx
         .update(userProfiles)
         .set({
           name: newName,
           updatedAt: updatedAt,
+          domisiliProvinsi: domisiliProvinsi,
+          domisiliKota: domisiliKota,
         })
         .where(eq(userProfiles.id, userId));
     });
@@ -89,4 +100,10 @@ export async function updateProfile(prevState: any, formData: FormData) {
     console.error("Failed to update profile:", error);
     throw new Error("Failed to update profile");
   }
+
+  revalidatePath("/dashboard", "layout");
+
+  return {
+    message: "Profile updated successfully",
+  };
 }

@@ -3,6 +3,6 @@ import { getIndonesianProvinces } from ".";
 
 export const getIndonesianProvincesQueryOptions = () =>
   queryOptions({
-    queryKey: ["indonesianStates"],
+    queryKey: ["indonesianProvinces"],
     queryFn: () => getIndonesianProvinces(),
   });

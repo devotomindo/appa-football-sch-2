@@ -22,9 +22,6 @@ export default async function DashboardPage() {
   const schoolSession = await getSchoolSession();
 
   return (
-    <DashboardView
-      userData={userData}
-      initialSchoolSession={schoolSession} // renamed prop
-    />
+    <DashboardView userData={userData} initialSchoolSession={schoolSession} />
   );
 }

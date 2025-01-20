@@ -42,12 +42,18 @@ export const userProfiles = pgTable("user_profiles", {
   deletedAt: timestamp("deleted_at"),
   avatarPath: text("avatar_path"),
   name: text("name"),
+  domisiliProvinsi: bigint("domisili_provinsi", { mode: "number" }).references(
+    () => states.id,
+  ),
+  domisiliKota: bigint("domisili_kota", { mode: "number" }).references(
+    () => cities.id,
+  ),
 });
 // END OF USERS
 
 // SCHOOLS
 export const schools = pgTable("schools", {
-  id: smallint("id").primaryKey().generatedAlwaysAsIdentity(),
+  id: uuid("id").primaryKey(),
   name: text("name").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -57,6 +63,9 @@ export const schools = pgTable("schools", {
   premiumExpiresAt: timestamp("premium_expires_at"),
   fieldLocation: text("field_location"),
   phone: text("phone"),
+  domisiliKota: bigint("domisili_kota", { mode: "number" }).references(
+    () => cities.id,
+  ),
 });
 
 export const schoolRoles = pgTable("school_roles", {
@@ -71,7 +80,7 @@ export const schoolRoleMembers = pgTable("school_role_members", {
   userId: uuid("user_id")
     .notNull()
     .references(() => authUsers.id),
-  schoolId: smallint("school_id")
+  schoolId: uuid("school_id")
     .notNull()
     .references(() => schools.id),
   schoolRoleId: smallint("school_role_id")

@@ -6,6 +6,7 @@ import { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import type { SchoolSession } from "@/lib/session";
 import { useSchoolStore } from "@/stores/school-store";
+import { Button } from "@mantine/core";
 import Image from "next/image";
 import { useEffect } from "react";
 
@@ -47,7 +48,7 @@ export function DashboardView({
             <p>regional pengguna</p>
           </div>
         </div>
-      ) : (
+      ) : schoolInfo ? (
         <>
           <div
             className="flex flex-col items-center gap-6 rounded-xl p-4 shadow-lg md:flex-row md:items-start md:gap-10 md:p-8"
@@ -55,7 +56,7 @@ export function DashboardView({
           >
             <div className="relative h-full">
               <Image
-                src={schoolInfo?.imageUrl ?? "/garuda-mas.png"}
+                src={schoolInfo.imageUrl ?? "/garuda-mas.png"}
                 alt=""
                 width={80}
                 height={80}
@@ -67,8 +68,8 @@ export function DashboardView({
                 {schoolInfo?.name ?? "Loading..."}
               </p>
               <div className="">
-                <p>{schoolInfo?.address ?? "-"}</p>
-                <p>{schoolInfo?.phone ?? "-"}</p>
+                <p>{schoolInfo.address ?? "-"}</p>
+                <p>{schoolInfo.phone ?? "-"}</p>
               </div>
               <p className="font-bold">{schoolInfo?.fieldLocation ?? "-"}</p>
             </div>
@@ -114,6 +115,14 @@ export function DashboardView({
             </BlackBackgroundContainer>
           </div>
         </>
+      ) : (
+        <div>
+          <div>
+            Anda belum terdaftar ke sekolah manapun. Daftarkan diri atau sekolah
+            Anda
+            <Button ml="sm">Daftar</Button>
+          </div>
+        </div>
       )}
     </DashboardSectionContainer>
   );

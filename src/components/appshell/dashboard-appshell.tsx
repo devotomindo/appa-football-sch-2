@@ -2,7 +2,6 @@
 
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { logout } from "@/features/user/actions/logout";
-import { UserProfileUpdateForm } from "@/features/user/components/form/user-profile-update-form";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import { SchoolSession } from "@/lib/session";
 import { useSchoolStore } from "@/stores/school-store";
@@ -14,7 +13,6 @@ import {
   Button,
   Group,
   Menu,
-  Modal,
   NavLink,
   ScrollArea,
   UnstyledButton,
@@ -30,7 +28,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { SubmitButton } from "../buttons/submit-button";
 import { SchoolSwitcher } from "../school-switcher";
 
 type DashboardAppshellProps = {
@@ -79,10 +76,6 @@ export function DashboardAppshell({
   initialSchool,
 }: DashboardAppshellProps) {
   const [opened, { toggle }] = useDisclosure();
-  const [
-    isProfileModalOpen,
-    { open: openProfileModal, close: closeProfileModal },
-  ] = useDisclosure();
   const pathname = usePathname();
   const { selectedSchool, setSelectedSchool } = useSchoolStore();
 
@@ -105,28 +98,8 @@ export function DashboardAppshell({
 
   const member = true;
 
-  const isProfileComplete = userData.name ? true : false;
-
   return (
     <>
-      <Modal
-        opened={isProfileModalOpen || !isProfileComplete}
-        onClose={closeProfileModal}
-        centered
-        title="Update Profile"
-        withCloseButton={isProfileComplete}
-      >
-        <div className="space-y-4">
-          <UserProfileUpdateForm userData={userData} />
-          <form action={logout}>
-            <SubmitButton color="red" fullWidth>
-              {" "}
-              Keluar{" "}
-            </SubmitButton>
-          </form>
-        </div>
-      </Modal>
-
       <AppShell
         header={{ height: 60 }}
         navbar={{
@@ -275,6 +248,19 @@ export function DashboardAppshell({
             />
             {!isUserAdminValue && (
               <>
+                <NavLink
+                  label="Pendaftaran Atlet"
+                  onClick={toggle}
+                  component={Link}
+                  href="/dashboard/pendaftaran-atlet"
+                  active={pathname === "/dashboard/pendaftaran-atlet"}
+                  color={
+                    pathname === "/dashboard/pendaftaran-atlet" ? "#E92222" : ""
+                  }
+                  variant="filled"
+                  styles={navLinkStyles}
+                  className="hover:!bg-[#E92222] hover:text-white"
+                />
                 <NavLink
                   label="Daftar Pemain"
                   onClick={toggle}
