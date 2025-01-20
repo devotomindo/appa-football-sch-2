@@ -8,21 +8,30 @@ import {
   Textarea,
   TextInput,
 } from "@mantine/core";
-import { IconMinus, IconPlus, IconUpload } from "@tabler/icons-react";
-import Image from "next/image";
-import { startTransition, useActionState, useState } from "react";
-import { z } from "zod";
-import { zfd } from "zod-form-data";
+import { notifications } from "@mantine/notifications";
+import {
+  IconCheck,
+  IconMinus,
+  IconPlus,
+  IconUpload,
+} from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+import { startTransition, useActionState, useEffect, useState } from "react";
+import { CreateLatihanKelompok } from "../../actions/create-latihan-kelompok";
 
 export function DaftarLatihanKelompokForm() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [alat, setAlat] = useState<string[]>([""]);
   const [langkah, setLangkah] = useState<string[]>([""]);
+  const router = useRouter();
 
   const handleVideoChange = (file: File | null) => {
     setVideoFile(file);
     if (file) {
+      const videoUrl = URL.createObjectURL(file);
+      setVideoPreview(videoUrl);
+
       const video = document.createElement("video");
       video.preload = "metadata";
       video.onloadedmetadata = () => {
@@ -30,11 +39,10 @@ export function DaftarLatihanKelompokForm() {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         canvas.getContext("2d")?.drawImage(video, 0, 0);
-        setThumbnail(canvas.toDataURL());
       };
-      video.src = URL.createObjectURL(file);
+      video.src = videoUrl;
     } else {
-      setThumbnail(null);
+      setVideoPreview(null);
     }
   };
 
@@ -73,9 +81,22 @@ export function DaftarLatihanKelompokForm() {
   };
 
   const [actionState, actionsDispatch, isActionPending] = useActionState(
-    Add,
+    CreateLatihanKelompok,
     undefined,
   );
+
+  useEffect(() => {
+    if (actionState?.success) {
+      notifications.show({
+        title: "Success",
+        message: actionState.message,
+        color: "green",
+        icon: <IconCheck />,
+        autoClose: 3000,
+      });
+      router.replace("/dashboard/admin/daftar-latihan-kelompok");
+    }
+  }, [actionState?.message, actionState?.success, router]);
 
   return (
     <form
@@ -85,6 +106,9 @@ export function DaftarLatihanKelompokForm() {
         startTransition(() => actionsDispatch(new FormData(e.currentTarget)));
       }}
     >
+      {actionState?.error && (
+        <p className="text-red-500">{actionState.message}</p>
+      )}
       <TextInput
         label="Nama Metode Latihan"
         placeholder="Masukkan nama metode latihan"
@@ -93,6 +117,7 @@ export function DaftarLatihanKelompokForm() {
         name="nama"
         className="shadow-lg"
         radius={"md"}
+        error={actionState?.error?.nama}
       />
 
       <Textarea
@@ -103,17 +128,32 @@ export function DaftarLatihanKelompokForm() {
         name="deskripsi"
         className="shadow-lg"
         radius={"md"}
+        minRows={2}
+        autosize
+        error={actionState?.error?.deskripsi}
       />
 
       <NumberInput
         label="Jumlah Peserta"
         placeholder="Masukkan jumlah peserta"
         required
-        min={1}
+        min={2}
         withAsterisk={false}
         name="jumlah"
         className="shadow-lg"
         radius={"md"}
+        error={actionState?.error?.jumlah}
+      />
+
+      <TextInput
+        label="Luas Lapangan"
+        placeholder="Masukkan luas lapangan"
+        required
+        withAsterisk={false}
+        name="luas"
+        className="shadow-lg"
+        radius={"md"}
+        error={actionState?.error?.luas}
       />
 
       <div className="space-y-4">
@@ -137,6 +177,7 @@ export function DaftarLatihanKelompokForm() {
               className="flex-1 shadow-lg"
               radius="md"
               name="alat"
+              error={actionState?.error?.alat?.[index]}
             />
             {alat.length > 1 && (
               <ActionIcon
@@ -174,6 +215,7 @@ export function DaftarLatihanKelompokForm() {
               className="flex-1 shadow-lg"
               radius="md"
               name="langkah"
+              error={actionState?.error?.langkah?.[index]}
             />
             {langkah.length > 1 && (
               <ActionIcon
@@ -203,23 +245,24 @@ export function DaftarLatihanKelompokForm() {
           styles={{
             input: {
               backgroundColor: "#E58525",
-              color: "white",
+              color: "#ffffff !important",
               "&::placeholder": {
-                color: "rgba(255, 255, 255, 0.8)",
+                color: "#ffffff !important",
               },
             },
           }}
+          error={actionState?.error?.video}
         />
-        {thumbnail && (
-          <div className="mt-2">
-            <p className="mb-1 text-sm">Preview:</p>
-            <Image
-              src={thumbnail}
-              alt="Video thumbnail"
-              className="max-w-[200px] rounded-md"
-              width={200}
-              height={200}
-            />
+        {videoPreview && (
+          <div className="mt-4 space-y-4">
+            <div>
+              <p className="mb-1 text-sm">Video Preview:</p>
+              <video
+                src={videoPreview}
+                controls
+                className="max-w-[400px] rounded-md"
+              />
+            </div>
           </div>
         )}
       </div>
@@ -235,44 +278,4 @@ export function DaftarLatihanKelompokForm() {
       </div>
     </form>
   );
-}
-
-async function Add(prevState: any, formData: FormData) {
-  const validationResult = await zfd
-    .formData({
-      video: zfd.file(z.instanceof(File)),
-      nama: zfd.text(
-        z.string().min(3, "Nama metode latihan minimal 3 karakter"),
-      ),
-      deskripsi: zfd.text(z.string().min(3, "Deskripsi minimal 3 karakter")),
-      jumlah: zfd.numeric(z.number().min(1, "Jumlah peserta minimal 1")),
-      alat: zfd.repeatable(
-        z.array(z.string().min(1, "Kebutuhan alat tidak boleh kosong")),
-      ),
-      langkah: zfd.repeatable(
-        z.array(z.string().min(1, "Langkah latihan tidak boleh kosong")),
-      ),
-    })
-    .safeParseAsync(formData);
-
-  // validasi error
-  if (!validationResult.success) {
-    const errorFormatted = validationResult.error.format() as any;
-    return {
-      error: {
-        video: errorFormatted.video?._errors,
-        nama: errorFormatted.nama?._errors,
-        deskripsi: errorFormatted.deskripsi?._errors,
-        jumlah: errorFormatted.jumlah?._errors,
-        alat: errorFormatted.alat?._errors,
-        langkah: errorFormatted.langkah?._errors,
-      },
-    };
-  }
-
-  // if success
-  return {
-    success: true,
-    message: "Data berhasil disimpan!",
-  };
 }

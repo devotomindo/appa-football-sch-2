@@ -88,3 +88,16 @@ export const userRoleMembers = pgTable("user_role_members", {
     .references(() => userRoles.id),
 });
 // END OF USERS
+
+export const trainingProcedure = pgTable("training_procedure", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  name: text("name").notNull(),
+  tools: text("tools").array().notNull(),
+  procedure: text("procedure").array().notNull(),
+  minFieldSize: text("min_field_size"),
+  videoPath: text("video_path").notNull(),
+  groupSize: bigint("group_size", { mode: "number" }).notNull(),
+  description: text("description").notNull(),
+});
