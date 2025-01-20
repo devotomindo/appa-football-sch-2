@@ -58,18 +58,18 @@ export const getUserById = cache(async function (id: string) {
     .then((res) => {
       const user = res[0];
 
-      if (!user.avatar_path) {
+      if (!user.avatarPath) {
         return user;
       }
 
-      const { bucket, path } = getStorageBucketAndPath(user.avatar_path);
+      const { bucket, path } = getStorageBucketAndPath(user.avatarPath);
 
       // Fetch avatar from bucket
       const { data } = supabase.storage.from(bucket).getPublicUrl(path);
 
       return {
         ...user,
-        avatar_url: data.publicUrl,
+        avatarUrl: data.publicUrl,
       };
     });
 });

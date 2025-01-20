@@ -40,9 +40,10 @@ export const userProfiles = pgTable("user_profiles", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
-  avatar_path: text("avatar_path"),
+  avatarPath: text("avatar_path"),
   name: text("name"),
 });
+// END OF USERS
 
 // SCHOOLS
 export const schools = pgTable("schools", {
@@ -51,9 +52,11 @@ export const schools = pgTable("schools", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   address: text("address"),
-  image_path: text("image_path"),
+  imagePath: text("image_path"),
   isPremium: boolean("is_premium").notNull().default(false),
   premiumExpiresAt: timestamp("premium_expires_at"),
+  fieldLocation: text("field_location"),
+  phone: text("phone"),
 });
 
 export const schoolRoles = pgTable("school_roles", {
@@ -87,7 +90,60 @@ export const userRoleMembers = pgTable("user_role_members", {
     .notNull()
     .references(() => userRoles.id),
 });
-// END OF USERS
+// END OF SCHOOLS
+
+// LOCATION
+export const countries = pgTable("_countries", {
+  id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  iso3: text("iso3").notNull(),
+  iso2: text("iso2").notNull(),
+  numericCode: text("numeric_code").notNull(),
+  phoneCode: text("phone_code").notNull(),
+  capital: text("capital"),
+  currency: text("currency"),
+  currencyName: text("currency_name"),
+  currencySymbol: text("currency_symbol"),
+  tld: text("tld"),
+  native: text("native"),
+  region: text("region"),
+  regionId: bigint("region_id", { mode: "number" }),
+  subregion: text("subregion"),
+  subregionId: bigint("subregion_id", { mode: "number" }),
+  nationality: text("nationality"),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+  emoji: text("emoji"),
+  emojiU: text("emojiu"),
+});
+
+export const states = pgTable("_states", {
+  id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  countryId: bigint("country_id", { mode: "number" })
+    .references(() => countries.id)
+    .notNull(),
+  countryCode: text("country_code"),
+  stateCode: text("state_code"),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+});
+
+export const cities = pgTable("_cities", {
+  id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  stateId: bigint("state_id", { mode: "number" })
+    .references(() => states.id)
+    .notNull(),
+  stateCode: text("state_code"),
+  countryId: bigint("country_id", { mode: "number" })
+    .references(() => countries.id)
+    .notNull(),
+  countryCode: text("country_code"),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+});
+// END OF LOCATION
 
 export const trainingProcedure = pgTable("training_procedure", {
   id: uuid("id").primaryKey(),

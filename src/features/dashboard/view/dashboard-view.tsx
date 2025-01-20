@@ -1,13 +1,37 @@
 "use client";
 import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import Image from "next/image";
-
+import { useSchoolInfo } from "@/features/school/hooks/use-school-info";
 import { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
+import type { SchoolSession } from "@/lib/session";
+import { useSchoolStore } from "@/stores/school-store";
+import Image from "next/image";
+import { useEffect } from "react";
 
-export function DashboardView({ userData }: { userData: GetUserByIdResponse }) {
+interface DashboardViewProps {
+  userData: GetUserByIdResponse;
+  initialSchoolSession: SchoolSession | null;
+}
+
+export function DashboardView({
+  userData,
+  initialSchoolSession,
+}: DashboardViewProps) {
   const userIsAdmin = isUserAdmin(userData);
+  const { selectedSchool, hydrate } = useSchoolStore();
+
+  useEffect(() => {
+    hydrate(initialSchoolSession);
+  }, [hydrate, initialSchoolSession]);
+
+  const { data: schoolInfo, isLoading } = useSchoolInfo(
+    selectedSchool?.id ?? 0,
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <DashboardSectionContainer>
@@ -31,7 +55,7 @@ export function DashboardView({ userData }: { userData: GetUserByIdResponse }) {
           >
             <div className="relative h-full">
               <Image
-                src={"/garuda-mas.png"}
+                src={schoolInfo?.imageUrl ?? "/garuda-mas.png"}
                 alt=""
                 width={80}
                 height={80}
@@ -39,14 +63,14 @@ export function DashboardView({ userData }: { userData: GetUserByIdResponse }) {
               />
             </div>
             <div className="space-y-4 text-center md:text-left">
-              <p className="text-xl font-bold md:text-2xl">SSB GARUDA MAS</p>
+              <p className="text-xl font-bold md:text-2xl">
+                {schoolInfo?.name ?? "Loading..."}
+              </p>
               <div className="">
-                <p>
-                  Jl. Lidah Wetan, Kec. Lakarsantri, Surabaya, Jawa Timur 60213
-                </p>
-                <p>0812-3456-4834</p>
+                <p>{schoolInfo?.address ?? "-"}</p>
+                <p>{schoolInfo?.phone ?? "-"}</p>
               </div>
-              <p className="font-bold">Lapangan Kodam Brawijaya, Surabaya</p>
+              <p className="font-bold">{schoolInfo?.fieldLocation ?? "-"}</p>
             </div>
           </div>
           <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
