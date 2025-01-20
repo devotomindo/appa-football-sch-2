@@ -12,7 +12,6 @@ export default async function DetailLatihanKelompok({
   };
 }) {
   const { id } = await params;
-  console.log(id);
 
   const db = createDrizzleConnection();
 

@@ -28,7 +28,7 @@ export function DetailLatihanKelompokView({
         </div>
         <div className="w-1/2 space-y-4">
           <p className="font-extralight">{data?.description}</p>
-          <div className="">
+          <div>
             <p className="text-lg font-bold capitalize">jumlah peserta</p>
             <p className="font-extralight">{data?.groupSize}</p>
           </div>
@@ -38,9 +38,6 @@ export function DetailLatihanKelompokView({
         <p className="text-lg font-bold capitalize">kebutuhan alat</p>
         <div className="flex gap-4">
           {data?.tools.map((tool, index) => (
-            // <p className="font-extralight" key={index}>
-            //   {tool}
-            // </p>
             <Badge color="#E92222" key={index} size="lg">
               {tool}
             </Badge>
