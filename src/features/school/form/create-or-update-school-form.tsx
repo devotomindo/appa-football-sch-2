@@ -7,7 +7,6 @@ import { Button, FileInput, Modal, Select, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import {
   FormEvent,
   startTransition,
@@ -17,8 +16,14 @@ import {
 } from "react";
 import { createSchool } from "../action/create-school";
 import { getIndonesianCitiesQueryOptions } from "../action/get-indonesian-cities/query-options";
+import { updateSchool } from "../action/update-school";
+import { SchoolWithImageUrl } from "../types/school";
 
-export function CreateOrUpdateSchoolForm({ schoolData }: { schoolData?: any }) {
+export function CreateOrUpdateSchoolForm({
+  schoolData,
+}: {
+  schoolData?: SchoolWithImageUrl;
+}) {
   const indonesianCities = useQuery(getIndonesianCitiesQueryOptions());
 
   const indonesianCitiesOptions = indonesianCities.data?.map((city) => ({
@@ -26,12 +31,11 @@ export function CreateOrUpdateSchoolForm({ schoolData }: { schoolData?: any }) {
     label: city.name,
   }));
 
-  // Controlled form states
   const [name, setName] = useState(schoolData?.name || "");
   const [address, setAddress] = useState(schoolData?.address || "");
-  const [homebase, setHomebase] = useState(schoolData?.homebase || "");
+  const [homebase, setHomebase] = useState(schoolData?.fieldLocation || "");
   const [phone, setPhone] = useState(schoolData?.phone || "");
-  const [city, setCity] = useState(schoolData?.city || "");
+  const [city, setCity] = useState(schoolData?.domisiliKota?.toString() || "");
   const [fileValue, setFileValue] = useState<File | null>(null);
 
   const fileUrl = fileValue ? URL.createObjectURL(fileValue) : null;
@@ -42,7 +46,7 @@ export function CreateOrUpdateSchoolForm({ schoolData }: { schoolData?: any }) {
   ] = useDisclosure();
 
   const [actionState, actionDispatch, isActionPending] = useActionState(
-    createSchool,
+    schoolData ? updateSchool : createSchool,
     undefined,
   );
 
@@ -50,6 +54,9 @@ export function CreateOrUpdateSchoolForm({ schoolData }: { schoolData?: any }) {
     e.preventDefault();
     startTransition(() => {
       const formData = new FormData();
+      if (schoolData) {
+        formData.append("id", schoolData.id);
+      }
       formData.append("name", name);
       formData.append("address", address);
       formData.append("homebase", homebase);
@@ -60,7 +67,10 @@ export function CreateOrUpdateSchoolForm({ schoolData }: { schoolData?: any }) {
       }
       actionDispatch(formData);
     });
-    closeConfirmationModal();
+
+    if (!schoolData) {
+      closeConfirmationModal();
+    }
   };
 
   const actionEffectEvent = useEffectEvent((state: typeof actionState) => {
@@ -68,7 +78,7 @@ export function CreateOrUpdateSchoolForm({ schoolData }: { schoolData?: any }) {
       formStateNotificationHelper({
         state,
         successCallback: () => {
-          redirect("/dashboard");
+          //   redirect("/dashboard");
         },
       });
     }
@@ -132,40 +142,54 @@ export function CreateOrUpdateSchoolForm({ schoolData }: { schoolData?: any }) {
           onChange={setFileValue}
           error={actionState?.error?.logo}
         />
-        {(fileValue || (schoolData && schoolData.logoUrl)) && (
+        {(fileValue || (schoolData && schoolData.imageUrl)) && (
           <Image
-            src={fileUrl ?? schoolData?.logoUrl ?? ""}
+            src={fileUrl ?? schoolData?.imageUrl ?? ""}
             alt="Profile Picture"
             width={200}
             height={200}
           />
         )}
 
-        <Button onClick={openConfirmationModal}>Simpan</Button>
+        {schoolData ? (
+          <>
+            <form onSubmit={handleSubmit}>
+              <SubmitButton color="green" loading={isActionPending}>
+                Simpan
+              </SubmitButton>
+            </form>
+          </>
+        ) : (
+          <>
+            <Button onClick={openConfirmationModal}>Simpan</Button>
 
-        <Modal
-          opened={isConfirmationModalOpen}
-          onClose={closeConfirmationModal}
-          centered
-          title="Konfirmasi Pendaftaran SSB"
-          size={"lg"}
-        >
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <p>
-                Dengan mendaftarkan SSB Anda setuju untuk mendaftarkan diri Anda
-                sebagai Head Coach SSB tersebut. Apakah Anda yakin ingin
-                melanjutkan?
-              </p>
-              <div className="flex justify-evenly">
-                <Button color="red" onClick={closeConfirmationModal}>
-                  Batal
-                </Button>
-                <SubmitButton color="green">Ya, Lanjutkan</SubmitButton>
-              </div>
-            </div>
-          </form>
-        </Modal>
+            <Modal
+              opened={isConfirmationModalOpen}
+              onClose={closeConfirmationModal}
+              centered
+              title="Konfirmasi Pendaftaran SSB"
+              size={"lg"}
+            >
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <p>
+                    Dengan mendaftarkan SSB Anda setuju untuk mendaftarkan diri
+                    Anda sebagai Head Coach SSB tersebut. Apakah Anda yakin
+                    ingin melanjutkan?
+                  </p>
+                  <div className="flex justify-evenly">
+                    <Button color="red" onClick={closeConfirmationModal}>
+                      Batal
+                    </Button>
+                    <SubmitButton color="green" loading={isActionPending}>
+                      Ya, Lanjutkan
+                    </SubmitButton>
+                  </div>
+                </div>
+              </form>
+            </Modal>
+          </>
+        )}
       </div>
     </div>
   );

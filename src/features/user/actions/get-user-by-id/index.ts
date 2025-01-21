@@ -27,7 +27,7 @@ export const getUserById = cache(async function (id: string) {
       >`COALESCE(${userRolesCTE.roles}, '{}')`,
       schools: sql<
         {
-          id: number;
+          id: string;
           name: string;
           role: string;
         }[]

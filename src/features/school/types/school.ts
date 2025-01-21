@@ -1,5 +1,5 @@
 export interface School {
-  id: number;
+  id: string;
   name: string;
   createdAt: Date;
   updatedAt: Date;
@@ -9,6 +9,7 @@ export interface School {
   premiumExpiresAt: Date | null;
   fieldLocation: string | null;
   phone: string | null;
+  domisiliKota: number | null;
 }
 
 export interface SchoolWithImageUrl extends School {

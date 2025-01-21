@@ -1,20 +1,22 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { schoolRoleMembers, schools } from "@/db/drizzle/schema";
+import { schools } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
 import { authGuard } from "@/features/user/guards/auth-guard";
-import { v7 as uuidv7 } from "uuid";
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-export const createSchool = async function (
+export const updateSchool = async function (
   prevState: any,
   formData: FormData,
 ) {
   // VALIDATION
   const validationResult = await zfd
     .formData({
+      id: zfd.text(z.string().uuid()),
       name: zfd.text(z.string().min(1).max(100)),
       address: zfd.text(z.string().min(1).max(100)),
       homebase: zfd.text(z.string().min(1).max(100)),
@@ -40,7 +42,7 @@ export const createSchool = async function (
 
     return {
       error: {
-        general: undefined,
+        general: errorFormatted.id?._errors,
         name: errorFormatted.name?._errors,
         address: errorFormatted.address?._errors,
         homebase: errorFormatted.homebase?._errors,
@@ -55,6 +57,8 @@ export const createSchool = async function (
     const db = createDrizzleConnection();
     const supabase = await createServerClient();
 
+    const updateTime = new Date();
+
     await db.transaction(async (tx) => {
       // Get current user
       const userData = (await authGuard()).data;
@@ -63,10 +67,8 @@ export const createSchool = async function (
         throw new Error("User tidak ditemukan");
       }
 
-      // Generate uuid for school
-      const schoolId = uuidv7();
-
-      // insert school
+      // New School Data
+      const schoolId = validationResult.data.id;
       const schoolName = validationResult.data.name;
       const schoolAddress = validationResult.data.address;
       const schoolHomebase = validationResult.data.homebase;
@@ -76,62 +78,52 @@ export const createSchool = async function (
       if (validationResult.data.logo) {
         const logo = validationResult.data.logo;
 
-        // Upload logo
-        const { data, error } = await supabase.storage
+        // Upload logo to supabase
+        const { data: logoData, error: logoError } = await supabase.storage
           .from("logos")
-          .upload(schoolId, logo);
+          .upload(schoolId, logo, {
+            upsert: true, // Overwrite if exists
+          });
 
-        if (error) {
-          console.error(error);
+        if (logoError) {
+          console.error(logoError);
           throw new Error("Gagal mengupload logo");
         }
 
-        const insertedId = await tx
-          .insert(schools)
-          .values({
-            id: schoolId,
+        await tx
+          .update(schools)
+          .set({
             name: schoolName,
             address: schoolAddress,
             fieldLocation: schoolHomebase,
             phone: schoolPhone,
             domisiliKota: schoolCity,
-            imagePath: data.fullPath,
+            imagePath: logoData.fullPath,
+            updatedAt: updateTime,
           })
-          .returning({ id: schools.id })
-          .then((res) => res[0].id);
-
-        await tx.insert(schoolRoleMembers).values({
-          userId: userData?.id,
-          schoolId: insertedId,
-          schoolRoleId: 1, // Head Coach ID
-        });
+          .where(eq(schools.id, schoolId));
       } else {
-        const insertedId = await tx
-          .insert(schools)
-          .values({
-            id: schoolId,
+        await tx
+          .update(schools)
+          .set({
             name: schoolName,
             address: schoolAddress,
             fieldLocation: schoolHomebase,
             phone: schoolPhone,
             domisiliKota: schoolCity,
+            updatedAt: updateTime,
           })
-          .returning({ id: schools.id })
-          .then((res) => res[0].id);
-
-        await tx.insert(schoolRoleMembers).values({
-          userId: userData?.id,
-          schoolId: insertedId,
-          schoolRoleId: 1, // Head Coach ID
-        });
+          .where(eq(schools.id, schoolId));
       }
     });
   } catch (error) {
     console.error(error);
-    throw new Error("Gagal membuat SSB");
+    throw new Error("Gagal mengupdate data sekolah");
   }
 
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/update-ssb/${validationResult.data.id}`);
   return {
-    message: "Berhasil membuat SSB",
+    message: "Berhasil mengupdate data SSB",
   };
 };

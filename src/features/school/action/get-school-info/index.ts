@@ -9,7 +9,7 @@ import { cache } from "react";
 import { SchoolWithImageUrl } from "../../types/school";
 
 export const getSchoolInfoById = cache(async function (
-  schoolId: number,
+  schoolId: string,
 ): Promise<SchoolWithImageUrl> {
   const db = createDrizzleConnection();
   const supabase = await createServerClient();
@@ -30,10 +30,11 @@ export const getSchoolInfoById = cache(async function (
 
       // Fetch avatar from bucket
       const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+      const imageUrl = data.publicUrl + "?t=" + new Date(school.updatedAt);
 
       return {
         ...school,
-        imageUrl: data.publicUrl,
+        imageUrl: imageUrl,
       };
     });
 });
