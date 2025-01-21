@@ -11,8 +11,6 @@ export default async function UpdateSSBPage({
   // Fetch SSB data
   const schoolData = await getSchoolInfoById(idSsb);
 
-  console.log(schoolData);
-
   return (
     <div>
       <CreateOrUpdateSchoolForm schoolData={schoolData} />

@@ -4,6 +4,7 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { schoolRoleMembers, schools } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
 import { authGuard } from "@/features/user/guards/auth-guard";
+import { compressImageWebp } from "@/lib/utils/media-converter";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -76,10 +77,26 @@ export const createSchool = async function (
       if (validationResult.data.logo) {
         const logo = validationResult.data.logo;
 
+        // Convert File to ArrayBuffer
+        const buffer = await logo.arrayBuffer();
+
+        // Compress the image
+        const compressedBuffer = await compressImageWebp({
+          buffer,
+          quality: 82,
+        });
+
+        // Convert Buffer back to File
+        const compressedFile = new File(
+          [compressedBuffer],
+          logo.name.replace(/\.[^/.]+$/, "") + ".webp",
+          { type: "image/webp" },
+        );
+
         // Upload logo
         const { data, error } = await supabase.storage
           .from("logos")
-          .upload(schoolId, logo);
+          .upload(schoolId, compressedFile);
 
         if (error) {
           console.error(error);

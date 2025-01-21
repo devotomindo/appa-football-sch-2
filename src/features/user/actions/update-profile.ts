@@ -6,6 +6,7 @@
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { userProfiles } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
+import { compressImageWebp } from "@/lib/utils/media-converter";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -62,10 +63,26 @@ export async function updateProfile(prevState: any, formData: FormData) {
       if (validationResult.data.profilePic) {
         const profilePic = validationResult.data.profilePic;
 
-        // Upload profile picture
+        // Convert File to ArrayBuffer
+        const buffer = await profilePic.arrayBuffer();
+
+        // Compress the image
+        const compressedBuffer = await compressImageWebp({
+          buffer,
+          quality: 82,
+        });
+
+        // Convert Buffer back to File
+        const compressedFile = new File(
+          [compressedBuffer],
+          profilePic.name.replace(/\.[^/.]+$/, "") + ".webp",
+          { type: "image/webp" },
+        );
+
+        // Upload compressed profile picture
         const { data, error } = await supabase.storage
           .from("avatars")
-          .upload(validationResult.data.id, profilePic, {
+          .upload(validationResult.data.id, compressedFile, {
             upsert: true,
           });
 
