@@ -1,10 +1,15 @@
 "use client";
 
 import { Button } from "@mantine/core";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
+import { getAllEnsiklopediPemainQueryOptions } from "../../actions/get-all-ensiklopedi-pemain/query-options";
 
 export function EnsiklopediPosisiPemainView() {
+  const { data, isLoading } = useQuery(getAllEnsiklopediPemainQueryOptions());
+  console.log(data);
+
   return (
     <div className="space-y-20">
       <div className="flex flex-row items-center justify-between">
@@ -21,29 +26,34 @@ export function EnsiklopediPosisiPemainView() {
           </Button>
         </Link>
       </div>
-      <div className="grid lg:grid-cols-3 lg:gap-24">
-        {[...Array(8)].map((_, index) => (
-          <Link
-            key={index}
-            href={`/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${index + 1}`}
-          >
-            <div className="space-y-4 rounded-xl border-2 p-12 shadow-xl">
-              <p className="text-center text-xl font-bold uppercase">
-                formasi 4-3-3
-              </p>
-              <div className="relative">
-                <Image
-                  src={"/formasi.png"}
-                  alt=""
-                  width={500}
-                  height={500}
-                  className=""
-                />
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="grid lg:grid-cols-3 lg:gap-24">
+          {data &&
+            data.map((formasi, index) => (
+              <Link
+                key={index}
+                href={`/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${formasi.id}`}
+              >
+                <div className="space-y-4 rounded-xl border-2 p-12 shadow-xl">
+                  <p className="text-center text-xl font-bold uppercase">
+                    formasi {formasi.name}
+                  </p>
+                  <div className="relative">
+                    <Image
+                      src={formasi.defaultFormationImagePath || "/formasi.png"}
+                      alt=""
+                      width={500}
+                      height={500}
+                      className=""
+                    />
+                  </div>
+                </div>
+              </Link>
+            ))}
+        </div>
+      )}
     </div>
   );
 }

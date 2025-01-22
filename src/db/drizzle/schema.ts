@@ -167,3 +167,34 @@ export const trainingProcedure = pgTable("training_procedure", {
   groupSize: bigint("group_size", { mode: "number" }).notNull(),
   description: text("description").notNull(),
 });
+
+export const formationPositioning = pgTable("formation_positioning", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  formationId: uuid("formation_id").references(() => formations.id),
+  positionId: uuid("position_id").references(() => positions.id),
+  characteristics: text("characteristics").array(),
+  offenseDescription: text("offense_description").array(),
+  offenseIllustrationPath: text("offense_illustration_path"),
+  defenseDescription: text("defense_description").array(),
+  defenseIllustrationPath: text("defense_illustration_path"),
+});
+
+export const formations = pgTable("formations", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  name: text("name"),
+  description: text("description"),
+  defaultFormationImagePath: text("default_formation_image_path"),
+  offenseTransitionImagePath: text("offense_transition_image_path"),
+  defenseTransitionImagePath: text("defense_transition_image_path"),
+});
+
+export const positions = pgTable("positions", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  name: text("name").notNull(),
+});

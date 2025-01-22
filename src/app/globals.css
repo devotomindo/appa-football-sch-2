@@ -49,3 +49,15 @@
     rgba(0, 0, 0, 1) 80%
   );
 }
+
+.chevron {
+  &[data-rotate] {
+    transform: rotate(45deg);
+  }
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  color: gray;
+}

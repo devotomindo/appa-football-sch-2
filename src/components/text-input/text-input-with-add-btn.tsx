@@ -9,11 +9,13 @@ export function TextInputWithAddBtn({
   value,
   setValue,
   name,
+  error,
 }: {
   title: string;
   value: string[];
   setValue: (value: string[]) => void;
   name: string;
+  error?: string;
 }) {
   const handleAddValue = () => {
     setValue([...value, ""]);
@@ -53,6 +55,7 @@ export function TextInputWithAddBtn({
             className="flex-1 shadow-lg"
             radius="md"
             name={name}
+            error={error}
           />
           {value.length > 1 && (
             <ActionIcon
@@ -70,15 +73,22 @@ export function TextInputWithAddBtn({
   );
 }
 
-export function KarakterInput({ posisi }: { posisi: number }) {
+export function KarakterInput({
+  posisi,
+  error,
+}: {
+  posisi: number;
+  error?: string;
+}) {
   const [karakter, setKarakter] = useState<string[]>([""]);
 
   return (
     <TextInputWithAddBtn
-      name={`karakter-${posisi}`}
+      name={`karakter[${posisi}]`}
       title="karakter yang harus dimiliki"
       value={karakter}
       setValue={setKarakter}
+      error={error}
     />
   );
 }
@@ -88,7 +98,7 @@ export function PosisiMenyerangInput({ posisi }: { posisi: number }) {
 
   return (
     <TextInputWithAddBtn
-      name={`posisiMenyerang-${posisi}`}
+      name={`posisiMenyerang[${posisi}]`}
       title="posisi ketika Menyerang"
       value={posisiMenyerang}
       setValue={setPosisiMenyerang}
@@ -101,7 +111,7 @@ export function PosisiBertahanInput({ posisi }: { posisi: number }) {
 
   return (
     <TextInputWithAddBtn
-      name={`posisiBertahan-${posisi}`}
+      name={`posisiBertahan[${posisi}]`}
       title="posisi ketika Bertahan"
       value={posisiBertahan}
       setValue={setPosisiBertahan}

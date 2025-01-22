@@ -37,7 +37,7 @@ export function PosisiMenyerangImageInput({ posisi }: { posisi: number }) {
         radius="md"
         value={gambar}
         onChange={setGambar}
-        name={`gambar-posisi-menyerang-${posisi}`}
+        name={`gambarPosisiMenyerang[${posisi}]`}
       />
     </div>
   );
@@ -76,7 +76,7 @@ export function PosisiBertahanImageInput({ posisi }: { posisi: number }) {
         radius="md"
         value={gambar}
         onChange={setGambar}
-        name={`gambar-posisi-bertahan-${posisi}`}
+        name={`gambarPosisiBertahan[${posisi}]`}
       />
     </div>
   );
@@ -90,6 +90,7 @@ export function FormasiAsliImageInput() {
     if (gambar) {
       const objectUrl = URL.createObjectURL(gambar);
       setPreview(objectUrl);
+
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
@@ -114,7 +115,7 @@ export function FormasiAsliImageInput() {
         radius="md"
         value={gambar}
         onChange={setGambar}
-        name="gambar-formasi-asli"
+        name="gambarFormasiAsli"
       />
     </div>
   );
@@ -152,7 +153,7 @@ export function TransisiMenyerangImageInput() {
         radius="md"
         value={gambar}
         onChange={setGambar}
-        name="gambar-transisi-menyerang"
+        name="gambarTransisiMenyerang"
       />
     </div>
   );
@@ -190,7 +191,7 @@ export function TransisiBertahanImageInput() {
         radius="md"
         value={gambar}
         onChange={setGambar}
-        name="gambar-transisi-bertahan"
+        name="gambarTransisiBertahan"
       />
     </div>
   );

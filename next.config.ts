@@ -25,9 +25,9 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    // serverActions: {
-    //   bodySizeLimit: "200mb",
-    // },
+    serverActions: {
+      bodySizeLimit: "20mb",
+    },
     // dynamicIO: true,
     // reactCompiler: true,
     staleTimes: {

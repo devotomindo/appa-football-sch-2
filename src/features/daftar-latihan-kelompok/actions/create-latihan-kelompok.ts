@@ -2,7 +2,7 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { trainingProcedure } from "@/db/drizzle/schema";
-import { createBrowserClient } from "@/db/supabase/browser";
+import { createServerClient } from "@/db/supabase/server";
 import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
@@ -62,13 +62,15 @@ export async function CreateLatihanKelompok(
     };
   }
 
-  const { storage } = createBrowserClient();
+  // const { storage } = createBrowserClient();
   const file = validationResult.data.video;
   const fileExt = file.name.split(".").pop();
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
   try {
-    const { error: uploadError } = await storage
+    const supabase = await createServerClient();
+
+    const { error: uploadError } = await supabase.storage
       .from("group_exercise_videos")
       .upload(`videos/${fileName}`, file, {
         cacheControl: "3600",
@@ -79,7 +81,7 @@ export async function CreateLatihanKelompok(
     if (uploadError) throw uploadError;
 
     // Get public URL for the uploaded video
-    const { data: publicUrl } = storage
+    const { data: publicUrl } = supabase.storage
       .from("group_exercise_videos")
       .getPublicUrl(`videos/${fileName}`);
 

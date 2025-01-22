@@ -206,7 +206,7 @@ export function DaftarLatihanKelompokForm() {
           </ActionIcon>
         </div>
         {langkah.map((item, index) => (
-          <div key={index} className="flex items-start gap-2">
+          <div key={index} className="flex items-center gap-2">
             <Textarea
               placeholder="Masukkan langkah-langkah latihan"
               value={item}
