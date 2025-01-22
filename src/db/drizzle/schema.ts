@@ -179,6 +179,7 @@ export const formationPositioning = pgTable("formation_positioning", {
   offenseIllustrationPath: text("offense_illustration_path"),
   defenseDescription: text("defense_description").array(),
   defenseIllustrationPath: text("defense_illustration_path"),
+  positionNumber: smallint("position_number").notNull(),
 });
 
 export const formations = pgTable("formations", {

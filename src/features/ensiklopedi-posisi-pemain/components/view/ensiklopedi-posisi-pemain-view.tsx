@@ -8,7 +8,6 @@ import { getAllEnsiklopediPemainQueryOptions } from "../../actions/get-all-ensik
 
 export function EnsiklopediPosisiPemainView() {
   const { data, isLoading } = useQuery(getAllEnsiklopediPemainQueryOptions());
-  console.log(data);
 
   return (
     <div className="space-y-20">

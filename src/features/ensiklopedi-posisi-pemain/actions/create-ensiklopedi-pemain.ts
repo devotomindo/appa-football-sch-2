@@ -45,8 +45,6 @@ export async function createEnskilopediPemain(
     })
     .safeParseAsync(formData);
 
-  console.log(validationResult.error);
-
   const db = createDrizzleConnection();
 
   if (!validationResult.success) {

@@ -14,7 +14,6 @@ export default async function DetailEnsiklopediPosisiPemain({
   params: { id: string };
 }) {
   const { id } = await params;
-  console.log(id);
 
   const db = createDrizzleConnection();
 
@@ -31,20 +30,21 @@ export default async function DetailEnsiklopediPosisiPemain({
     gambarOffense: data[0].formations.offenseTransitionImagePath ?? "",
     gambarDefense: data[0].formations.defenseTransitionImagePath ?? "",
     deskripsiFormasi: data[0].formations.description ?? "",
-    daftarPosisi: data.map((item) => {
-      return {
-        idPosisi: item.positions.id,
-        namaPosisi: item.positions.name,
-        karakteristik: item.formation_positioning.characteristics,
-        deskripsiOffense: item.formation_positioning.offenseDescription,
-        gambarOffense: item.formation_positioning.offenseIllustrationPath,
-        deskripsiDefense: item.formation_positioning.defenseDescription,
-        gambarDefense: item.formation_positioning.defenseIllustrationPath,
-      };
-    }),
+    daftarPosisi: data
+      .map((item) => {
+        return {
+          idPosisi: item.positions.id,
+          namaPosisi: item.positions.name,
+          karakteristik: item.formation_positioning.characteristics,
+          deskripsiOffense: item.formation_positioning.offenseDescription,
+          gambarOffense: item.formation_positioning.offenseIllustrationPath,
+          deskripsiDefense: item.formation_positioning.defenseDescription,
+          gambarDefense: item.formation_positioning.defenseIllustrationPath,
+          nomorPosisi: item.formation_positioning.positionNumber,
+        };
+      })
+      .sort((a, b) => a.nomorPosisi - b.nomorPosisi),
   };
-
-  console.log(formatedData);
 
   return (
     <DashboardSectionContainer>
