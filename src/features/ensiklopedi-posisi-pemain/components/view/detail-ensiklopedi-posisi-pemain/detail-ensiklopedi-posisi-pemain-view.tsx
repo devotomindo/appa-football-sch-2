@@ -176,7 +176,7 @@ export function DetailEnsiklopediPosisiPemainView({
         className="chevron"
         chevron={<IconTriangleInvertedFilled className={"icon"} />}
       >
-        <p className="mb-2 font-bold capitalize">daftar posisi</p>
+        <p className="mb-4 font-bold capitalize">daftar posisi</p>
         {items}
       </Accordion>
     </div>

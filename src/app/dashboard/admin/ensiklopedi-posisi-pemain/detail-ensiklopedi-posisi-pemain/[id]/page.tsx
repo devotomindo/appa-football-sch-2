@@ -21,20 +21,20 @@ export default async function DetailEnsiklopediPosisiPemain({
     .select()
     .from(formationPositioning)
     .where(eq(formationPositioning.formationId, id))
-    .innerJoin(positions, eq(formationPositioning.positionId, positions.id))
-    .innerJoin(formations, eq(formationPositioning.formationId, id));
+    .leftJoin(positions, eq(formationPositioning.positionId, positions.id))
+    .leftJoin(formations, eq(formationPositioning.formationId, formations.id));
 
   const formatedData = {
-    namaFormasi: data[0].formations.name ?? "",
-    gambarFormasiDefault: data[0].formations.defaultFormationImagePath ?? "",
-    gambarOffense: data[0].formations.offenseTransitionImagePath ?? "",
-    gambarDefense: data[0].formations.defenseTransitionImagePath ?? "",
-    deskripsiFormasi: data[0].formations.description ?? "",
+    namaFormasi: data[0]?.formations?.name ?? "",
+    gambarFormasiDefault: data[0]?.formations?.defaultFormationImagePath ?? "",
+    gambarOffense: data[0]?.formations?.offenseTransitionImagePath ?? "",
+    gambarDefense: data[0]?.formations?.defenseTransitionImagePath ?? "",
+    deskripsiFormasi: data[0]?.formations?.description ?? "",
     daftarPosisi: data
       .map((item) => {
         return {
-          idPosisi: item.positions.id,
-          namaPosisi: item.positions.name,
+          idPosisi: item.positions?.id ?? "",
+          namaPosisi: item.positions?.name ?? "",
           karakteristik: item.formation_positioning.characteristics,
           deskripsiOffense: item.formation_positioning.offenseDescription,
           gambarOffense: item.formation_positioning.offenseIllustrationPath,

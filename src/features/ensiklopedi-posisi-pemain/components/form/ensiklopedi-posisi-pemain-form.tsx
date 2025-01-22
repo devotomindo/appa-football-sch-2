@@ -28,6 +28,13 @@ import { startTransition, useActionState, useEffect } from "react";
 import { createEnskilopediPemain } from "../../actions/create-ensiklopedi-pemain";
 import { getAllPosisiQueryOptions } from "../../actions/get-all-posisi/queryOptions";
 
+interface PosisiData {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const daftarPosisi = [
   {
     value: "Posisi #1",
@@ -38,30 +45,30 @@ const daftarPosisi = [
   {
     value: "Posisi #3",
   },
-  {
-    value: "Posisi #4",
-  },
-  {
-    value: "Posisi #5",
-  },
-  {
-    value: "Posisi #6",
-  },
-  {
-    value: "Posisi #7",
-  },
-  {
-    value: "Posisi #8",
-  },
-  {
-    value: "Posisi #9",
-  },
-  {
-    value: "Posisi #10",
-  },
-  {
-    value: "Posisi #11",
-  },
+  // {
+  //   value: "Posisi #4",
+  // },
+  // {
+  //   value: "Posisi #5",
+  // },
+  // {
+  //   value: "Posisi #6",
+  // },
+  // {
+  //   value: "Posisi #7",
+  // },
+  // {
+  //   value: "Posisi #8",
+  // },
+  // {
+  //   value: "Posisi #9",
+  // },
+  // {
+  //   value: "Posisi #10",
+  // },
+  // {
+  //   value: "Posisi #11",
+  // },
 ];
 
 export function EnsiklopediPosisiPemainForm() {
@@ -93,7 +100,11 @@ export function EnsiklopediPosisiPemainForm() {
         <Select
           label="Pilih Posisi"
           placeholder="Pick value"
-          data={posisiData?.map((value) => value.name)}
+          data={posisiData
+            ?.sort((a: PosisiData, b: PosisiData) =>
+              a.name.localeCompare(b.name),
+            )
+            .map((value) => value.name)}
           searchable
           name="posisi"
           error={actionState?.error?.posisi}
@@ -128,7 +139,7 @@ export function EnsiklopediPosisiPemainForm() {
       ) : null}
       <TextInput
         label="Nama Formasi"
-        placeholder="Masukkan nama formasi"
+        placeholder="Masukkan nama formasi contoh: 4-4-2, 4-3-3, dan lain-lain"
         required
         withAsterisk={false}
         name="nama"

@@ -169,6 +169,17 @@ export async function createEnskilopediPemain(
 
       // Insert formation-position relationships
       for (let i = 0; i < positionRecords.length; i++) {
+        // console.log({
+        //   id: uuidv7(),
+        //   formationId: idFormations,
+        //   positionId: positionRecords[i].id,
+        //   characteristics: validationResult.data.karakter[i],
+        //   offenseDescription: validationResult.data.posisiMenyerang[i],
+        //   offenseIllustrationPath: gambarPosisiMenyerangURLs[i].publicUrl,
+        //   defenseDescription: validationResult.data.posisiBertahan[i],
+        //   defenseIllustrationPath: gambarPosisiBertahanURLs[i].publicUrl,
+        //   positionNumber: i + 1,
+        // });
         await tx.insert(formationPositioning).values({
           id: uuidv7(),
           formationId: idFormations,
@@ -178,6 +189,7 @@ export async function createEnskilopediPemain(
           offenseIllustrationPath: gambarPosisiMenyerangURLs[i].publicUrl,
           defenseDescription: validationResult.data.posisiBertahan[i],
           defenseIllustrationPath: gambarPosisiBertahanURLs[i].publicUrl,
+          positionNumber: i + 1,
         });
       }
     });
