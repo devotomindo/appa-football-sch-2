@@ -75,7 +75,7 @@ export const schoolRoles = pgTable("school_roles", {
 });
 
 export const schoolRoleMembers = pgTable("school_role_members", {
-  id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+  id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   userId: uuid("user_id")
     .notNull()
@@ -86,6 +86,7 @@ export const schoolRoleMembers = pgTable("school_role_members", {
   schoolRoleId: smallint("school_role_id")
     .notNull()
     .references(() => schoolRoles.id),
+  isApproved: boolean("is_approved").notNull().default(false),
 });
 
 export const userRoleMembers = pgTable("user_role_members", {

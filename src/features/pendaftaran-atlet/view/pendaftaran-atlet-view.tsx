@@ -7,6 +7,7 @@ import { UserProfileUpdateForm } from "@/features/user/components/form/user-prof
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { PendaftaranAtletForm } from "../form/pendaftaran-atlet-form";
 
 export function PendaftaranAtletView({
@@ -14,6 +15,8 @@ export function PendaftaranAtletView({
 }: {
   userData: GetUserByIdResponse;
 }) {
+  const queryClient = useQueryClient();
+
   const [
     isProfileModalOpen,
     { open: openProfileModal, close: closeProfileModal },
@@ -29,8 +32,16 @@ export function PendaftaranAtletView({
       ? true
       : false;
 
+  const handleRegistrationSuccess = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["user-school-member", userData.id],
+    });
+    closePendaftaranModal();
+  };
+
   return (
-    <div>
+    <div className="mb-5">
+      {/* Modal to Complete Profile */}
       <Modal
         opened={isProfileModalOpen || !isProfileComplete}
         onClose={closeProfileModal}
@@ -46,12 +57,12 @@ export function PendaftaranAtletView({
           />
           <form action={logout}>
             <SubmitButton color="red" fullWidth>
-              {" "}
-              Keluar{" "}
+              Keluar
             </SubmitButton>
           </form>
         </div>
       </Modal>
+
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Pendaftaran Atlet</h1>
         <Button leftSection={<IconPlus />} onClick={openPendaftaranModal}>
@@ -65,7 +76,10 @@ export function PendaftaranAtletView({
         title="Pendaftaran Atlet"
         size={"lg"}
       >
-        <PendaftaranAtletForm userData={userData} />
+        <PendaftaranAtletForm
+          userData={userData}
+          onSuccess={handleRegistrationSuccess}
+        />
       </Modal>
     </div>
   );

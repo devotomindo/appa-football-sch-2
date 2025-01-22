@@ -5,7 +5,7 @@ import { Menu } from "@mantine/core";
 import { IconBuilding } from "@tabler/icons-react";
 
 type School = {
-  id: number;
+  id: string;
   name: string;
   role: string;
 };

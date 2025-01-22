@@ -5,7 +5,7 @@ import {
 } from "../action/get-school-info/query-options";
 import { SchoolWithImageUrl } from "../types/school";
 
-export function useSchoolInfo(schoolId: number) {
+export function useSchoolInfo(schoolId: string) {
   return useQuery<
     SchoolWithImageUrl,
     Error,
@@ -13,6 +13,6 @@ export function useSchoolInfo(schoolId: number) {
     SchoolInfoQueryKey
   >({
     ...getSchoolInfoByIdQueryOptions(schoolId),
-    enabled: !!schoolId,
+    enabled: schoolId !== "",
   });
 }

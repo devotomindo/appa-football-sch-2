@@ -1,16 +1,31 @@
 "use client";
+import { SubmitButton } from "@/components/buttons/submit-button";
 import { getAllSchoolRoleQueryOptions } from "@/features/school/action/get-all-school-roles/query-options";
 import { getSchoolByCityIdQueryOptions } from "@/features/school/action/get-school-by-city-id/query-options";
 import { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
+import { registerToSchool } from "@/features/user/actions/register-to-school";
+import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
+import {
+  formStateNotificationHelper,
+  notificationHelper,
+} from "@/lib/notification/notification-helper";
 import { Button, Group, Radio, Select } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useState } from "react";
+import {
+  FormEvent,
+  startTransition,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
 
 export function PendaftaranAtletForm({
   userData,
+  onSuccess,
 }: {
   userData: GetUserByIdResponse;
+  onSuccess?: () => void;
 }) {
   const allSchoolRoles = useQuery(getAllSchoolRoleQueryOptions());
 
@@ -34,12 +49,63 @@ export function PendaftaranAtletForm({
     label: school.name,
   }));
 
+  const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
+
+  const [actionState, actionDispatch, isActionPending] = useActionState(
+    registerToSchool,
+    undefined,
+  );
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!selectedSchoolRole || !selectedSchool) return;
+
+    startTransition(() => {
+      const formData = new FormData();
+      formData.append("roleId", selectedSchoolRole);
+      formData.append("schoolId", selectedSchool);
+
+      actionDispatch(formData);
+    });
+  };
+
+  const actionEffectEvent = useEffectEvent((state: typeof actionState) => {
+    if (state) {
+      // Show field-specific errors as notifications too
+      if (state.error?.roleId) {
+        notificationHelper({
+          type: "error",
+          message: state.error.roleId,
+        });
+      }
+      if (state.error?.schoolId) {
+        notificationHelper({
+          type: "error",
+          message: state.error.schoolId,
+        });
+      }
+
+      formStateNotificationHelper({
+        state,
+        successCallback: () => {
+          onSuccess?.();
+        },
+      });
+    }
+  });
+
+  useEffect(
+    () => actionEffectEvent(actionState),
+    [actionState, actionEffectEvent],
+  );
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="space-y-4">
         <Radio.Group
           withAsterisk
-          error={allSchoolRoles.isError}
+          error={allSchoolRoles.isError || actionState?.error?.roleId}
           label="Pilih Peran di SSB"
           mb={4}
         >
@@ -65,9 +131,10 @@ export function PendaftaranAtletForm({
               label="Pilih SSB"
               placeholder="Pilih SSB"
               data={schoolSelectOptions}
-              error={schoolByUserCityId.isError}
+              error={schoolByUserCityId.isError || actionState?.error?.schoolId}
               required
               searchable
+              onChange={(value) => setSelectedSchool(value)}
             />
           ) : (
             <div className="text-red-500">
@@ -89,6 +156,14 @@ export function PendaftaranAtletForm({
             </Button>
           </div>
         )}
+
+        <SubmitButton
+          loading={isActionPending}
+          fullWidth
+          disabled={!selectedSchool || !selectedSchoolRole}
+        >
+          Daftar
+        </SubmitButton>
       </div>
     </form>
   );

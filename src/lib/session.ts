@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 export type SchoolSession = {
-  id: number;
+  id: string;
   name: string;
   role: string;
   imageUrl?: string;

@@ -66,6 +66,7 @@ export const createSchool = async function (
 
       // Generate uuid for school
       const schoolId = uuidv7();
+      const userSchoolMemberId = uuidv7();
 
       // insert school
       const schoolName = validationResult.data.name;
@@ -118,9 +119,11 @@ export const createSchool = async function (
           .then((res) => res[0].id);
 
         await tx.insert(schoolRoleMembers).values({
+          id: userSchoolMemberId,
           userId: userData?.id,
           schoolId: insertedId,
           schoolRoleId: 1, // Head Coach ID
+          isApproved: true,
         });
       } else {
         const insertedId = await tx
@@ -137,9 +140,11 @@ export const createSchool = async function (
           .then((res) => res[0].id);
 
         await tx.insert(schoolRoleMembers).values({
+          id: userSchoolMemberId,
           userId: userData?.id,
           schoolId: insertedId,
           schoolRoleId: 1, // Head Coach ID
+          isApproved: true,
         });
       }
     });

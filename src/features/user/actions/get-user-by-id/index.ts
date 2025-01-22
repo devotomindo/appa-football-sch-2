@@ -45,6 +45,7 @@ export const getUserById = cache(async function (id: string) {
             JOIN schools s ON s.id = srm.school_id
             JOIN school_roles sr ON sr.id = srm.school_role_id
             WHERE srm.user_id = ${authUsers.id}
+            AND srm.is_approved = true
           ),
           '[]'
         )
@@ -67,9 +68,11 @@ export const getUserById = cache(async function (id: string) {
       // Fetch avatar from bucket
       const { data } = supabase.storage.from(bucket).getPublicUrl(path);
 
+      const avatarUrl = data.publicUrl + `?t=${new Date(user.updatedAt)}`;
+
       return {
         ...user,
-        avatarUrl: data.publicUrl,
+        avatarUrl,
       };
     });
 });

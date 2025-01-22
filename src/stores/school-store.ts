@@ -2,20 +2,22 @@ import type { SchoolSession } from "@/lib/session";
 import { create } from "zustand";
 
 type School = {
-  id: number;
+  id: string;
   name: string;
   role: string;
 };
 
 type SchoolStore = {
   selectedSchool: SchoolSession | null;
+  isHydrating: boolean;
   setSelectedSchool: (school: SchoolSession | null) => Promise<void>;
   hydrate: (school: SchoolSession | null) => void;
 };
 
 export const useSchoolStore = create<SchoolStore>((set) => ({
   selectedSchool: null,
-  hydrate: (school) => set({ selectedSchool: school }),
+  isHydrating: true,
+  hydrate: (school) => set({ selectedSchool: school, isHydrating: false }),
   setSelectedSchool: async (school) => {
     try {
       const response = await fetch("/api/session", {
