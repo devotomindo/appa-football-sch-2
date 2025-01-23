@@ -4,7 +4,7 @@ import { DetailAsesmenView } from "@/features/data-asesmen/components/view/detai
 export default async function DetailAsesmen({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
   console.log(id);

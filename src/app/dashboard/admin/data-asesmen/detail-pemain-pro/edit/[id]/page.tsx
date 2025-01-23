@@ -4,12 +4,7 @@ import { Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import Link from "next/link";
 
-export default async function EditAsesmenPemainPro({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function EditAsesmenPemainPro() {
   const idPemainPro = "1";
 
   return (

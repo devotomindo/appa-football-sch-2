@@ -200,3 +200,24 @@ export const positions = pgTable("positions", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   name: text("name").notNull(),
 });
+
+export const gradeMetrics = pgTable("grade_metrics", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  name: text("name"),
+});
+
+export const assessments = pgTable("assessments", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  name: text("name"),
+  desription: text("description"),
+  mainGoal: text("main_goal"),
+  procedure: text("procedure").array(),
+  gradeMetricId: uuid("grade_metric_id").references(() => gradeMetrics.id),
+  isHigherGradeBetter: boolean("is_higher_grade_better"),
+  category: text("category"),
+  illustrationPath: text("illustration_path").array(),
+});

@@ -12,7 +12,7 @@ export function TambahAsesmenForm() {
     setLangkahAsesmen((prev) => prev + 1);
   };
 
-  const handleRemoveCriteria = (index: number) => {
+  const handleRemoveCriteria = () => {
     if (langkahAsesmen > 1) {
       setLangkahAsesmen((prev) => prev - 1);
     }
@@ -134,7 +134,7 @@ export function TambahAsesmenForm() {
                 <ActionIcon
                   color="red"
                   variant="filled"
-                  onClick={() => handleRemoveCriteria(index)}
+                  onClick={() => handleRemoveCriteria()}
                   className="h-[36px] w-[36px]"
                   radius="xl"
                 >
