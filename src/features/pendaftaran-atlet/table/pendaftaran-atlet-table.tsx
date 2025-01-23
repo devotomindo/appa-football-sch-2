@@ -5,7 +5,7 @@ import {
   GetUserSchoolsMemberByUserIdResponse,
 } from "@/features/user/actions/get-user-schools-member-by-user-id/query-options";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   MantineReactTable,
   MRT_ColumnDef,
@@ -16,7 +16,6 @@ import { useMemo } from "react";
 
 export function PendaftaranAtletTable({ userId }: { userId: string }) {
   // QUERY DATA
-  const queryClient = useQueryClient();
   const currentUserSchools = useQuery(
     getUserSchoolsMemberByUserIdQueryOptions(userId),
   );

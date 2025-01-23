@@ -1,7 +1,7 @@
 "use client";
 
+import { getCoachRegistrantsBySchoolIdQueryOptions } from "@/features/school/action/get-coach-registrants-by-school-id/query-options";
 import { GetSchoolRegistrantsBySchoolIdResponse } from "@/features/school/action/get-school-registrants";
-import { getSchoolRegistrantsBySchoolIdQueryOptions } from "@/features/school/action/get-school-registrants/query-options";
 import { AcceptSchoolRegistrantForm } from "@/features/school/form/accept-school-registrant-form";
 import { RejectAndDeleteSchoolRegistrantForm } from "@/features/school/form/reject-and-delete-school-registrant-form";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
@@ -16,7 +16,7 @@ import {
 } from "mantine-react-table";
 import { useMemo, useState } from "react";
 
-export function DaftarRegistrasiPemainTable({
+export function DaftarRegistrasiPelatihTable({
   schoolId,
 }: {
   schoolId: string;
@@ -28,8 +28,8 @@ export function DaftarRegistrasiPemainTable({
   >(null);
 
   // QUERY DATA
-  const schoolRegistrants = useQuery(
-    getSchoolRegistrantsBySchoolIdQueryOptions(schoolId),
+  const schoolCoachRegistrants = useQuery(
+    getCoachRegistrantsBySchoolIdQueryOptions(schoolId),
   );
   // END OF QUERY DATA
 
@@ -101,12 +101,12 @@ export function DaftarRegistrasiPemainTable({
 
   const table = useMantineReactTable({
     ...getDefautTableOptions({
-      queryResult: schoolRegistrants,
+      queryResult: schoolCoachRegistrants,
     }),
     columns,
     enableRowNumbers: true,
     rowNumberDisplayMode: "original",
-    data: schoolRegistrants.data ?? [],
+    data: schoolCoachRegistrants.data ?? [],
   });
 
   return (
@@ -134,7 +134,7 @@ export function DaftarRegistrasiPemainTable({
               onSuccess={() => {
                 setSelectedRow(null);
                 setIsAcceptModalOpen(false);
-                schoolRegistrants.refetch();
+                schoolCoachRegistrants.refetch();
               }}
             />
           </div>
@@ -162,7 +162,7 @@ export function DaftarRegistrasiPemainTable({
               onSuccess={() => {
                 setSelectedRow(null);
                 setIsRejectModalOpen(false);
-                schoolRegistrants.refetch();
+                schoolCoachRegistrants.refetch();
               }}
             />
           </div>

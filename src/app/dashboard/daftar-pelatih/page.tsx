@@ -1,9 +1,9 @@
-import { DaftarPemainView } from "@/features/daftar-pemain/view/daftar-pemain-view";
+import { DaftarPelatihView } from "@/features/daftar-pelatih/view/daftar-pelatih-view";
 import { authGuard } from "@/features/user/guards/auth-guard";
 import { getSchoolSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-export default async function DaftarPemainPage() {
+export default async function DaftarPelatihPage() {
   // AUTH GUARD
   const authResponse = await authGuard();
 
@@ -17,7 +17,7 @@ export default async function DaftarPemainPage() {
   const schoolSession = await getSchoolSession();
 
   return (
-    <DaftarPemainView
+    <DaftarPelatihView
       userData={userData}
       initialSchoolSession={schoolSession}
     />

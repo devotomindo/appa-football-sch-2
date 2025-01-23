@@ -1,12 +1,6 @@
 import type { SchoolSession } from "@/lib/session";
 import { create } from "zustand";
 
-type School = {
-  id: string;
-  name: string;
-  role: string;
-};
-
 type SchoolStore = {
   selectedSchool: SchoolSession | null;
   isHydrating: boolean;

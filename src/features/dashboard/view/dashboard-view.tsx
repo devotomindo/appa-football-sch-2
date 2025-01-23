@@ -24,7 +24,7 @@ export function DashboardView({
   const { selectedSchool, hydrate, isHydrating } = useSchoolStore();
   const { data: schoolInfo } = useSchoolInfo(selectedSchool?.id ?? "");
   // Consider it loading during hydration or when waiting for school info
-  let isLoading = isHydrating || (selectedSchool && !schoolInfo);
+  const isLoading = isHydrating || (selectedSchool && !schoolInfo);
 
   useEffect(() => {
     hydrate(initialSchoolSession);

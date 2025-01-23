@@ -31,7 +31,6 @@ export const rejectAndDeleteSchoolRegistrant = async function (
 
   try {
     const db = createDrizzleConnection();
-    const updateTime = new Date();
     let result: any; // Used to fetch errors and success message for notificaton
 
     await db.transaction(async (tx) => {

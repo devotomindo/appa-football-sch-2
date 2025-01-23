@@ -17,10 +17,7 @@ export function PendaftaranAtletView({
 }) {
   const queryClient = useQueryClient();
 
-  const [
-    isProfileModalOpen,
-    { open: openProfileModal, close: closeProfileModal },
-  ] = useDisclosure();
+  const [isProfileModalOpen, { close: closeProfileModal }] = useDisclosure();
 
   const [
     isPendaftaranModalOpen,

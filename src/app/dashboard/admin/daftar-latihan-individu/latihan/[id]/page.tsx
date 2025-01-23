@@ -7,9 +7,9 @@ import { eq } from "drizzle-orm";
 export default async function DetailLatihanIndividu({
   params,
 }: {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }) {
   const { id } = await params;
 

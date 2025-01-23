@@ -10,14 +10,14 @@ import { useSchoolStore } from "@/stores/school-store";
 import { Button } from "@mantine/core";
 import Link from "next/link";
 import { useEffect } from "react";
-import { DaftarRegistrasiPemainTable } from "../table/daftar-registrasi-pemain-table";
+import { DaftarPemainTable } from "../table/daftar-pemain-table";
 
 interface DashboardViewProps {
   userData: GetUserByIdResponse;
   initialSchoolSession: SchoolSession | null;
 }
 
-export function DaftarRegistrasiPemainView({
+export function DaftarPemainView({
   userData,
   initialSchoolSession,
 }: DashboardViewProps) {
@@ -63,31 +63,38 @@ export function DaftarRegistrasiPemainView({
     userData.schools?.find((school) => school.id === schoolInfo?.id)?.role ===
     "Head Coach";
 
-  if (!userIsHeadCoach) {
-    return (
-      <DashboardSectionContainer>
-        <div>Anda tidak memiliki akses ke halaman ini</div>
-      </DashboardSectionContainer>
-    );
-  }
+  //   if (!userIsHeadCoach) {
+  //     return (
+  //       <DashboardSectionContainer>
+  //         <div>Anda tidak memiliki akses ke halaman ini</div>
+  //       </DashboardSectionContainer>
+  //     );
+  //   }
 
   return (
     schoolInfo && (
       <DashboardSectionContainer>
-        <SchoolBanner
-          schoolInfo={schoolInfo}
-          userIsHeadCoach={userIsHeadCoach}
-        />
+        {schoolInfo && (
+          <SchoolBanner
+            schoolInfo={schoolInfo}
+            userIsHeadCoach={userIsHeadCoach}
+          />
+        )}
 
         <div className="mt-8">
-          <h1 className="mb-2 text-2xl font-semibold">
-            Daftar Registrasi Pemain
-          </h1>
-          <p>
-            Daftar atlet yang mengajukan pendaftaran ke sekolah Anda. Anda dapat
-            memilih untuk menerima atau menolak pendaftaran mereka.
-          </p>
-          <DaftarRegistrasiPemainTable schoolId={schoolInfo?.id} />
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="mb-2 text-2xl font-semibold">Daftar Pemain</h1>
+              <p>Daftar atlet yang terdaftar di SSB</p>
+            </div>
+            <Button
+              component={Link}
+              href={`/dashboard/daftar-registrasi-pemain`}
+            >
+              Lihat Daftar Registrasi
+            </Button>
+          </div>
+          <DaftarPemainTable schoolId={schoolInfo?.id} />
         </div>
       </DashboardSectionContainer>
     )

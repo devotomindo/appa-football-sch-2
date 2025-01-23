@@ -1,5 +1,6 @@
 "use client";
 
+import { useSchoolInfo } from "@/features/school/hooks/use-school-info";
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { logout } from "@/features/user/actions/logout";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
@@ -92,11 +93,14 @@ export function DashboardAppshell({
     };
 
     initializeSchool();
-  }, []); // Empty dependency array to run only once on mount
+  }); // Empty dependency array to run only once on mount
 
   const isUserAdminValue = isUserAdmin(userData);
 
-  const member = true;
+  // Fetch school info
+  const { data: schoolInfo } = useSchoolInfo(selectedSchool?.id ?? "");
+
+  const member = schoolInfo?.isPremium;
 
   return (
     <>
@@ -219,8 +223,12 @@ export function DashboardAppshell({
               </div>
             )}
             <div className="w-full bg-[#E92222] p-2 text-center text-white">
-              {member && <p className="uppercase">premium 1 tahun</p>}
-              {!member && <Link href="/daftar">daftar disini</Link>}
+              {member && <p className="uppercase">premium</p>}
+              {!member && (
+                <Link href="/daftar" className="uppercase">
+                  daftar disini
+                </Link>
+              )}
             </div>
           </div>
 

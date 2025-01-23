@@ -20,16 +20,18 @@ const mekanismeAsesmen = [
   },
 ];
 
-export default function AsesmenDetail({
+export default async function AsesmenDetail({
   params,
 }: {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }) {
+  const { name } = await params;
+
   return (
     <DashboardSectionContainer>
       <p className="font-bold uppercase">asesmen</p>
       <p className="text-5xl uppercase tracking-wider text-[#E92222]">
-        {params.name.split("-").join(" ")}
+        {name.split("-").join(" ")}
       </p>
       <div className="space-y-4 py-16">
         <p className="text-xl font-bold uppercase">mekanisme asesmen</p>

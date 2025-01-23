@@ -10,14 +10,14 @@ import { useSchoolStore } from "@/stores/school-store";
 import { Button } from "@mantine/core";
 import Link from "next/link";
 import { useEffect } from "react";
-import { DaftarRegistrasiPemainTable } from "../table/daftar-registrasi-pemain-table";
+import { DaftarRegistrasiPelatihTable } from "../table/daftar-registrasi-pelatih-table";
 
 interface DashboardViewProps {
   userData: GetUserByIdResponse;
   initialSchoolSession: SchoolSession | null;
 }
 
-export function DaftarRegistrasiPemainView({
+export function DaftarRegistrasiPelatihView({
   userData,
   initialSchoolSession,
 }: DashboardViewProps) {
@@ -81,13 +81,13 @@ export function DaftarRegistrasiPemainView({
 
         <div className="mt-8">
           <h1 className="mb-2 text-2xl font-semibold">
-            Daftar Registrasi Pemain
+            Daftar Registrasi Pelatih
           </h1>
           <p>
-            Daftar atlet yang mengajukan pendaftaran ke sekolah Anda. Anda dapat
-            memilih untuk menerima atau menolak pendaftaran mereka.
+            Daftar pelatih yang mengajukan pendaftaran ke sekolah Anda. Anda
+            dapat memilih untuk menerima atau menolak pendaftaran mereka.
           </p>
-          <DaftarRegistrasiPemainTable schoolId={schoolInfo?.id} />
+          <DaftarRegistrasiPelatihTable schoolId={schoolInfo?.id} />
         </div>
       </DashboardSectionContainer>
     )

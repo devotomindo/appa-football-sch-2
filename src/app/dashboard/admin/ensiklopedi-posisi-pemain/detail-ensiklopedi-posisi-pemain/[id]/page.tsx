@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 export default async function DetailEnsiklopediPosisiPemain({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
 
