@@ -7,7 +7,7 @@ import { getStorageBucketAndPath } from "@/lib/utils/supabase";
 import { eq } from "drizzle-orm";
 import { cache } from "react";
 
-export type GetAllUserRoleResponse = Awaited<
+export type GetUserSchoolsMemberByUserIdResponse = Awaited<
   ReturnType<typeof getUserSchoolsMemberByUserId>
 >;
 

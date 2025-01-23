@@ -77,6 +77,7 @@ export const schoolRoles = pgTable("school_roles", {
 export const schoolRoleMembers = pgTable("school_role_members", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
   userId: uuid("user_id")
     .notNull()
     .references(() => authUsers.id),

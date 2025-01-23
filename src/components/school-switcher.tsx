@@ -3,6 +3,7 @@
 import { useSchoolStore } from "@/stores/school-store";
 import { Menu } from "@mantine/core";
 import { IconBuilding } from "@tabler/icons-react";
+import { useEffect } from "react";
 
 type School = {
   id: string;
@@ -12,6 +13,12 @@ type School = {
 
 export function SchoolSwitcher({ schools }: { schools: School[] }) {
   const { selectedSchool, setSelectedSchool } = useSchoolStore();
+
+  useEffect(() => {
+    if (!selectedSchool && schools.length > 0) {
+      setSelectedSchool(schools[0]);
+    }
+  }, [selectedSchool, schools, setSelectedSchool]);
 
   return (
     <Menu>
