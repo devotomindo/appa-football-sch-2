@@ -25,7 +25,13 @@ export function PendaftaranAtletView({
   ] = useDisclosure();
 
   const isProfileComplete =
-    userData.name && userData.domisiliKota && userData.domisiliProvinsi
+    userData.name &&
+    userData.domisiliKota &&
+    userData.domisiliProvinsi &&
+    userData.bodyHeight &&
+    userData.bodyWeight &&
+    userData.isMale &&
+    userData.birthDate
       ? true
       : false;
 

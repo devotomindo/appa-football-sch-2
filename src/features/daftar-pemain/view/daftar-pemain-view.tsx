@@ -61,15 +61,17 @@ export function DaftarPemainView({
   // Check if user is head coach
   const userIsHeadCoach =
     userData.schools?.find((school) => school.id === schoolInfo?.id)?.role ===
-    "Head Coach";
+      "Head Coach" ||
+    userData.schools?.find((school) => school.id === schoolInfo?.id)?.role ===
+      "Coach";
 
-  //   if (!userIsHeadCoach) {
-  //     return (
-  //       <DashboardSectionContainer>
-  //         <div>Anda tidak memiliki akses ke halaman ini</div>
-  //       </DashboardSectionContainer>
-  //     );
-  //   }
+  if (!userIsHeadCoach) {
+    return (
+      <DashboardSectionContainer>
+        <div>Anda tidak memiliki akses ke halaman ini</div>
+      </DashboardSectionContainer>
+    );
+  }
 
   return (
     schoolInfo && (

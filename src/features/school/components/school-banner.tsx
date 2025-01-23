@@ -10,7 +10,7 @@ export function SchoolBanner({
   userIsHeadCoach,
 }: {
   schoolInfo: SchoolWithImageUrl;
-  userIsHeadCoach: boolean;
+  userIsHeadCoach?: boolean;
 }) {
   return (
     <div

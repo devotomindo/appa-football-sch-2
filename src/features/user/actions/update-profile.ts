@@ -18,6 +18,10 @@ export async function updateProfile(prevState: any, formData: FormData) {
     .formData({
       id: zfd.text(z.string().uuid()),
       name: zfd.text(z.string().min(1)),
+      birthDate: zfd.text(z.string()),
+      isMale: zfd.text(z.enum(["true", "false"])),
+      bodyHeight: zfd.numeric(z.number().int().min(1)),
+      bodyWeight: zfd.numeric(z.number().int().min(1)),
       profilePic: zfd.file(
         z
           .instanceof(File)
@@ -44,6 +48,10 @@ export async function updateProfile(prevState: any, formData: FormData) {
         profilePic: errorFormatted.profilePic?._errors,
         domisiliProvinsi: errorFormatted.domisiliProvinsi?._errors,
         domisiliKota: errorFormatted.domisiliKota?._errors,
+        bodyHeight: errorFormatted.bodyHeight?._errors,
+        bodyWeight: errorFormatted.bodyWeight?._errors,
+        isMale: errorFormatted.isMale?._errors,
+        birthDate: errorFormatted.birthDate?._errors,
       },
     };
   }
@@ -56,6 +64,10 @@ export async function updateProfile(prevState: any, formData: FormData) {
       // update user
       const userId = validationResult.data.id;
       const newName = validationResult.data.name;
+      const birthDate = new Date(validationResult.data.birthDate);
+      const isMale = validationResult.data.isMale === "true";
+      const bodyHeight = validationResult.data.bodyHeight;
+      const bodyWeight = validationResult.data.bodyWeight;
       const domisiliKota = validationResult.data.domisiliKota;
       const domisiliProvinsi = validationResult.data.domisiliProvinsi;
       const updatedAt = new Date();
@@ -95,6 +107,10 @@ export async function updateProfile(prevState: any, formData: FormData) {
           .update(userProfiles)
           .set({
             name: newName,
+            birthDate: birthDate.toISOString(),
+            isMale: isMale,
+            bodyHeight: bodyHeight,
+            bodyWeight: bodyWeight,
             avatarPath: data.fullPath,
             updatedAt: updatedAt,
             domisiliProvinsi: domisiliProvinsi,
@@ -107,6 +123,10 @@ export async function updateProfile(prevState: any, formData: FormData) {
         .update(userProfiles)
         .set({
           name: newName,
+          birthDate: birthDate.toISOString(),
+          isMale: isMale,
+          bodyHeight: bodyHeight,
+          bodyWeight: bodyWeight,
           updatedAt: updatedAt,
           domisiliProvinsi: domisiliProvinsi,
           domisiliKota: domisiliKota,

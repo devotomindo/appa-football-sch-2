@@ -11,7 +11,7 @@ import { Button } from "@mantine/core";
 import Link from "next/link";
 import { useEffect } from "react";
 
-interface DashboardViewProps {
+export interface DashboardViewProps {
   userData: GetUserByIdResponse;
   initialSchoolSession: SchoolSession | null;
 }

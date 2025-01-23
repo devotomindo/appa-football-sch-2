@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  date,
   jsonb,
   pgSchema,
   pgTable,
@@ -42,6 +43,11 @@ export const userProfiles = pgTable("user_profiles", {
   deletedAt: timestamp("deleted_at"),
   avatarPath: text("avatar_path"),
   name: text("name"),
+  birthDate: date("birth_date").notNull(),
+  isMale: boolean("is_male").notNull(),
+  bodyHeight: smallint("body_height").notNull(),
+  bodyWeight: smallint("body_weight").notNull(),
+
   domisiliProvinsi: bigint("domisili_provinsi", { mode: "number" }).references(
     () => states.id,
   ),

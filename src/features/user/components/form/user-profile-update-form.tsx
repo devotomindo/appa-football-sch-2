@@ -4,8 +4,18 @@ import { getCitiesByProvinceIdQueryOptions } from "@/features/school/action/get-
 import { getIndonesianProvincesQueryOptions } from "@/features/school/action/get-indonesian-provinces/query-options";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
-import { FileInput, Select, TextInput } from "@mantine/core";
+import {
+  FileInput,
+  Group,
+  NumberInput,
+  Radio,
+  Select,
+  TextInput,
+} from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import "dayjs/locale/id";
 import Image from "next/image";
 import {
   startTransition,
@@ -17,6 +27,8 @@ import {
 import { GetUserByIdResponse } from "../../actions/get-user-by-id";
 import { getUserByIdQueryOptions } from "../../actions/get-user-by-id/query-options";
 import { updateProfile } from "../../actions/update-profile";
+
+dayjs.locale("id");
 
 export function UserProfileUpdateForm({
   userData,
@@ -132,6 +144,53 @@ export function UserProfileUpdateForm({
           label="Nama Lengkap"
           required
           error={actionState?.error?.name}
+        />
+        <DateInput
+          defaultValue={
+            userData.birthDate ? new Date(userData.birthDate) : undefined
+          }
+          name="birthDate"
+          label="Tanggal Lahir"
+          required
+          error={actionState?.error?.birthDate}
+          locale="id"
+          valueFormat="DD MMMM YYYY"
+        />
+        <Radio.Group
+          defaultValue={
+            userData.isMale === null || userData.isMale === undefined
+              ? null
+              : userData.isMale
+                ? "true"
+                : "false"
+          }
+          name="isMale"
+          label="Jenis Kelamin"
+          error={actionState?.error?.isMale}
+          required
+        >
+          <Group mt="xs">
+            <Radio value="true" label="Laki-laki" />
+            <Radio value="false" label="Perempuan" />
+          </Group>
+        </Radio.Group>
+        <NumberInput
+          defaultValue={userData.bodyHeight}
+          name="bodyHeight"
+          label="Tinggi Badan (cm)"
+          required
+          min={100}
+          max={250}
+          error={actionState?.error?.bodyHeight}
+        />
+        <NumberInput
+          defaultValue={userData.bodyWeight}
+          name="bodyWeight"
+          label="Berat Badan (kg)"
+          required
+          min={30}
+          max={200}
+          error={actionState?.error?.bodyWeight}
         />
         <Select
           label="Provinsi Domisili"

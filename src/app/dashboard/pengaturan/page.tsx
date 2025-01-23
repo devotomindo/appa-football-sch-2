@@ -1,3 +1,4 @@
+import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { UserProfileUpdateForm } from "@/features/user/components/form/user-profile-update-form";
 import { authGuard } from "@/features/user/guards/auth-guard";
 import { redirect } from "next/navigation";
@@ -14,8 +15,9 @@ export default async function PengaturanPage() {
   // END OF AUTH GUARD
 
   return (
-    <div>
+    <DashboardSectionContainer>
+      <h1 className="text-2xl font-bold">Pengaturan Profil</h1>
       <UserProfileUpdateForm userData={userData} />
-    </div>
+    </DashboardSectionContainer>
   );
 }
