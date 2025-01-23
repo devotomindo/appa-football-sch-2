@@ -70,54 +70,12 @@ export async function createEnskilopediPemain(
   }
 
   try {
-    // const supabase = await createServerClient();
-
-    // Upload gambarPosisiMenyerang
-    // const menyerangUrls: Array<{ publicUrl: string }> = [];
-    // for (const file of validationResult.data.gambarPosisiMenyerang) {
-    //   const compressedImage = await imageCompressor(file);
-
-    //   const { error: uploadError, data } = await supabase.storage
-    //     .from("offense_illustration")
-    //     .upload(`${compressedImage.name}`, compressedImage, {
-    //       upsert: true,
-    //     });
-
-    //   if (uploadError)
-    //     throw new Error("Gagal mengupload gambar ilustrasi posisi menyerang");
-
-    //   const { data: publicUrl } = supabase.storage
-    //     .from("offense_illustration")
-    //     .getPublicUrl(`${data.path}`);
-
-    //   menyerangUrls.push(publicUrl);
-    // }
     const { URLs: gambarPosisiMenyerangURLs } =
       await multipleImageUploaderAndGetURL(
         validationResult.data.gambarPosisiMenyerang,
         "offense_illustration",
       );
 
-    // Upload gambarPosisiBertahan
-    // const bertahanUrls: Array<{ publicUrl: string }> = [];
-    // for (const file of validationResult.data.gambarPosisiBertahan) {
-    //   const compressedImage = await imageCompressor(file);
-
-    //   const { error: uploadError, data } = await supabase.storage
-    //     .from("defense_illustration")
-    //     .upload(`${compressedImage.name}`, compressedImage, {
-    //       upsert: true,
-    //     });
-
-    //   if (uploadError)
-    //     throw new Error("Gagal mengupload gambar ilustrasi posisi bertahan");
-
-    //   const { data: publicUrl } = supabase.storage
-    //     .from("defense_illustration")
-    //     .getPublicUrl(`${data.path}`);
-
-    //   bertahanUrls.push(publicUrl);
-    // }
     const { URLs: gambarPosisiBertahanURLs } =
       await multipleImageUploaderAndGetURL(
         validationResult.data.gambarPosisiBertahan,
@@ -169,17 +127,6 @@ export async function createEnskilopediPemain(
 
       // Insert formation-position relationships
       for (let i = 0; i < positionRecords.length; i++) {
-        // console.log({
-        //   id: uuidv7(),
-        //   formationId: idFormations,
-        //   positionId: positionRecords[i].id,
-        //   characteristics: validationResult.data.karakter[i],
-        //   offenseDescription: validationResult.data.posisiMenyerang[i],
-        //   offenseIllustrationPath: gambarPosisiMenyerangURLs[i].publicUrl,
-        //   defenseDescription: validationResult.data.posisiBertahan[i],
-        //   defenseIllustrationPath: gambarPosisiBertahanURLs[i].publicUrl,
-        //   positionNumber: i + 1,
-        // });
         await tx.insert(formationPositioning).values({
           id: uuidv7(),
           formationId: idFormations,

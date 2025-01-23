@@ -45,30 +45,30 @@ const daftarPosisi = [
   {
     value: "Posisi #3",
   },
-  // {
-  //   value: "Posisi #4",
-  // },
-  // {
-  //   value: "Posisi #5",
-  // },
-  // {
-  //   value: "Posisi #6",
-  // },
-  // {
-  //   value: "Posisi #7",
-  // },
-  // {
-  //   value: "Posisi #8",
-  // },
-  // {
-  //   value: "Posisi #9",
-  // },
-  // {
-  //   value: "Posisi #10",
-  // },
-  // {
-  //   value: "Posisi #11",
-  // },
+  {
+    value: "Posisi #4",
+  },
+  {
+    value: "Posisi #5",
+  },
+  {
+    value: "Posisi #6",
+  },
+  {
+    value: "Posisi #7",
+  },
+  {
+    value: "Posisi #8",
+  },
+  {
+    value: "Posisi #9",
+  },
+  {
+    value: "Posisi #10",
+  },
+  {
+    value: "Posisi #11",
+  },
 ];
 
 export function EnsiklopediPosisiPemainForm() {
