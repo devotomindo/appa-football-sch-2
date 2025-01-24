@@ -162,17 +162,34 @@ export const cities = pgTable("_cities", {
 });
 // END OF LOCATION
 
+// Training Procedure
+export const tools = pgTable("tools", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  name: text("name").notNull(),
+  imagePath: text("image_path"),
+});
+
 export const trainingProcedure = pgTable("training_procedure", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   name: text("name").notNull(),
-  tools: text("tools").array().notNull(),
   procedure: text("procedure").array().notNull(),
   minFieldSize: text("min_field_size"),
   videoPath: text("video_path").notNull(),
   groupSize: bigint("group_size", { mode: "number" }).notNull(),
   description: text("description").notNull(),
+});
+
+export const trainingTools = pgTable("training_tools", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  trainingId: uuid("training_id").references(() => trainingProcedure.id),
+  toolId: uuid("tool_id").references(() => tools.id),
+  minCount: smallint("min_count").notNull(),
 });
 
 export const formationPositioning = pgTable("formation_positioning", {

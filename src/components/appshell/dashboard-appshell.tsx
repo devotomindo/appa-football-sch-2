@@ -22,6 +22,7 @@ import { useDisclosure } from "@mantine/hooks";
 import {
   IconHome,
   IconHomeFilled,
+  IconTool,
   IconUserCircle,
   IconUsersGroup,
 } from "@tabler/icons-react";
@@ -408,6 +409,13 @@ export function DashboardAppshell({
                   path="admin/referral-code-voucher"
                   toggle={toggle}
                   leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                  pathname={pathname}
+                />
+                <NavLinkComponent
+                  label="Daftar Alat Latihan"
+                  path="admin/daftar-alat-latihan"
+                  toggle={toggle}
+                  leftSection={<IconTool size="1.25rem" stroke={1.5} />}
                   pathname={pathname}
                 />
                 <div>

@@ -1,9 +1,8 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { trainingProcedure } from "@/db/drizzle/schema";
+import { trainingProcedure, trainingTools } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
-import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -16,100 +15,171 @@ const ACCEPTED_VIDEO_TYPES = [
   "video/x-msvideo",
 ];
 
-export async function CreateLatihanKelompok(
+const toolSchema = z.object({
+  id: z.string().min(1, "Pilih alat latihan"),
+  quantity: z
+    .number()
+    .min(1, "Jumlah alat minimal 1")
+    .max(100, "Jumlah alat maksimal 100"),
+});
+
+export async function createLatihanKelompok(
   prevState: any,
   formData: FormData,
 ) {
-  const db = createDrizzleConnection();
+  const noToolsNeeded = formData.get("no_tools_needed") === "true";
+  const toolsJson = formData.get("tools");
 
-  const validationResult = await zfd
-    .formData({
-      video: zfd.file(
-        z
-          .instanceof(File)
-          .refine(
-            (file) => file.size <= MAX_FILE_SIZE,
-            "File size must be less than 500MB",
-          )
-          .refine(
-            (file) => ACCEPTED_VIDEO_TYPES.includes(file.type),
-            "Only .mp4, .webm, .mov, and .avi formats are supported",
-          ),
-      ),
-      nama: zfd.text(z.string().min(3)),
-      deskripsi: zfd.text(z.string().min(3)),
-      jumlah: zfd.numeric(z.number().min(1)),
-      luas: zfd.text(z.string().min(3)),
-      alat: zfd.repeatable(z.array(z.string().min(1))),
-      langkah: zfd.repeatable(z.array(z.string().min(1))),
-    })
-    .safeParseAsync(formData);
+  // Extract langkah from formData first
+  const formEntries = Array.from(formData.entries());
+  const langkah = formEntries
+    .filter(([key]) => key.startsWith("langkah["))
+    .map(([_, value]) => value.toString());
 
-  // validasi error
+  const baseSchema = {
+    video: zfd.file(
+      z
+        .instanceof(File)
+        .refine(
+          (file) => file.size <= MAX_FILE_SIZE,
+          "Ukuran video maksimal 500MB",
+        )
+        .refine(
+          (file) => ACCEPTED_VIDEO_TYPES.includes(file.type),
+          "Format video harus .mp4, .webm, .mov, atau .avi",
+        ),
+    ),
+    nama: zfd.text(z.string().min(3).max(100)),
+    deskripsi: zfd.text(z.string().min(3).max(500)),
+    jumlah: zfd.numeric(z.number().min(2).max(50)),
+    luas: zfd.text(z.string().min(3).max(50)),
+  };
+
+  // Parse tools JSON before validation
+  let tools = [];
+  if (!noToolsNeeded && toolsJson) {
+    try {
+      tools = JSON.parse(toolsJson.toString());
+    } catch (e) {
+      return {
+        error: {
+          tools: ["Invalid tools data"],
+        },
+      };
+    }
+  }
+
+  const validationSchema = z.object({
+    ...baseSchema,
+    tools: noToolsNeeded
+      ? z.array(toolSchema).optional()
+      : z
+          .array(toolSchema)
+          .min(1, "Jika tidak membutuhkan alat, klik tombol di sebelah kanan"),
+    langkah: z
+      .array(z.string().min(3, "Langkah minimal 3 karakter"))
+      .min(1, "Minimal satu langkah diperlukan"),
+  });
+
+  const validationResult = await validationSchema.safeParseAsync({
+    ...Object.fromEntries(formData.entries()),
+    tools,
+    langkah, // Pass the extracted langkah array
+  });
+
   if (!validationResult.success) {
     const errorFormatted = validationResult.error.format() as any;
 
     return {
       error: {
+        general: "Terjadi kesalahan. Periksa kembali data yang diinput",
         video: errorFormatted.video?._errors,
         nama: errorFormatted.nama?._errors,
         deskripsi: errorFormatted.deskripsi?._errors,
         jumlah: errorFormatted.jumlah?._errors,
         luas: errorFormatted.luas?._errors,
-        alat: errorFormatted.alat?._errors,
         langkah: errorFormatted.langkah?._errors,
+        tools: errorFormatted.tools?._errors,
       },
     };
   }
 
-  // const { storage } = createBrowserClient();
-  const file = validationResult.data.video;
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
   try {
+    const db = createDrizzleConnection();
     const supabase = await createServerClient();
+    let result: any;
 
-    const { error: uploadError } = await supabase.storage
-      .from("group_exercise_videos")
-      .upload(`videos/${fileName}`, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type,
-      });
-
-    if (uploadError) throw uploadError;
-
-    // Get public URL for the uploaded video
-    const { data: publicUrl } = supabase.storage
-      .from("group_exercise_videos")
-      .getPublicUrl(`videos/${fileName}`);
-
-    // Continue with database transaction
     await db.transaction(async (tx) => {
-      await tx.insert(trainingProcedure).values({
-        id: uuidv7(),
-        name: validationResult.data.nama,
-        tools: validationResult.data.alat,
-        procedure: validationResult.data.langkah,
-        videoPath: publicUrl.publicUrl, // Store the public URL
-        minFieldSize: validationResult.data.luas,
-        groupSize: validationResult.data.jumlah,
-        description: validationResult.data.deskripsi,
-      });
+      const { video, nama, deskripsi, jumlah, luas, tools, langkah } =
+        validationResult.data;
+
+      // Generate ID for the new latihan kelompok
+      const id = uuidv7();
+
+      // Upload video to storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("group_exercise_videos")
+        .upload(`videos/${id}`, video);
+
+      // Handle on upload error
+      if (uploadError || !uploadData) {
+        result = {
+          error: {
+            general: "Terjadi kesalahan saat mengunggah video",
+          },
+        };
+        return;
+      }
+
+      // Insert new latihan kelompok
+      const insertedData = await tx
+        .insert(trainingProcedure)
+        .values({
+          id,
+          name: nama,
+          description: deskripsi,
+          groupSize: jumlah,
+          minFieldSize: luas,
+          procedure: langkah, // This will now contain all steps
+          videoPath: uploadData.fullPath,
+        })
+        .returning({ id: trainingProcedure.id })
+        .then((res) => res[0]);
+
+      // Use returned ID to confirm successful insert
+      if (!insertedData) {
+        result = {
+          error: {
+            general: "Terjadi kesalahan saat membuat latihan kelompok",
+          },
+        };
+        return;
+      }
+
+      // Insert tools if tools exist
+      if (tools && tools.length > 0) {
+        const toolsData = tools.map((tool) => ({
+          id: uuidv7(),
+          trainingId: insertedData.id,
+          toolId: tool.id,
+          minCount: tool.quantity,
+        }));
+
+        await tx.insert(trainingTools).values(toolsData);
+      }
+
+      result = {
+        message: "Latihan kelompok berhasil dibuat",
+      };
     });
-  } catch (error: any) {
-    console.error("Upload error:", error);
+
+    return result;
+  } catch (error) {
+    console.error(error);
     return {
-      success: false,
-      message: error.message || "Gagal mengupload video",
+      error: {
+        general: "Terjadi kesalahan saat membuat latihan kelompok",
+      },
     };
   }
-
-  revalidatePath("/dashboard/admin/daftar-latihan-kelompok");
-
-  return {
-    success: true,
-    message: "Data berhasil disimpan!",
-  };
 }

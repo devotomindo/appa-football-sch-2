@@ -30,9 +30,9 @@ export function DaftarLatihanKelompokView() {
               className="flex items-start gap-20 rounded-lg border-2 p-16 shadow-lg"
             >
               <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
-                {item.videoPath ? (
+                {item.videoUrl ? (
                   <video
-                    src={item.videoPath}
+                    src={item.videoUrl}
                     controls
                     className="h-full w-full object-cover"
                   >
