@@ -3,6 +3,7 @@
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { trainingProcedure, trainingTools } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
+import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -23,10 +24,7 @@ const toolSchema = z.object({
     .max(100, "Jumlah alat maksimal 100"),
 });
 
-export async function createLatihanKelompok(
-  prevState: any,
-  formData: FormData,
-) {
+export async function createLatihan(prevState: any, formData: FormData) {
   const noToolsNeeded = formData.get("no_tools_needed") === "true";
   const toolsJson = formData.get("tools");
 
@@ -172,6 +170,8 @@ export async function createLatihanKelompok(
         message: "Latihan kelompok berhasil dibuat",
       };
     });
+
+    revalidatePath("/dashboard/admin/daftar-latihan-kelompok");
 
     return result;
   } catch (error) {

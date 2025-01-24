@@ -20,23 +20,48 @@ import {
   IconPlus,
   IconUpload,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
-import { redirect, useRouter } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
 import { startTransition, useActionState, useEffect, useState } from "react";
-import { createLatihanKelompok } from "../../actions/create-latihan-kelompok";
+import { createLatihan } from "../actions/create-latihan";
+import { GetLatihanByIdResponse } from "../actions/get-latihan-by-id";
+import { getLatihanByIdQueryOptions } from "../actions/get-latihan-by-id/query-options";
+import { updateLatihan } from "../actions/update-latihan";
 
-export function DaftarLatihanKelompokForm() {
+export function CreateOrUpdateLatihanForm({
+  isIndividual,
+  latihanData,
+  onSuccess,
+}: {
+  isIndividual: boolean;
+  latihanData?: GetLatihanByIdResponse;
+  onSuccess?: () => void;
+}) {
   // Fetch alat latihan
   const alatLatihan = useQuery(getAllAlatLatihanWithoutImageQueryOptions());
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [videoPreview, setVideoPreview] = useState<string | null>(null);
-  const [alat, setAlat] = useState<Array<{ id: string; quantity: number }>>([
-    { id: "", quantity: 1 },
-  ]);
-  const [langkah, setLangkah] = useState<string[]>([""]);
-  const [needsTools, setNeedsTools] = useState(true);
-  const router = useRouter();
+  const [videoPreview, setVideoPreview] = useState<string | null>(
+    latihanData?.videoUrl || null,
+  );
+  const [alat, setAlat] = useState<Array<{ id: string; quantity: number }>>(
+    latihanData?.tools?.length
+      ? latihanData.tools.map((tool) => ({
+          id: tool.id ?? "",
+          quantity: tool.minCount ?? 1,
+        }))
+      : [{ id: "", quantity: 1 }],
+  );
+  const [langkah, setLangkah] = useState<string[]>(
+    latihanData?.procedure.length
+      ? latihanData.procedure.map((step) => {
+          return step;
+        })
+      : [""],
+  );
+  const [needsTools, setNeedsTools] = useState(
+    latihanData?.tools?.length ? true : false,
+  );
 
   const handleVideoChange = (file: File | null) => {
     setVideoFile(file);
@@ -99,15 +124,25 @@ export function DaftarLatihanKelompokForm() {
   };
 
   const [actionState, actionsDispatch, isActionPending] = useActionState(
-    createLatihanKelompok,
+    latihanData ? updateLatihan : createLatihan,
     undefined,
   );
+
+  const queryClient = useQueryClient();
 
   const actionEffectEvent = useEffectEvent((state: typeof actionState) => {
     if (state) {
       formStateNotificationHelper({
         state,
         successCallback: () => {
+          onSuccess?.();
+
+          if (latihanData) {
+            queryClient.invalidateQueries(
+              getLatihanByIdQueryOptions(latihanData.id),
+            );
+          }
+
           redirect("/dashboard/admin/daftar-latihan-kelompok");
         },
       });
@@ -142,6 +177,10 @@ export function DaftarLatihanKelompokForm() {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
+        if (isIndividual) {
+          formData.append("jumlah", "1");
+        }
+
         // Only include non-empty tool entries
         if (needsTools) {
           const validTools = alat.filter((tool) => tool.id !== "");
@@ -150,10 +189,16 @@ export function DaftarLatihanKelompokForm() {
           formData.append("no_tools_needed", "true");
         }
 
+        // For Edits
+        if (latihanData) {
+          formData.append("id", latihanData.id);
+        }
+
         startTransition(() => actionsDispatch(formData));
       }}
     >
       <TextInput
+        defaultValue={latihanData?.name}
         label="Nama Metode Latihan"
         placeholder="Masukkan nama metode latihan"
         required
@@ -165,6 +210,7 @@ export function DaftarLatihanKelompokForm() {
       />
 
       <Textarea
+        defaultValue={latihanData?.description}
         label="Deskripsi"
         placeholder="Masukkan deskripsi metode latihan"
         required
@@ -177,19 +223,23 @@ export function DaftarLatihanKelompokForm() {
         error={actionState?.error?.deskripsi}
       />
 
-      <NumberInput
-        label="Jumlah Peserta"
-        placeholder="Masukkan jumlah peserta"
-        required
-        min={2}
-        withAsterisk={false}
-        name="jumlah"
-        className="shadow-lg"
-        radius={"md"}
-        error={actionState?.error?.jumlah}
-      />
+      {!isIndividual && (
+        <NumberInput
+          defaultValue={latihanData?.groupSize}
+          label="Jumlah Peserta"
+          placeholder="Masukkan jumlah peserta"
+          required
+          min={2}
+          withAsterisk={false}
+          name="jumlah"
+          className="shadow-lg"
+          radius={"md"}
+          error={actionState?.error?.jumlah}
+        />
+      )}
 
       <TextInput
+        defaultValue={latihanData?.minFieldSize ?? ""}
         label="Luas Lapangan"
         placeholder="Masukkan luas lapangan"
         required

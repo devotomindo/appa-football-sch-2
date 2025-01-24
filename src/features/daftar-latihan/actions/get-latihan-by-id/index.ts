@@ -7,6 +7,8 @@ import { getStorageBucketAndPath } from "@/lib/utils/supabase";
 import { eq, getTableColumns } from "drizzle-orm";
 import { cache } from "react";
 
+export type GetLatihanByIdResponse = Awaited<ReturnType<typeof getLatihanById>>;
+
 export const getLatihanById = cache(async function (id: string) {
   const db = createDrizzleConnection();
   const supabase = await createServerClient();

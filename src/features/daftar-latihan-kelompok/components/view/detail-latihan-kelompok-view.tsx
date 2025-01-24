@@ -1,6 +1,6 @@
 "use client";
 
-import { getLatihanByIdQueryOptions } from "@/features/daftar-latihan-kelompok/actions/get-latihan-by-id/query-options";
+import { getLatihanByIdQueryOptions } from "@/features/daftar-latihan/actions/get-latihan-by-id/query-options";
 import { Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";

@@ -57,6 +57,12 @@ export function DaftarLatihanKelompokView() {
                 >
                   Selengkapnya
                 </Link>
+                <Link
+                  href={`/dashboard/admin/daftar-latihan-kelompok/edit/${item.id}`}
+                  className="w-fit rounded-lg border-2 px-10 py-4 capitalize shadow-xl"
+                >
+                  Edit
+                </Link>
               </div>
             </div>
           ))
