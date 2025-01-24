@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { getAllLatihanKelompokQueryOptions } from "../../actions/get-all-latihan-kelompok/query-options";
@@ -51,18 +52,21 @@ export function DaftarLatihanKelompokView() {
                     ? `${item.description.slice(0, 200)}...`
                     : item.description}
                 </p>
-                <Link
-                  href={`/dashboard/admin/daftar-latihan-kelompok/latihan/${item.id}`}
-                  className="w-fit rounded-lg border-2 px-10 py-4 capitalize shadow-xl"
-                >
-                  Selengkapnya
-                </Link>
-                <Link
-                  href={`/dashboard/admin/daftar-latihan-kelompok/edit/${item.id}`}
-                  className="w-fit rounded-lg border-2 px-10 py-4 capitalize shadow-xl"
-                >
-                  Edit
-                </Link>
+                <div className="flex gap-4">
+                  <Button
+                    component={Link}
+                    href={`/dashboard/admin/daftar-latihan-kelompok/latihan/${item.id}`}
+                  >
+                    Selengkapnya
+                  </Button>
+                  <Button
+                    component={Link}
+                    href={`/dashboard/admin/daftar-latihan-kelompok/edit/${item.id}`}
+                    color="green"
+                  >
+                    Edit
+                  </Button>
+                </div>
               </div>
             </div>
           ))

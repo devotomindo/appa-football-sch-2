@@ -1,8 +1,9 @@
 "use client";
 
+import { getAllLatihanIndividuQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
+import { Button } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { getAllLatihanIndividuQueryOptions } from "../../actions/get-all-latihan-individu/query-options";
 
 export function DaftarLatihanIndividuView() {
   const { data, isLoading } = useQuery(getAllLatihanIndividuQueryOptions());
@@ -30,9 +31,9 @@ export function DaftarLatihanIndividuView() {
               className="flex items-start gap-20 rounded-lg border-2 p-16 shadow-lg"
             >
               <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
-                {item.videoPath ? (
+                {item.videoUrl ? (
                   <video
-                    src={item.videoPath}
+                    src={item.videoUrl}
                     controls
                     className="h-full w-full object-cover"
                   >
@@ -51,12 +52,21 @@ export function DaftarLatihanIndividuView() {
                     ? `${item.description.slice(0, 200)}...`
                     : item.description}
                 </p>
-                <Link
-                  href={`/dashboard/admin/daftar-latihan-individu/latihan/${item.id}`}
-                  className="w-fit rounded-lg border-2 px-10 py-4 capitalize shadow-xl"
-                >
-                  Selengkapnya
-                </Link>
+                <div className="flex gap-4">
+                  <Button
+                    component={Link}
+                    href={`/dashboard/admin/daftar-latihan-individu/latihan/${item.id}`}
+                  >
+                    Selengkapnya
+                  </Button>
+                  <Button
+                    component={Link}
+                    href={`/dashboard/admin/daftar-latihan-individu/edit/${item.id}`}
+                    color="green"
+                  >
+                    Edit
+                  </Button>
+                </div>
               </div>
             </div>
           ))

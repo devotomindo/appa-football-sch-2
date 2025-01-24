@@ -1,7 +1,7 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { DetailLatihanIndividuView } from "@/features/daftar-latihan-individu/components/view/detail-latihan-individu-view";
+import { EditLatihanIndividuView } from "@/features/daftar-latihan-individu/components/view/edit-latihan-individu-view";
 
-export default async function DetailLatihanIndividu({
+export default async function EditLatihanKelompok({
   params,
 }: {
   params: Promise<{
@@ -12,7 +12,7 @@ export default async function DetailLatihanIndividu({
 
   return (
     <DashboardSectionContainer>
-      <DetailLatihanIndividuView latihanId={id} />
+      <EditLatihanIndividuView latihanId={id} />
     </DashboardSectionContainer>
   );
 }

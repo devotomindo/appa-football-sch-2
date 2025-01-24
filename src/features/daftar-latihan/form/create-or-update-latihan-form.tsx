@@ -138,12 +138,17 @@ export function CreateOrUpdateLatihanForm({
           onSuccess?.();
 
           if (latihanData) {
+            // Invalidate the cache so that the updated data will be fetched again
             queryClient.invalidateQueries(
               getLatihanByIdQueryOptions(latihanData.id),
             );
           }
 
-          redirect("/dashboard/admin/daftar-latihan-kelompok");
+          if (isIndividual) {
+            redirect("/dashboard/admin/daftar-latihan-individu");
+          } else {
+            redirect("/dashboard/admin/daftar-latihan-kelompok");
+          }
         },
       });
     }
@@ -176,6 +181,9 @@ export function CreateOrUpdateLatihanForm({
       onSubmit={(e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
+
+        // Add isIndividual flag to formData
+        formData.append("isIndividual", isIndividual.toString());
 
         if (isIndividual) {
           formData.append("jumlah", "1");

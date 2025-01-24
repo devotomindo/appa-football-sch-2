@@ -1,5 +1,5 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { DaftarLatihanIndividuForm } from "@/features/daftar-latihan-individu/components/form/daftar-latihan-individu-form";
+import { CreateOrUpdateLatihanForm } from "@/features/daftar-latihan/form/create-or-update-latihan-form";
 import { Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import Link from "next/link";
@@ -18,7 +18,7 @@ export default function TambahLatihanIndividu() {
       <h1 className="my-8 text-2xl font-semibold capitalize">
         metode latihan baru
       </h1>
-      <DaftarLatihanIndividuForm />
+      <CreateOrUpdateLatihanForm isIndividual={true} />
     </DashboardSectionContainer>
   );
 }

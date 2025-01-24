@@ -49,7 +49,11 @@ export async function createLatihan(prevState: any, formData: FormData) {
     ),
     nama: zfd.text(z.string().min(3).max(100)),
     deskripsi: zfd.text(z.string().min(3).max(500)),
-    jumlah: zfd.numeric(z.number().min(2).max(50)),
+    jumlah: zfd.numeric(
+      formData.get("isIndividual") === "true"
+        ? z.number().min(1).max(1)
+        : z.number().min(2).max(50),
+    ),
     luas: zfd.text(z.string().min(3).max(50)),
   };
 
