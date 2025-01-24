@@ -1,9 +1,9 @@
 "use client";
 
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { DashboardViewProps } from "@/features/dashboard/view/dashboard-view";
 import { SchoolBanner } from "@/features/school/components/school-banner";
 import { useSchoolInfo } from "@/features/school/hooks/use-school-info";
+import { SchoolSession } from "@/lib/session";
 import { useSchoolStore } from "@/stores/school-store";
 import { Button, Tabs } from "@mantine/core";
 import { IconClipboard } from "@tabler/icons-react";
@@ -40,9 +40,10 @@ function TabsPanel({
 }
 
 export function AsesmenPemainView({
-  userData,
   initialSchoolSession,
-}: DashboardViewProps) {
+}: {
+  initialSchoolSession: SchoolSession | null;
+}) {
   const { selectedSchool, hydrate, isHydrating } = useSchoolStore();
   const { data: schoolInfo } = useSchoolInfo(selectedSchool?.id ?? "");
   // Consider it loading during hydration or when waiting for school info

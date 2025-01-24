@@ -31,7 +31,7 @@ export const getLatihanById = cache(async function (id: string) {
       if (res.length === 0) return null;
 
       // Get base training data from first result
-      const { tools: _, ...baseTraining } = res[0];
+      const { ...baseTraining } = res[0];
 
       // Fetch public url for video
       const videoPath = baseTraining.videoPath;

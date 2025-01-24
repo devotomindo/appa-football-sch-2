@@ -33,7 +33,7 @@ export async function updateLatihan(prevState: any, formData: FormData) {
   const formEntries = Array.from(formData.entries());
   const langkah = formEntries
     .filter(([key]) => key.startsWith("langkah["))
-    .map(([_, value]) => value.toString());
+    .map(([, value]) => value.toString());
 
   const baseSchema = {
     id: zfd.text(z.string().uuid()),
@@ -53,7 +53,8 @@ export async function updateLatihan(prevState: any, formData: FormData) {
   if (!noToolsNeeded && toolsJson) {
     try {
       tools = JSON.parse(toolsJson.toString());
-    } catch (e) {
+    } catch (error) {
+      console.error(error);
       return {
         error: {
           tools: ["Invalid tools data"],

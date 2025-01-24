@@ -49,10 +49,7 @@ export async function updateUser(prevState: any, formData: FormData) {
   try {
     await db.transaction(async (tx) => {
       // update user
-      const userProfileData: Omit<
-        InferInsertModel<typeof userProfiles>,
-        "id"
-      > = {
+      const userProfileData: Partial<InferInsertModel<typeof userProfiles>> = {
         name: validationResult.data.name,
         updatedAt: new Date(),
       };
