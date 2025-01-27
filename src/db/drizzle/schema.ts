@@ -3,6 +3,7 @@ import {
   boolean,
   date,
   jsonb,
+  numeric,
   pgSchema,
   pgTable,
   smallint,
@@ -228,7 +229,7 @@ export const gradeMetrics = pgTable("grade_metrics", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  name: text("name"),
+  metric: text("metric"),
 });
 
 export const assessments = pgTable("assessments", {
@@ -236,11 +237,36 @@ export const assessments = pgTable("assessments", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   name: text("name"),
-  desription: text("description"),
+  description: text("description"),
   mainGoal: text("main_goal"),
   procedure: text("procedure").array(),
   gradeMetricId: uuid("grade_metric_id").references(() => gradeMetrics.id),
   isHigherGradeBetter: boolean("is_higher_grade_better"),
   category: text("category"),
   illustrationPath: text("illustration_path").array(),
+});
+
+export const proPlayers = pgTable("pro_players", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  playersName: text("player_name"),
+  age: bigint("age", { mode: "number" }),
+  photoPath: text("photo_path"),
+  positionId: uuid("position_id").references(() => positions.id),
+  weight: bigint("weight", { mode: "number" }),
+  height: bigint("height", { mode: "number" }),
+  currentTeam: text("current_team"),
+  countryId: bigint("country_id", { mode: "number" }).references(
+    () => countries.id,
+  ),
+});
+
+export const proPlayerAssessments = pgTable("pro_player_assessments", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  proPlayerId: uuid("pro_player_id").references(() => proPlayers.id),
+  assessmentId: uuid("assessment_id").references(() => assessments.id),
+  score: numeric("score"),
 });

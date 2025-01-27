@@ -4,7 +4,7 @@ import { Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import Link from "next/link";
 
-export default function TambahAsesmen() {
+export default function CreateAsesmen() {
   return (
     <DashboardSectionContainer>
       <Link href={"/dashboard/admin/data-asesmen"}>
@@ -16,7 +16,7 @@ export default function TambahAsesmen() {
         </Button>
       </Link>
       <h1 className="my-8 text-2xl font-bold capitalize">data asesmen baru</h1>
-      <TambahAsesmenForm state={"create"} />
+      <TambahAsesmenForm state="create" />
     </DashboardSectionContainer>
   );
 }

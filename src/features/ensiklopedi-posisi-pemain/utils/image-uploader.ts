@@ -16,11 +16,7 @@ export async function singleImageUploaderAndGetURL(image: File, path: string) {
 
   if (error) throw new Error(`Gagal mengupload gambar ${path}`);
 
-  const { data: url } = supabase.storage
-    .from("default_formation_image")
-    .getPublicUrl(`${data.path}`);
-
-  return { url };
+  return data.fullPath;
 }
 
 export async function multipleImageUploaderAndGetURL(
@@ -29,7 +25,7 @@ export async function multipleImageUploaderAndGetURL(
 ) {
   const supabase = await createServerClient();
 
-  const URLs: Array<{ publicUrl: string }> = [];
+  const URLs: Array<{ fullPath: string }> = [];
 
   for (const file of images) {
     const compressedImage = await imageCompressor(file);
@@ -42,12 +38,21 @@ export async function multipleImageUploaderAndGetURL(
 
     if (uploadError) throw new Error(`Gagal mengupload gambar ${path}`);
 
-    const { data: publicUrl } = supabase.storage
-      .from(path)
-      .getPublicUrl(`${data.path}`);
-
-    URLs.push(publicUrl);
+    URLs.push({ fullPath: data.fullPath });
   }
 
   return { URLs };
+}
+
+export async function getImageURL(fullPath: string) {
+  const supabase = await createServerClient();
+  const [folderName, fileName] = fullPath.split("/");
+
+  const { data } = supabase.storage.from(folderName).getPublicUrl(fileName);
+
+  if (!data) {
+    throw new Error(`Gagal mengambil gambar ${fullPath}`);
+  }
+
+  return data.publicUrl;
 }

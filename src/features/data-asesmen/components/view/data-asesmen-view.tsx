@@ -1,20 +1,41 @@
 "use client";
 
 import { Carousel } from "@mantine/carousel";
-import { Button } from "@mantine/core";
-import { IconNotes } from "@tabler/icons-react";
+import { Button, Modal } from "@mantine/core";
+import { IconEdit, IconNotes, IconTrash } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { getAllAssesmentQueryOptions } from "../../actions/get-all-assesment/query-options";
+import { getAllProPlayersQueryOptions } from "../../actions/get-all-pro-players/query-options";
+import { DeleteAsesmenForm } from "../form/delete-asesmen-form/delete-asesmen-form";
 
-export function Kotak({ id }: { id: number }) {
+interface playerDataInterface {
+  photoPath: string | null;
+  positionName: string | null;
+  id: string;
+  playersName: string | null;
+  age: number | null;
+  team: string | null;
+  countryName: string | null;
+}
+
+export function PlayerFrame({
+  playerData,
+}: {
+  playerData: playerDataInterface;
+}) {
   return (
-    <Link href={`/dashboard/admin/data-asesmen/detail-pemain-pro/${id}`}>
+    <Link
+      href={`/dashboard/admin/data-asesmen/detail-pemain-pro/${playerData.id}`}
+    >
       <div className="relative h-72 w-60 rounded-xl border-2 shadow-xl">
         {/* image */}
         <div className="h-3/4 w-full">
           <div className="relative flex h-full w-full items-center justify-center">
             <Image
-              src={"/messi.png"}
+              src={playerData.photoPath || "/messi.png"}
               alt=""
               width={500}
               height={500}
@@ -25,10 +46,14 @@ export function Kotak({ id }: { id: number }) {
         {/* text */}
         <div className="flex h-1/4 w-full flex-col justify-center rounded-bl-xl rounded-br-xl bg-[#333333] px-4 text-white">
           <div className="flex justify-between">
-            <p className="text-sm font-bold capitalize">lionel messi</p>
-            <p className="text-sm uppercase">cf</p>
+            <p className="text-sm font-bold capitalize">
+              {playerData.playersName}
+            </p>
+            <p className="text-sm uppercase">{playerData.positionName}</p>
           </div>
-          <p className="text-xs font-thin capitalize">argentina - fc dallas</p>
+          <p className="text-xs font-thin capitalize">
+            {playerData.countryName} - {playerData.team}
+          </p>
         </div>
       </div>
     </Link>
@@ -36,15 +61,21 @@ export function Kotak({ id }: { id: number }) {
 }
 
 export function DataAsesmenView() {
+  const { data: allAssessmentData, isLoading: allAssessmentIsLoading } =
+    useQuery(getAllAssesmentQueryOptions());
+  const { data: allProPlayersData, isLoading: allProPlayersIsLoading } =
+    useQuery(getAllProPlayersQueryOptions());
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold capitalize">
           data hasil asesmen pemain pro
         </h1>
-        <Link href={"/dashboard/admin/data-asesmen/tambah/pemain-pro"}>
+        <Link href={"/dashboard/admin/data-asesmen/tambah-pemain-pro"}>
           <Button className="!h-12 !w-80 !rounded-lg !bg-green-500 capitalize text-white hover:!bg-green-600 focus-visible:outline-2">
-            tambahkan data
+            tambahkan data pemain pro
           </Button>
         </Link>
       </div>
@@ -81,17 +112,21 @@ export function DataAsesmenView() {
             },
           }}
         >
-          {[...Array(8)].map((_, i) => (
-            <Carousel.Slide key={i}>
-              <Kotak id={i + 1} />
-            </Carousel.Slide>
-          ))}
+          {allProPlayersIsLoading ? (
+            <p>loading....</p>
+          ) : (
+            allProPlayersData?.map((item, i) => (
+              <Carousel.Slide key={i}>
+                <PlayerFrame playerData={item} />
+              </Carousel.Slide>
+            ))
+          )}
         </Carousel>
       </div>
 
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold capitalize">data asesmen</h1>
-        <Link href={"/dashboard/admin/data-asesmen/tambah-asesmen"}>
+        <Link href={"/dashboard/admin/data-asesmen/asesmen/create"}>
           <Button className="!h-12 !w-96 !rounded-lg !bg-green-500 capitalize text-white hover:!bg-green-600 focus-visible:outline-2">
             tambahkan data asesmen baru
           </Button>
@@ -99,17 +134,67 @@ export function DataAsesmenView() {
       </div>
 
       <div className="px-4">
-        {[...Array(5)].map((_, i) => (
-          <Link
-            href={`/dashboard/admin/data-asesmen/detail-asesmen/${i + 1}`}
-            key={i}
-          >
-            <div className="my-8 flex items-center gap-4 border-b-2 border-[#333333] pb-2">
-              <IconNotes />
-              <p className="uppercase">push up 1 menit - fisik</p>
-            </div>
-          </Link>
-        ))}
+        {allAssessmentIsLoading ? (
+          <div>Loading...</div>
+        ) : (
+          allAssessmentData?.map((item) => {
+            return (
+              <div
+                className="my-8 flex items-center justify-between gap-4 border-b-2 border-[#333333] pb-2"
+                key={item.id}
+              >
+                <Link
+                  href={`/dashboard/admin/data-asesmen/detail-asesmen/${item.id}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <IconNotes />
+                    <p className="uppercase">
+                      {item.name} - {item.category}
+                    </p>
+                  </div>
+                </Link>
+                <div className="flex items-center gap-4">
+                  <Link
+                    href={`/dashboard/admin/data-asesmen/asesmen/edit/${item.id}`}
+                  >
+                    <IconEdit size={24} className="text-gray-600" />
+                  </Link>
+                  <Button
+                    variant="subtle"
+                    size="xs"
+                    p={0}
+                    className="h-6 w-6 min-w-0"
+                    onClick={() => {
+                      setIsDeleteModalOpen(true);
+                    }}
+                  >
+                    <IconTrash size={24} className="!text-red-600" />
+                  </Button>
+                </div>
+                <Modal
+                  title="Hapus Asesmen?"
+                  opened={isDeleteModalOpen}
+                  onClose={() => {
+                    setIsDeleteModalOpen(false);
+                  }}
+                  centered
+                  styles={{
+                    overlay: {
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    },
+                  }}
+                >
+                  <DeleteAsesmenForm
+                    onSuccess={() => {
+                      setIsDeleteModalOpen(false);
+                    }}
+                    assesmentId={item.id}
+                  />
+                </Modal>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

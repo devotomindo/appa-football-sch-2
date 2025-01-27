@@ -12,6 +12,7 @@ import {
   PosisiBertahanInput,
   PosisiMenyerangInput,
 } from "@/components/text-input/text-input-with-add-btn";
+import { GetAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
 import {
   Accordion,
   Alert,
@@ -26,7 +27,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
 import { createEnskilopediPemain } from "../../actions/create-ensiklopedi-pemain";
-import { getAllPosisiQueryOptions } from "../../actions/get-all-posisi/queryOptions";
 
 interface PosisiData {
   id: string;
@@ -72,7 +72,7 @@ const daftarPosisi = [
 ];
 
 export function EnsiklopediPosisiPemainForm() {
-  const { data: posisiData } = useQuery(getAllPosisiQueryOptions());
+  const { data: posisiData } = useQuery(GetAllPositionsQueryOptions());
   const router = useRouter();
 
   const [actionState, actionDispatch, isActionPending] = useActionState(

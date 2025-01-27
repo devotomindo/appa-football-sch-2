@@ -1,12 +1,42 @@
 "use client";
 
+import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
+import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import { ActionIcon, Button, Select, Textarea, TextInput } from "@mantine/core";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import {
+  FormEvent,
+  startTransition,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
+import { createAssesment } from "../../actions/create-assesment";
+import { editAssesment } from "../../actions/edit-assesment";
+import { getAssessmentByIdQueryOptions } from "../../actions/get-assesment-by-id/query-options";
 
-export function TambahAsesmenForm() {
-  const [fileNames, setFileNames] = useState<string[]>([]);
-  const [langkahAsesmen, setLangkahAsesmen] = useState(1);
+export function TambahAsesmenForm({
+  state,
+  id,
+}: {
+  state: "create" | "edit";
+  id?: string;
+}) {
+  const { data: assessmentData } = useQuery({
+    ...getAssessmentByIdQueryOptions(id ?? ""),
+    enabled: Boolean(id),
+  });
+  console.log(assessmentData);
+  const router = useRouter();
+  const [langkahAsesmen, setLangkahAsesmen] = useState(
+    assessmentData?.procedure?.length || 1,
+  );
+  const [fileNames, setFileNames] = useState<string[]>(
+    assessmentData?.illustrationPath || [],
+  );
+  console.log(fileNames);
 
   const handleAddAsesmen = () => {
     setLangkahAsesmen((prev) => prev + 1);
@@ -23,6 +53,7 @@ export function TambahAsesmenForm() {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
+    console.log(file);
     if (file) {
       setFileNames((prev) => {
         const newFileNames = [...prev];
@@ -32,8 +63,38 @@ export function TambahAsesmenForm() {
     }
   };
 
+  const [actionState, actionDispatch, actionIsPending] = useActionState(
+    state === "create" ? createAssesment : editAssesment,
+    undefined,
+  );
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    startTransition(() => {
+      const formData = new FormData(e.currentTarget as HTMLFormElement);
+      formData.append("assessmentId", assessmentData?.id ?? "");
+      actionDispatch(formData);
+    });
+  };
+
+  const actionEffectEvent = useEffectEvent((state: typeof actionState) => {
+    if (state) {
+      formStateNotificationHelper({
+        state,
+        successCallback: () => {
+          router.replace("/dashboard/admin/data-asesmen");
+        },
+      });
+    }
+  });
+
+  useEffect(
+    () => actionEffectEvent(actionState),
+    [actionState, actionEffectEvent],
+  );
+
   return (
-    <form className="space-y-8">
+    <form className="space-y-8" onSubmit={handleSubmit}>
       <TextInput
         label="Nama Asesmen"
         required
@@ -41,6 +102,7 @@ export function TambahAsesmenForm() {
         name="nama"
         className="shadow-lg"
         radius={"md"}
+        defaultValue={assessmentData?.name ?? ""}
       />
 
       <div className="flex items-center gap-8">
@@ -57,6 +119,7 @@ export function TambahAsesmenForm() {
           ].sort((a, b) => a.localeCompare(b))}
           searchable
           name="kategori"
+          defaultValue={assessmentData?.category ?? ""}
         />
         <Select
           label="satuan"
@@ -65,6 +128,7 @@ export function TambahAsesmenForm() {
           )}
           searchable
           name="satuan"
+          defaultValue={assessmentData?.grademetricName ?? ""}
         />
       </div>
 
@@ -75,6 +139,7 @@ export function TambahAsesmenForm() {
         name="deskripsi"
         className="shadow-lg"
         radius={"md"}
+        defaultValue={assessmentData?.description ?? ""}
       />
       <TextInput
         label="Tujuan Asesmen"
@@ -83,6 +148,7 @@ export function TambahAsesmenForm() {
         name="tujuan"
         className="shadow-lg"
         radius={"md"}
+        defaultValue={assessmentData?.mainGoal ?? ""}
       />
 
       <div className="space-y-4">
@@ -91,10 +157,11 @@ export function TambahAsesmenForm() {
             <div className="flex-1">
               <TextInput
                 label={index === 0 ? "Langkah Asesmen" : ""}
-                name={`criteria-${index}`}
+                name={`langkahAsesmen[${index}]`}
                 required
                 className="shadow-lg"
                 radius="md"
+                defaultValue={assessmentData?.procedure?.[index] ?? ""}
               />
             </div>
             <div className="w-[400px]">
@@ -106,10 +173,14 @@ export function TambahAsesmenForm() {
               <div className="relative h-[36px] w-full rounded-md border-2 border-dashed">
                 <input
                   type="file"
-                  name={`image-${index}`}
+                  // name={`image[${index}]`}
+                  name={
+                    assessmentData ? `imagePath[${index}]` : `image[${index}]`
+                  }
                   className="absolute inset-0 cursor-pointer opacity-0"
                   accept="image/*"
                   onChange={(e) => handleFileChange(index, e)}
+                  defaultValue={fileNames[index] ?? ""}
                 />
                 <div className="flex h-full items-center justify-center">
                   <p className="truncate px-2 text-sm text-gray-500">
@@ -149,8 +220,10 @@ export function TambahAsesmenForm() {
       <Button
         type="submit"
         className="ml-auto !bg-green-500 hover:!bg-green-600"
+        disabled={actionIsPending}
+        loading={actionIsPending}
       >
-        Simpan
+        {state === "create" ? "Simpan" : "Edit"}
       </Button>
     </form>
   );

@@ -141,7 +141,6 @@ export async function createEnskilopediPemain(
       }
     });
   } catch (error: any) {
-    console.error("Upload error:", error);
     return {
       success: false,
       message: error.message,
