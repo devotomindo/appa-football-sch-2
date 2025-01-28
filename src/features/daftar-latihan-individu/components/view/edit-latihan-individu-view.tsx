@@ -16,12 +16,12 @@ export function EditLatihanIndividuView({ latihanId }: { latihanId: string }) {
 
   return (
     <div className="space-y-8">
-      <Link href={"/dashboard/admin/daftar-latihan-kelompok"}>
+      <Link href={"/dashboard/admin/daftar-latihan-individu"}>
         <Button
           className="flex w-32 flex-row items-center justify-center !bg-[#E92222] capitalize hover:bg-gray-600"
           leftSection={<IconArrowLeft size={18} />}
         >
-          back to daftar latihan kelompok
+          back to daftar latihan individu
         </Button>
       </Link>
 

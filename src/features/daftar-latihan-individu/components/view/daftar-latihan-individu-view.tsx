@@ -5,21 +5,27 @@ import { Button } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
-export function DaftarLatihanIndividuView() {
+export function DaftarLatihanIndividuView({
+  isAdmin = false,
+}: {
+  isAdmin: boolean;
+}) {
   const { data, isLoading } = useQuery(getAllLatihanIndividuQueryOptions());
 
   return (
     <div className="mt-10 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Daftar Latihan Individu</h2>
-        <Link
-          href={
-            "/dashboard/admin/daftar-latihan-individu/tambah-latihan-individu"
-          }
-          className="rounded-lg bg-[#28B826] px-4 py-2 capitalize text-white shadow-xl"
-        >
-          tambahkan latihan baru
-        </Link>
+        {isAdmin && (
+          <Link
+            href={
+              "/dashboard/admin/daftar-latihan-individu/tambah-latihan-individu"
+            }
+            className="rounded-lg bg-[#28B826] px-4 py-2 capitalize text-white shadow-xl"
+          >
+            tambahkan latihan baru
+          </Link>
+        )}
       </div>
       <div className="space-y-4">
         {isLoading ? (
@@ -28,7 +34,7 @@ export function DaftarLatihanIndividuView() {
           data.map((item, index) => (
             <div
               key={index}
-              className="flex items-start gap-20 rounded-lg border-2 p-16 shadow-lg"
+              className="flex items-start gap-20 rounded-lg border-2 p-8 shadow-lg"
             >
               <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
                 {item.videoUrl ? (
@@ -55,17 +61,23 @@ export function DaftarLatihanIndividuView() {
                 <div className="flex gap-4">
                   <Button
                     component={Link}
-                    href={`/dashboard/admin/daftar-latihan-individu/latihan/${item.id}`}
+                    href={
+                      isAdmin
+                        ? `/dashboard/admin/daftar-latihan-individu/latihan/${item.id}`
+                        : `/dashboard/latihan/${item.id}`
+                    }
                   >
                     Selengkapnya
                   </Button>
-                  <Button
-                    component={Link}
-                    href={`/dashboard/admin/daftar-latihan-individu/edit/${item.id}`}
-                    color="green"
-                  >
-                    Edit
-                  </Button>
+                  {isAdmin && (
+                    <Button
+                      component={Link}
+                      href={`/dashboard/admin/daftar-latihan-individu/edit/${item.id}`}
+                      color="green"
+                    >
+                      Edit
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

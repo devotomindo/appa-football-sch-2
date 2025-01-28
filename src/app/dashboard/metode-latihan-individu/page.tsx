@@ -1,3 +1,5 @@
+import { DaftarLatihanIndividuView } from "@/features/daftar-latihan-individu/components/view/daftar-latihan-individu-view";
+
 export default function MetodeLatihanIndividu() {
-  return <div>MetodeLatihanIndividu</div>;
+  return <DaftarLatihanIndividuView isAdmin={false} />;
 }

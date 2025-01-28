@@ -7,10 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 
-export function DetailLatihanKelompokView({
+export function DetailLatihanView({
   latihanId,
+  isAdmin = false,
 }: {
   latihanId: string;
+  isAdmin: boolean;
 }) {
   const { data, isLoading } = useQuery(getLatihanByIdQueryOptions(latihanId));
 
@@ -18,16 +20,28 @@ export function DetailLatihanKelompokView({
     return <p>loading...</p>;
   }
 
+  const isKelompok = data?.groupSize && data.groupSize > 1;
+
   return (
     <div className="space-y-8">
-      <Link href={"/dashboard/admin/daftar-latihan-kelompok"}>
-        <Button
-          className="flex w-32 flex-row items-center justify-center !bg-[#E92222] capitalize hover:bg-gray-600"
-          leftSection={<IconArrowLeft size={18} />}
-        >
-          back to daftar latihan kelompok
-        </Button>
-      </Link>
+      <Button
+        component={Link}
+        href={
+          isAdmin
+            ? isKelompok
+              ? "/dashboard/admin/daftar-latihan-kelompok"
+              : "/admin/daftar-latihan-individu"
+            : isKelompok
+              ? "/dashboard/metode-latihan-kelompok"
+              : "/dashboard/metode-latihan-individu"
+        }
+        className="flex w-32 flex-row items-center justify-center !bg-[#E92222] capitalize"
+        leftSection={<IconArrowLeft size={18} />}
+      >
+        {isKelompok
+          ? "back to daftar latihan kelompok"
+          : "back to daftar latihan individu"}
+      </Button>
       <p className="text-2xl font-bold uppercase">{data?.name}</p>
       <div className="flex items-start gap-10">
         <div className="relative aspect-video w-1/2 rounded-lg">
@@ -35,10 +49,12 @@ export function DetailLatihanKelompokView({
         </div>
         <div className="w-1/2 space-y-4">
           <p className="font-extralight">{data?.description}</p>
-          <div>
-            <p className="text-lg font-bold capitalize">jumlah peserta</p>
-            <p className="font-extralight">{data?.groupSize}</p>
-          </div>
+          {data?.groupSize && data.groupSize > 1 && (
+            <div>
+              <p className="text-lg font-bold capitalize">jumlah peserta</p>
+              <p className="font-extralight">{data.groupSize}</p>
+            </div>
+          )}
         </div>
       </div>
       <div className="space-y-4">

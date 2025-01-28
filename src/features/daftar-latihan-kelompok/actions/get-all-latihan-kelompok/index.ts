@@ -4,7 +4,7 @@ import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { trainingProcedure } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
 import { getStorageBucketAndPath } from "@/lib/utils/supabase";
-import { gte } from "drizzle-orm";
+import { gt } from "drizzle-orm";
 import { cache } from "react";
 
 export const getAllLatihanKelompok = cache(async function () {
@@ -14,7 +14,7 @@ export const getAllLatihanKelompok = cache(async function () {
   return await db
     .select()
     .from(trainingProcedure)
-    .where(gte(trainingProcedure.groupSize, 1))
+    .where(gt(trainingProcedure.groupSize, 1))
     .then((res) =>
       res.map((trainingProcedure) => {
         // Fetch public url
