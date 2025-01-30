@@ -2,17 +2,10 @@
 
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
-import { ActionIcon, Button, Select, Textarea, TextInput } from "@mantine/core";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { Button, Select, Textarea, TextInput } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import {
-  FormEvent,
-  startTransition,
-  useActionState,
-  useEffect,
-  useState,
-} from "react";
+import { FormEvent, startTransition, useActionState, useEffect } from "react";
 import { createAssesment } from "../../actions/create-assesment";
 import { editAssesment } from "../../actions/edit-assesment";
 import { getAssessmentByIdQueryOptions } from "../../actions/get-assesment-by-id/query-options";
@@ -29,36 +22,35 @@ export function TambahAsesmenForm({
     enabled: Boolean(id),
   });
   const router = useRouter();
-  const [langkahAsesmen, setLangkahAsesmen] = useState(
-    assessmentData?.procedure?.length || 1,
-  );
-  const [fileNames, setFileNames] = useState<string[]>(
-    assessmentData?.illustrationPath || [],
-  );
+  // const [langkahAsesmen, setLangkahAsesmen] = useState(
+  //   assessmentData?.procedure?.length || 1,
+  // );
+  // const [fileNames, setFileNames] = useState<string[]>(
+  //   assessmentData?.illustrationPath || [],
+  // );
 
-  const handleAddAsesmen = () => {
-    setLangkahAsesmen((prev) => prev + 1);
-  };
+  // const handleAddAsesmen = () => {
+  //   setLangkahAsesmen((prev) => prev + 1);
+  // };
 
-  const handleRemoveCriteria = () => {
-    if (langkahAsesmen > 1) {
-      setLangkahAsesmen((prev) => prev - 1);
-    }
-  };
+  // const handleRemoveCriteria = () => {
+  //   if (langkahAsesmen > 1) {
+  //     setLangkahAsesmen((prev) => prev - 1);
+  //   }
+  // };
 
-  const handleFileChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFileNames((prev) => {
-        const newFileNames = [...prev];
-        newFileNames[index] = file.name;
-        return newFileNames;
-      });
-    }
-  };
+  // const handleFileChange = (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  // ) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     // setFileNames((prev) => {
+  //     //   const newFileNames = [...prev];
+  //     //   newFileNames[index] = file.name;
+  //     //   return newFileNames;
+  //     // });
+  //   }
+  // };
 
   const [actionState, actionDispatch, actionIsPending] = useActionState(
     state === "create" ? createAssesment : editAssesment,
@@ -116,7 +108,7 @@ export function TambahAsesmenForm({
           ].sort((a, b) => a.localeCompare(b))}
           searchable
           name="kategori"
-          defaultValue={assessmentData?.category ?? ""}
+          // defaultValue={assessmentData?.category ?? ""}
         />
         <Select
           label="satuan"
@@ -148,6 +140,7 @@ export function TambahAsesmenForm({
         defaultValue={assessmentData?.mainGoal ?? ""}
       />
 
+      {/*
       <div className="space-y-4">
         {[...Array(langkahAsesmen)].map((_, index) => (
           <div key={index} className="flex items-end gap-4">
@@ -213,6 +206,8 @@ export function TambahAsesmenForm({
           </div>
         ))}
       </div>
+
+      */}
 
       <Button
         type="submit"

@@ -73,8 +73,8 @@ export function DataAsesmenView() {
   const { data: filteredAssessments, isLoading: allAssessmentIsLoading } =
     useQuery(getAssessmentsByCategoryQueryOptions(selectedCategory));
 
-  const categories =
-    assessmentCategories?.map((category) => category.name) ?? [];
+  // const categories =
+  //   assessmentCategories?.map((category) => category.name) ?? [];
 
   return (
     <div className="space-y-8">

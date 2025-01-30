@@ -17,8 +17,6 @@ export async function getAssessmentsByCategory(categoryId: number | null) {
       name: assessments.name,
       description: assessments.description,
       mainGoal: assessments.mainGoal,
-      procedure: assessments.procedure,
-      illustrationPath: assessments.illustrationPath,
       isHigherGradeBetter: assessments.isHigherGradeBetter,
       categoryId: assessments.categoryId,
       categoryName: assessmentCategories.name,

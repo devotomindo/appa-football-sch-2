@@ -4,7 +4,6 @@ import { getAssessmentByIdQueryOptions } from "@/features/data-asesmen/actions/g
 import { Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import Link from "next/link";
 
 export function DetailAsesmenView({ id }: { id: string }) {
@@ -29,7 +28,7 @@ export function DetailAsesmenView({ id }: { id: string }) {
       <p className="font-light text-[#333333]">{assessmentData?.description}</p>
       <h2 className="text-xl font-bold capitalize">tujuan asesmen</h2>
       <p className="font-extralight">{assessmentData?.mainGoal}</p>
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         {assessmentData?.procedure &&
           assessmentData?.procedure.map((item, i) => (
             <div className="rounded-xl border-2 shadow-xl" key={i}>
@@ -56,7 +55,7 @@ export function DetailAsesmenView({ id }: { id: string }) {
               </div>
             </div>
           ))}
-      </div>
+      </div> */}
     </div>
     // <div className="">tes</div>
   );

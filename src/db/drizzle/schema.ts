@@ -245,13 +245,20 @@ export const assessments = pgTable("assessments", {
   name: text("name"),
   description: text("description"),
   mainGoal: text("main_goal"),
-  procedure: text("procedure").array(),
   gradeMetricId: uuid("grade_metric_id").references(() => gradeMetrics.id),
   isHigherGradeBetter: boolean("is_higher_grade_better"),
   categoryId: bigint("category_id", { mode: "number" }).references(
     () => assessmentCategories.id,
   ),
-  illustrationPath: text("illustration_path").array(),
+});
+
+export const assessment_illustrations = pgTable("assessment_illustrations", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  assessmentId: uuid("assessment_id").references(() => assessments.id),
+  imagePath: text("image_path").notNull(),
+  procedure: text("procedure").notNull(),
 });
 
 export const proPlayers = pgTable("pro_players", {

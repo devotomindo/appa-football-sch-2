@@ -3,7 +3,14 @@
 import { getAllAssessmentCategoriesQueryOptions } from "@/features/data-asesmen/actions/get-all-assessment-categories/query-options";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
-import { ActionIcon, Button, Select, Textarea, TextInput } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  FileInput,
+  Select,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -33,10 +40,11 @@ export function CreateOrUpdateAsesmenForm({
 
   const router = useRouter();
   const [langkahAsesmen, setLangkahAsesmen] = useState(
-    assessmentData?.procedure?.length || 1,
+    assessmentData?.illustrations.length || 1,
   );
   const [fileNames, setFileNames] = useState<string[]>(
-    assessmentData?.illustrationPath || [],
+    // assessmentData?.illustrationPath || [],
+    [],
   );
 
   const handleAddAsesmen = () => {
@@ -136,6 +144,7 @@ export function CreateOrUpdateAsesmenForm({
         className="shadow-lg"
         radius={"md"}
         defaultValue={assessmentData?.name ?? ""}
+        error={actionState?.error?.nama}
       />
 
       <div className="flex items-center gap-8">
@@ -148,6 +157,7 @@ export function CreateOrUpdateAsesmenForm({
           name="kategori"
           value={assessmentCategory}
           onChange={(value) => setAssessmentCategory(value)}
+          error={actionState?.error?.kategori}
         />
         <Select
           label="satuan"
@@ -156,6 +166,7 @@ export function CreateOrUpdateAsesmenForm({
           name="satuan"
           value={gradingMetric}
           onChange={(value) => setGradingMetric(value)}
+          error={actionState?.error?.satuan}
         />
       </div>
 
@@ -167,6 +178,7 @@ export function CreateOrUpdateAsesmenForm({
         className="shadow-lg"
         radius={"md"}
         defaultValue={assessmentData?.description ?? ""}
+        error={actionState?.error?.deskripsi}
       />
       <TextInput
         label="Tujuan Asesmen"
@@ -176,6 +188,7 @@ export function CreateOrUpdateAsesmenForm({
         className="shadow-lg"
         radius={"md"}
         defaultValue={assessmentData?.mainGoal ?? ""}
+        error={actionState?.error?.tujuan}
       />
 
       <div className="space-y-4">
@@ -188,7 +201,7 @@ export function CreateOrUpdateAsesmenForm({
                 required
                 className="shadow-lg"
                 radius="md"
-                defaultValue={assessmentData?.procedure?.[index] ?? ""}
+                // defaultValue={assessmentData?.procedure?.[index] ?? ""}
               />
             </div>
             <div className="w-[400px]">
@@ -198,21 +211,18 @@ export function CreateOrUpdateAsesmenForm({
                 Gambar Ilustrasi
               </label>
               <div className="relative h-[36px] w-full rounded-md border-2 border-dashed">
-                <input
-                  type="file"
-                  name="image[]"
-                  className="absolute inset-0 cursor-pointer opacity-0"
+                <FileInput
+                  name={`images[${index}]`}
                   accept="image/*"
-                  onChange={(e) => handleFileChange(index, e)}
+                  onChange={(file: File | null) => {
+                    handleFileChange(index, {
+                      target: { files: file ? [file] : [] },
+                    } as any);
+                  }}
+                  placeholder={fileNames[index] || "Upload Gambar Ilustrasi"}
+                  className="w-full"
                 />
-                {/* Add a hidden input to preserve existing image paths */}
-                {assessmentData && (
-                  <input
-                    type="hidden"
-                    name="existingImage[]"
-                    value={assessmentData?.illustrationPath?.[index] || ""}
-                  />
-                )}
+
                 <div className="flex h-full items-center justify-center">
                   <p className="truncate px-2 text-sm text-gray-500">
                     {fileNames[index] || "Upload Gambar Ilustrasi"}
