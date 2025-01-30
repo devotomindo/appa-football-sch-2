@@ -3,7 +3,7 @@
 import { createServerClient } from "@/db/supabase/server";
 import { imageCompressor } from "@/lib/utils/image-compressor";
 
-export async function singleImageUploaderAndGetURL(image: File, path: string) {
+export async function singleImageUploader(image: File, path: string) {
   const supabase = await createServerClient();
 
   const compressedImageFormasiAsli = await imageCompressor(image);
@@ -19,10 +19,7 @@ export async function singleImageUploaderAndGetURL(image: File, path: string) {
   return data.fullPath;
 }
 
-export async function multipleImageUploaderAndGetURL(
-  images: File[],
-  path: string,
-) {
+export async function multipleImageUploader(images: File[], path: string) {
   const supabase = await createServerClient();
 
   const URLs: Array<{ fullPath: string }> = [];

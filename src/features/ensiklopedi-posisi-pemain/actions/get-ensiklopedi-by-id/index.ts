@@ -1,0 +1,64 @@
+"use server";
+
+import { createDrizzleConnection } from "@/db/drizzle/connection";
+import {
+  formationPositioning,
+  formations,
+  positions,
+} from "@/db/drizzle/schema";
+import { getImageURL } from "@/lib/utils/image-uploader";
+import { eq } from "drizzle-orm";
+
+export async function getEnsiklopediById(id: string) {
+  const db = createDrizzleConnection();
+
+  return db
+    .select()
+    .from(formationPositioning)
+    .where(eq(formationPositioning.formationId, id))
+    .leftJoin(positions, eq(formationPositioning.positionId, positions.id))
+    .leftJoin(formations, eq(formationPositioning.formationId, formations.id))
+    .then(async (data) => {
+      const gambarFormasiURL = data[0]?.formations?.defaultFormationImagePath
+        ? await getImageURL(data[0].formations.defaultFormationImagePath)
+        : "";
+      const gambarOffenseURL = data[0]?.formations?.offenseTransitionImagePath
+        ? await getImageURL(data[0].formations.offenseTransitionImagePath)
+        : "";
+      const gambarDefenseURL = data[0]?.formations?.defenseTransitionImagePath
+        ? await getImageURL(data[0].formations.defenseTransitionImagePath)
+        : "";
+
+      const daftarPosisi = await Promise.all(
+        data.map(async (item) => ({
+          idPosisi: item.positions?.id ?? "",
+          namaPosisi: item.positions?.name ?? "",
+          karakteristik: item.formation_positioning.characteristics,
+          deskripsiOffense: item.formation_positioning.offenseDescription,
+          gambarOffense: item.formation_positioning.offenseIllustrationPath
+            ? await getImageURL(
+                item.formation_positioning.offenseIllustrationPath,
+              )
+            : "",
+          deskripsiDefense: item.formation_positioning.defenseDescription,
+          gambarDefense: item.formation_positioning.defenseIllustrationPath
+            ? await getImageURL(
+                item.formation_positioning.defenseIllustrationPath,
+              )
+            : "",
+          nomorPosisi: item.formation_positioning.positionNumber,
+        })),
+      );
+
+      return {
+        namaFormasi: data[0]?.formations?.name ?? "",
+        gambarFormasiDefault: gambarFormasiURL,
+        gambarOffense: gambarOffenseURL,
+        gambarDefense: gambarDefenseURL,
+        deskripsiFormasi: data[0]?.formations?.description ?? "",
+        daftarPosisi: daftarPosisi.sort(
+          (a, b) => a.nomorPosisi - b.nomorPosisi,
+        ),
+      };
+    });
+}

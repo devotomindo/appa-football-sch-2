@@ -37,15 +37,15 @@ export function EnsiklopediPosisiPemainView() {
               >
                 <div className="space-y-4 rounded-xl border-2 p-12 shadow-xl">
                   <p className="text-center text-xl font-bold uppercase">
-                    formasi {formasi.name}
+                    formasi {formasi.namaFormasi}
                   </p>
                   <div className="relative">
                     <Image
-                      src={formasi.defaultFormationImagePath || "/formasi.png"}
-                      alt=""
+                      src={formasi.gambarFormasiDefault || "/formasi.png"}
+                      alt="formasi default"
                       width={500}
                       height={500}
-                      className=""
+                      priority
                     />
                   </div>
                 </div>

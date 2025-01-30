@@ -2,7 +2,7 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { proPlayers } from "@/db/drizzle/schema";
-import { singleImageUploaderAndGetURL } from "@/features/ensiklopedi-posisi-pemain/utils/image-uploader";
+import { singleImageUploader } from "@/lib/utils/image-uploader";
 import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
@@ -53,7 +53,7 @@ export async function createPemainPro(prevState: any, formData: FormData) {
 
   try {
     await db.transaction(async (tx) => {
-      const fullPath = await singleImageUploaderAndGetURL(
+      const fullPath = await singleImageUploader(
         validationResult.data.foto,
         "pro_players",
       );

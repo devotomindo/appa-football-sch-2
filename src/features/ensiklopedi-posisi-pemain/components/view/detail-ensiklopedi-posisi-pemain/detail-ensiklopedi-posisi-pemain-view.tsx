@@ -1,36 +1,20 @@
 "use client";
 
+import { getEnsiklopediByIdQueryOptions } from "@/features/ensiklopedi-posisi-pemain/actions/get-ensiklopedi-by-id/query-options";
 import { Accordion, Button } from "@mantine/core";
 import { IconArrowLeft, IconTriangleInvertedFilled } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 
-interface DaftarPosisi {
-  idPosisi: string;
-  namaPosisi: string;
-  karakteristik: string[] | null;
-  deskripsiOffense: string[] | null;
-  gambarOffense: string | null;
-  deskripsiDefense: string[] | null;
+export function DetailEnsiklopediPosisiPemainView({ id }: { id: string }) {
+  const { data, isLoading } = useQuery(getEnsiklopediByIdQueryOptions(id));
 
-  gambarDefense: string | null;
-}
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-interface DetailEnsiklopediInterface {
-  namaFormasi: string;
-  gambarFormasiDefault: string;
-  gambarOffense: string;
-  gambarDefense: string;
-  deskripsiFormasi: string | null;
-  daftarPosisi: DaftarPosisi[];
-}
-
-export function DetailEnsiklopediPosisiPemainView({
-  data,
-}: {
-  data: DetailEnsiklopediInterface;
-}) {
-  const items = data.daftarPosisi.map((posisi, index) => {
+  const items = data?.daftarPosisi.map((posisi, index) => {
     return (
       <Accordion.Item key={posisi.idPosisi} value={`Posisi #${index + 1}`}>
         <Accordion.Control
@@ -128,14 +112,14 @@ export function DetailEnsiklopediPosisiPemainView({
         </Button>
       </Link>
       <h1 className="text-2xl font-bold uppercase">
-        formasi {data.namaFormasi}
+        formasi {data?.namaFormasi}
       </h1>
       <div className="flex justify-start gap-4">
         <div className="w-1/5">
           <p className="font-bold capitalize">formasi asli</p>
           <div className="relative">
             <Image
-              src={data.gambarFormasiDefault}
+              src={data?.gambarFormasiDefault || ""}
               alt="formasi-default"
               width={500}
               height={500}
@@ -147,7 +131,7 @@ export function DetailEnsiklopediPosisiPemainView({
           <p className="font-bold capitalize">transisi menyerang</p>
           <div className="relative">
             <Image
-              src={data.gambarOffense}
+              src={data?.gambarOffense || ""}
               alt="formasi-offense"
               width={500}
               height={500}
@@ -159,7 +143,7 @@ export function DetailEnsiklopediPosisiPemainView({
           <p className="font-bold capitalize">transisi defense</p>
           <div className="relative">
             <Image
-              src={data.gambarDefense}
+              src={data?.gambarDefense || ""}
               alt="formasi-defense"
               width={500}
               height={500}
@@ -168,7 +152,7 @@ export function DetailEnsiklopediPosisiPemainView({
           </div>
         </div>
       </div>
-      <p className="font-light">{data.deskripsiFormasi}</p>
+      <p className="font-light">{data?.deskripsiFormasi}</p>
       <Accordion
         variant="separated"
         defaultValue="Posisi #1"

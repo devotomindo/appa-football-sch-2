@@ -6,14 +6,14 @@ import {
   formations,
   positions,
 } from "@/db/drizzle/schema";
+import {
+  multipleImageUploader,
+  singleImageUploader,
+} from "@/lib/utils/image-uploader";
 import { eq } from "drizzle-orm";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import {
-  multipleImageUploaderAndGetURL,
-  singleImageUploaderAndGetURL,
-} from "../utils/image-uploader";
 
 export async function createEnskilopediPemain(
   prevState: any,
@@ -70,37 +70,33 @@ export async function createEnskilopediPemain(
   }
 
   try {
-    const { URLs: gambarPosisiMenyerangURLs } =
-      await multipleImageUploaderAndGetURL(
-        validationResult.data.gambarPosisiMenyerang,
-        "offense_illustration",
-      );
+    const { URLs: gambarPosisiMenyerangURLs } = await multipleImageUploader(
+      validationResult.data.gambarPosisiMenyerang,
+      "offense_illustration",
+    );
 
-    const { URLs: gambarPosisiBertahanURLs } =
-      await multipleImageUploaderAndGetURL(
-        validationResult.data.gambarPosisiBertahan,
-        "defense_illustration",
-      );
+    const { URLs: gambarPosisiBertahanURLs } = await multipleImageUploader(
+      validationResult.data.gambarPosisiBertahan,
+      "defense_illustration",
+    );
 
     // Upload gambarFormasiAsli
-    const { url: gambarFormasiAsliURL } = await singleImageUploaderAndGetURL(
+    const gambarFormasiAsliURL = await singleImageUploader(
       validationResult.data.gambarFormasiAsli,
       "default_formation_image",
     );
 
     // Upload gambarFormasiBertahan
-    const { url: gambarTransisiBertahanURL } =
-      await singleImageUploaderAndGetURL(
-        validationResult.data.gambarTransisiBertahan,
-        "defense_transition_image",
-      );
+    const gambarTransisiBertahanURL = await singleImageUploader(
+      validationResult.data.gambarTransisiBertahan,
+      "defense_transition_image",
+    );
 
     // Upload gambarFormasiMenyerang
-    const { url: gambarTransisiMenyerangURL } =
-      await singleImageUploaderAndGetURL(
-        validationResult.data.gambarTransisiMenyerang,
-        "offense_transition_image",
-      );
+    const gambarTransisiMenyerangURL = await singleImageUploader(
+      validationResult.data.gambarTransisiMenyerang,
+      "offense_transition_image",
+    );
 
     const idFormations = uuidv7();
 
@@ -110,9 +106,9 @@ export async function createEnskilopediPemain(
         id: idFormations,
         name: validationResult.data.nama,
         description: validationResult.data.deskripsi,
-        defaultFormationImagePath: gambarFormasiAsliURL.publicUrl,
-        offenseTransitionImagePath: gambarTransisiMenyerangURL.publicUrl,
-        defenseTransitionImagePath: gambarTransisiBertahanURL.publicUrl,
+        defaultFormationImagePath: gambarFormasiAsliURL,
+        offenseTransitionImagePath: gambarTransisiMenyerangURL,
+        defenseTransitionImagePath: gambarTransisiBertahanURL,
       });
 
       // Get position IDs for the selected positions
@@ -133,9 +129,9 @@ export async function createEnskilopediPemain(
           positionId: positionRecords[i].id,
           characteristics: validationResult.data.karakter[i],
           offenseDescription: validationResult.data.posisiMenyerang[i],
-          offenseIllustrationPath: gambarPosisiMenyerangURLs[i].publicUrl,
+          offenseIllustrationPath: gambarPosisiMenyerangURLs[i].fullPath,
           defenseDescription: validationResult.data.posisiBertahan[i],
-          defenseIllustrationPath: gambarPosisiBertahanURLs[i].publicUrl,
+          defenseIllustrationPath: gambarPosisiBertahanURLs[i].fullPath,
           positionNumber: i + 1,
         });
       }

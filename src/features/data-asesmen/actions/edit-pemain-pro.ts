@@ -2,7 +2,7 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { proPlayers } from "@/db/drizzle/schema";
-import { singleImageUploaderAndGetURL } from "@/features/ensiklopedi-posisi-pemain/utils/image-uploader";
+import { singleImageUploader } from "@/lib/utils/image-uploader";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -57,7 +57,7 @@ export async function editPemainPro(prevState: any, formData: FormData) {
     await db.transaction(async (tx) => {
       let fullPath: string | undefined = undefined;
       if (validationResult.data.foto) {
-        fullPath = await singleImageUploaderAndGetURL(
+        fullPath = await singleImageUploader(
           validationResult.data.foto,
           "pro_players",
         );

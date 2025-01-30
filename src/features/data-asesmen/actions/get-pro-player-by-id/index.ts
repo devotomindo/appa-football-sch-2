@@ -2,7 +2,7 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { countries, positions, proPlayers } from "@/db/drizzle/schema";
-import { getImageURL } from "@/features/ensiklopedi-posisi-pemain/utils/image-uploader";
+import { getImageURL } from "@/lib/utils/image-uploader";
 import { eq } from "drizzle-orm";
 import { cache } from "react";
 
