@@ -116,7 +116,7 @@ export function DetailPemainProView({ id }: { id: string }) {
       <div className="flex gap-8">
         <div className="relative flex h-48 w-48 items-center justify-center">
           <Image
-            src={proPlayerData?.photoPath || "/messi.png"}
+            src={proPlayerData?.photoUrl || "/messi.png"}
             alt=""
             width={500}
             height={500}
@@ -139,9 +139,18 @@ export function DetailPemainProView({ id }: { id: string }) {
           </div>
         </div>
         <div className="flex gap-4">
-          <Button variant="subtle" size="xs" p={0} className="h-6 w-6 min-w-0">
-            <IconEdit size={22} className="text-gray-600" />
-          </Button>
+          <Link
+            href={`/dashboard/admin/data-asesmen/detail-pemain-pro/${id}/edit`}
+          >
+            <Button
+              variant="subtle"
+              size="xs"
+              p={0}
+              className="h-6 w-6 min-w-0"
+            >
+              <IconEdit size={22} className="text-gray-600" />
+            </Button>
+          </Link>
           <Button
             variant="subtle"
             size="xs"

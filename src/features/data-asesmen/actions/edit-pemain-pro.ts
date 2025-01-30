@@ -3,20 +3,15 @@
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { proPlayers } from "@/db/drizzle/schema";
 import { singleImageUploaderAndGetURL } from "@/features/ensiklopedi-posisi-pemain/utils/image-uploader";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-export async function createPemainPro(prevState: any, formData: FormData) {
-  const db = createDrizzleConnection();
-
+export async function editPemainPro(prevState: any, formData: FormData) {
   const validationResult = await zfd
     .formData({
-      nama: zfd.text(z.string().min(1)),
-      umur: zfd.numeric(z.number().min(1)),
-      tim: zfd.text(z.string().min(1)),
-      positionId: zfd.text(z.string()),
+      id: zfd.text(z.string().min(1)),
       foto: zfd.file(
         z
           .instanceof(File)
@@ -25,11 +20,16 @@ export async function createPemainPro(prevState: any, formData: FormData) {
           })
           .refine((val) => val.type.includes("image"), {
             message: "File foto harus berupa gambar",
-          }),
+          })
+          .optional(),
       ),
-      countryId: zfd.text(z.string()),
-      berat: zfd.numeric(z.number().min(1)),
-      tinggi: zfd.numeric(z.number().min(1)),
+      nama: zfd.text(z.string().min(1, "Nama pemain harus diisi")),
+      umur: zfd.numeric(z.number().min(1, "Umur harus diisi")),
+      berat: zfd.numeric(z.number().min(1, "Berat badan harus diisi")),
+      tinggi: zfd.numeric(z.number().min(1, "Tinggi badan harus diisi")),
+      tim: zfd.text(z.string().min(1, "Tim harus diisi")),
+      positionId: zfd.text(z.string().min(1, "Posisi harus dipilih")),
+      countryId: zfd.text(z.string().min(1, "Negara harus dipilih")),
     })
     .safeParseAsync(formData);
 
@@ -51,24 +51,31 @@ export async function createPemainPro(prevState: any, formData: FormData) {
     };
   }
 
+  const db = createDrizzleConnection();
+
   try {
     await db.transaction(async (tx) => {
-      const fullPath = await singleImageUploaderAndGetURL(
-        validationResult.data.foto,
-        "pro_players",
-      );
+      let fullPath: string | undefined = undefined;
+      if (validationResult.data.foto) {
+        fullPath = await singleImageUploaderAndGetURL(
+          validationResult.data.foto,
+          "pro_players",
+        );
+      }
 
-      await tx.insert(proPlayers).values({
-        id: uuidv7(),
-        playersName: validationResult.data.nama,
-        age: validationResult.data.umur,
-        photoPath: fullPath,
-        positionId: validationResult.data.positionId,
-        currentTeam: validationResult.data.tim,
-        countryId: Number(validationResult.data.countryId),
-        weight: validationResult.data.berat,
-        height: validationResult.data.tinggi,
-      });
+      await tx
+        .update(proPlayers)
+        .set({
+          playersName: validationResult.data.nama,
+          age: validationResult.data.umur,
+          photoPath: fullPath,
+          positionId: validationResult.data.positionId,
+          currentTeam: validationResult.data.tim,
+          countryId: Number(validationResult.data.countryId),
+          weight: validationResult.data.berat,
+          height: validationResult.data.tinggi,
+        })
+        .where(eq(proPlayers.id, validationResult.data.id));
     });
   } catch (error: any) {
     console.log(error);
@@ -82,6 +89,6 @@ export async function createPemainPro(prevState: any, formData: FormData) {
 
   return {
     success: true,
-    message: "Data berhasil disimpan",
+    message: "Berhasil mengedit data pemain pro",
   };
 }

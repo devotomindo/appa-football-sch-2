@@ -16,7 +16,7 @@ export default function TambahPemainPro() {
         </Button>
       </Link>
       <h1 className="my-8 text-2xl font-bold capitalize">data asesmen baru</h1>
-      <TambahPemainProForm />
+      <TambahPemainProForm state="create" />
     </DashboardSectionContainer>
   );
 }

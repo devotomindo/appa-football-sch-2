@@ -1,8 +1,10 @@
 "use client";
 
 import { GetAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
-import { CreatePemainPro } from "@/features/data-asesmen/actions/create-pemain-pro";
+import { createPemainPro } from "@/features/data-asesmen/actions/create-pemain-pro";
+import { editPemainPro } from "@/features/data-asesmen/actions/edit-pemain-pro";
 import { GetAllCountriesQueryOptions } from "@/features/data-asesmen/actions/get-all-countries/query-options";
+import { getProPlayerByIdQueryOptions } from "@/features/data-asesmen/actions/get-pro-player-by-id/query-options";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import {
@@ -23,32 +25,50 @@ import {
   useState,
 } from "react";
 
-export function TambahPemainProForm() {
+export function TambahPemainProForm({
+  id,
+  state,
+}: {
+  id?: string;
+  state: "create" | "edit";
+}) {
   const [actionState, actionDispatch, actionIsPending] = useActionState(
-    CreatePemainPro,
+    state === "create" ? createPemainPro : editPemainPro,
     undefined,
   );
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { data: allPositionsData } = useQuery(GetAllPositionsQueryOptions());
   const { data: allCountriesData } = useQuery(GetAllCountriesQueryOptions());
   const router = useRouter();
+  const { data: pemainProData } = useQuery({
+    ...getProPlayerByIdQueryOptions(id ?? ""),
+    enabled: Boolean(id),
+  });
+  const [fileValue, setFileValue] = useState<File | null>(null);
+  const fileUrl = fileValue ? URL.createObjectURL(fileValue) : null;
 
-  const handleImageChange = (file: File | null) => {
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
-    }
-  };
+  // const handleImageChange = (file: File | null) => {
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setImagePreview(reader.result as string);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   } else {
+  //     setImagePreview(null);
+  //   }
+  // };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     startTransition(() => {
       const formData = new FormData(e.currentTarget as HTMLFormElement);
+      if (id) {
+        formData.append("id", id);
+      }
+      if (fileValue) {
+        formData.append("foto", fileValue);
+      }
       actionDispatch(formData);
     });
   };
@@ -74,7 +94,7 @@ export function TambahPemainProForm() {
       {actionState?.error?.general && (
         <div className="text-red-500">{actionState.error.general}</div>
       )}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         {imagePreview && (
           <div className="relative h-72 w-72 rounded-xl">
             <Image
@@ -97,6 +117,21 @@ export function TambahPemainProForm() {
           withAsterisk={false}
           error={actionState?.error?.foto}
         />
+      </div> */}
+      <div className="space-y-4">
+        <FileInput
+          label="Gambar Pemain Pro"
+          onChange={setFileValue}
+          accept="image/*"
+        />
+        {(pemainProData?.photoUrl || fileValue) && pemainProData?.photoPath && (
+          <Image
+            src={fileUrl ?? pemainProData?.photoUrl ?? ""}
+            alt="Profile Picture"
+            width={200}
+            height={200}
+          />
+        )}
       </div>
 
       <TextInput
@@ -107,37 +142,43 @@ export function TambahPemainProForm() {
         className="shadow-lg"
         radius={"md"}
         error={actionState?.error?.nama}
+        defaultValue={pemainProData?.playersName ?? undefined}
       />
 
-      <NumberInput
-        label="Umur"
-        required
-        withAsterisk={false}
-        name="umur"
-        className="shadow-lg"
-        radius={"md"}
-        error={actionState?.error?.umur}
-      />
+      <div className="flex items-center gap-4">
+        <NumberInput
+          label="Umur"
+          required
+          withAsterisk={false}
+          name="umur"
+          className="shadow-lg"
+          radius={"md"}
+          error={actionState?.error?.umur}
+          defaultValue={pemainProData?.age ?? undefined}
+        />
 
-      <NumberInput
-        label="Berat Badan"
-        required
-        withAsterisk={false}
-        name="berat"
-        className="shadow-lg"
-        radius={"md"}
-        error={actionState?.error?.berat}
-      />
+        <NumberInput
+          label="Berat Badan"
+          required
+          withAsterisk={false}
+          name="berat"
+          className="shadow-lg"
+          radius={"md"}
+          error={actionState?.error?.berat}
+          defaultValue={pemainProData?.weight ?? undefined}
+        />
 
-      <NumberInput
-        label="Tinggi Badan"
-        required
-        withAsterisk={false}
-        name="tinggi"
-        className="shadow-lg"
-        radius={"md"}
-        error={actionState?.error?.tinggi}
-      />
+        <NumberInput
+          label="Tinggi Badan"
+          required
+          withAsterisk={false}
+          name="tinggi"
+          className="shadow-lg"
+          radius={"md"}
+          error={actionState?.error?.tinggi}
+          defaultValue={pemainProData?.height ?? undefined}
+        />
+      </div>
 
       <TextInput
         label="Tim"
@@ -147,6 +188,7 @@ export function TambahPemainProForm() {
         className="shadow-lg"
         radius={"md"}
         error={actionState?.error?.tim}
+        defaultValue={pemainProData?.currentTeam ?? undefined}
       />
 
       <Select
@@ -164,6 +206,7 @@ export function TambahPemainProForm() {
         required
         withAsterisk={false}
         error={actionState?.error?.positionId}
+        defaultValue={pemainProData?.positionId ?? undefined}
       />
 
       <Select
@@ -181,6 +224,7 @@ export function TambahPemainProForm() {
         required
         withAsterisk={false}
         error={actionState?.error?.countryId}
+        defaultValue={pemainProData?.countryId?.toString() ?? undefined}
       />
 
       <Button
@@ -189,7 +233,7 @@ export function TambahPemainProForm() {
         disabled={actionIsPending}
         loading={actionIsPending}
       >
-        Simpan
+        {state === "edit" ? "Edit" : "Simpan"}
       </Button>
     </form>
   );

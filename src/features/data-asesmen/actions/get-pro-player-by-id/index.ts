@@ -9,7 +9,7 @@ import { cache } from "react";
 export const getProPlayerById = cache(async function (id: string) {
   const db = createDrizzleConnection();
 
-  const data = await db
+  const [data] = await db
     .select({
       id: proPlayers.id,
       playersName: proPlayers.playersName,
@@ -20,38 +20,26 @@ export const getProPlayerById = cache(async function (id: string) {
       height: proPlayers.height,
       currentTeam: proPlayers.currentTeam,
       countryName: countries.name,
+      positionId: proPlayers.positionId,
+      countryId: proPlayers.countryId,
     })
     .from(proPlayers)
     .where(eq(proPlayers.id, id))
     .leftJoin(positions, eq(proPlayers.positionId, positions.id))
     .leftJoin(countries, eq(proPlayers.countryId, countries.id))
-    .limit(1)
-    .then((res) => {
-      const player = res[0];
+    .limit(1);
 
-      if (player.photoPath) {
-        return getImageURL(player.photoPath).then((url) => {
-          return {
-            ...player,
-            photoPath: url,
-          };
-        });
-      }
-
+  if (data.photoPath) {
+    return getImageURL(data.photoPath).then((url) => {
       return {
-        ...player,
+        ...data,
+        photoUrl: url,
       };
     });
+  }
 
-  //   const playersWithUrls = await Promise.all(
-  //     data.map(async (player) => {
-  //       const url = player.photoPath ? await getImageURL(player.photoPath) : null;
-  //       return {
-  //         ...player,
-  //         photoPath: url,
-  //       };
-  //     }),
-  //   );
-
-  return data;
+  return {
+    ...data,
+    photoUrl: undefined,
+  };
 });

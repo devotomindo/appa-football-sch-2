@@ -28,7 +28,6 @@ export function TambahAsesmenForm({
     ...getAssessmentByIdQueryOptions(id ?? ""),
     enabled: Boolean(id),
   });
-  console.log(assessmentData);
   const router = useRouter();
   const [langkahAsesmen, setLangkahAsesmen] = useState(
     assessmentData?.procedure?.length || 1,
@@ -36,7 +35,6 @@ export function TambahAsesmenForm({
   const [fileNames, setFileNames] = useState<string[]>(
     assessmentData?.illustrationPath || [],
   );
-  console.log(fileNames);
 
   const handleAddAsesmen = () => {
     setLangkahAsesmen((prev) => prev + 1);
@@ -53,7 +51,6 @@ export function TambahAsesmenForm({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
-    console.log(file);
     if (file) {
       setFileNames((prev) => {
         const newFileNames = [...prev];
