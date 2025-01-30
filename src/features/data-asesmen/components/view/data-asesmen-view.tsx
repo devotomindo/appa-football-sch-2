@@ -1,5 +1,7 @@
 "use client";
 
+import { getAllAssessmentCategoriesQueryOptions } from "@/features/data-asesmen/actions/get-all-assessment-categories/query-options";
+import { getAssessmentsByCategoryQueryOptions } from "@/features/data-asesmen/actions/get-assessments-by-category/query-options";
 import { Carousel } from "@mantine/carousel";
 import { Button, Modal } from "@mantine/core";
 import { IconEdit, IconNotes, IconTrash } from "@tabler/icons-react";
@@ -7,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { getAllAssesmentQueryOptions } from "../../actions/get-all-assesment/query-options";
 import { getAllProPlayersQueryOptions } from "../../actions/get-all-pro-players/query-options";
 import { DeleteAsesmenForm } from "../form/delete-asesmen-form/delete-asesmen-form";
 
@@ -61,11 +62,19 @@ export function PlayerFrame({
 }
 
 export function DataAsesmenView() {
-  const { data: allAssessmentData, isLoading: allAssessmentIsLoading } =
-    useQuery(getAllAssesmentQueryOptions());
   const { data: allProPlayersData, isLoading: allProPlayersIsLoading } =
     useQuery(getAllProPlayersQueryOptions());
+  const { data: assessmentCategories } = useQuery(
+    getAllAssessmentCategoriesQueryOptions(),
+  );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
+  const { data: filteredAssessments, isLoading: allAssessmentIsLoading } =
+    useQuery(getAssessmentsByCategoryQueryOptions(selectedCategory));
+
+  const categories =
+    assessmentCategories?.map((category) => category.name) ?? [];
 
   return (
     <div className="space-y-8">
@@ -133,11 +142,34 @@ export function DataAsesmenView() {
         </Link>
       </div>
 
+      <div className="flex gap-2 overflow-x-auto py-2">
+        <Button
+          variant={selectedCategory === null ? "filled" : "light"}
+          onClick={() => setSelectedCategory(null)}
+          className={selectedCategory === null ? "!bg-[#333333]" : ""}
+        >
+          Semua
+        </Button>
+        {assessmentCategories?.map((category) => (
+          <Button
+            key={category.id}
+            variant={selectedCategory === category.id ? "filled" : "light"}
+            onClick={() => setSelectedCategory(category.id)}
+            className={selectedCategory === category.id ? "!bg-[#333333]" : ""}
+          >
+            {category.name}
+          </Button>
+        ))}
+      </div>
+
       <div className="px-4">
         {allAssessmentIsLoading ? (
           <div>Loading...</div>
         ) : (
-          allAssessmentData?.map((item) => {
+          filteredAssessments?.map((item) => {
+            const categoryName = assessmentCategories?.find(
+              (cat) => cat.id === item.categoryId,
+            )?.name;
             return (
               <div
                 className="my-8 flex items-center justify-between gap-4 border-b-2 border-[#333333] pb-2"
@@ -149,7 +181,7 @@ export function DataAsesmenView() {
                   <div className="flex items-center gap-4">
                     <IconNotes />
                     <p className="uppercase">
-                      {item.name} - {item.category}
+                      {item.name} - {categoryName}
                     </p>
                   </div>
                 </Link>

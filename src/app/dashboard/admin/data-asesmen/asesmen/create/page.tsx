@@ -1,5 +1,5 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { TambahAsesmenForm } from "@/features/data-asesmen/components/form/tambah-asesmen-form";
+import { CreateOrUpdateAsesmenForm } from "@/features/data-asesmen/components/form/create-or-update-asesmen-form";
 import { Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export default function CreateAsesmen() {
         </Button>
       </Link>
       <h1 className="my-8 text-2xl font-bold capitalize">data asesmen baru</h1>
-      <TambahAsesmenForm state="create" />
+      <CreateOrUpdateAsesmenForm state="create" />
     </DashboardSectionContainer>
   );
 }

@@ -1,6 +1,6 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { getAssessmentByIdQueryOptions } from "@/features/data-asesmen/actions/get-assesment-by-id/query-options";
-import { TambahAsesmenForm } from "@/features/data-asesmen/components/form/tambah-asesmen-form";
+import { CreateOrUpdateAsesmenForm } from "@/features/data-asesmen/components/form/create-or-update-asesmen-form";
 import { Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import {
@@ -35,7 +35,7 @@ export default async function EditAsesmen({
         <h1 className="my-8 text-2xl font-bold capitalize">
           edit data asesmen
         </h1>
-        <TambahAsesmenForm state="edit" id={id} />
+        <CreateOrUpdateAsesmenForm state="edit" id={id} />
       </DashboardSectionContainer>
     </HydrationBoundary>
   );

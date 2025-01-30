@@ -23,7 +23,7 @@ export function DetailAsesmenView({ id }: { id: string }) {
       <div className="space-y-2">
         <h1 className="text-2xl font-bold uppercase">{assessmentData?.name}</h1>
         <p className="text-xl uppercase text-[#E92222]">
-          {assessmentData?.category}
+          {assessmentData?.categoryName}
         </p>
       </div>
       <p className="font-light text-[#333333]">{assessmentData?.description}</p>

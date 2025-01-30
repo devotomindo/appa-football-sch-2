@@ -12,7 +12,6 @@ export async function getAllAssessment() {
       id: assessments.id,
       name: assessments.name,
       gradeMetric: gradeMetrics.metric,
-      category: assessments.category,
     })
     .from(assessments)
     .leftJoin(gradeMetrics, eq(assessments.gradeMetricId, gradeMetrics.id));

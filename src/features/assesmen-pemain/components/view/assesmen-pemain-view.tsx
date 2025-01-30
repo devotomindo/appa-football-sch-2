@@ -7,9 +7,11 @@ import { SchoolSession } from "@/lib/session";
 import { useSchoolStore } from "@/stores/school-store";
 import { Button, Tabs } from "@mantine/core";
 import { IconClipboard } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect } from "react";
-import { AssesmenPemainTable } from "../table/assesmen-pemain-table";
+import { useEffect, useState } from "react";
+import { getAllAssessmentCategoriesQueryOptions } from "../../../data-asesmen/actions/get-all-assessment-categories/query-options";
+import { getAssessmentsByCategoryQueryOptions } from "../../../data-asesmen/actions/get-assessments-by-category/query-options";
 
 function TabsPanel({
   name,
@@ -23,7 +25,7 @@ function TabsPanel({
   return (
     <Tabs.Panel
       value={value}
-      className="flex w-full items-center justify-between border-b-[1px] border-black px-4 pb-2"
+      className="flex w-full items-center justify-between border-b-[1px] border-gray-200 px-4 pb-2"
     >
       <div className="flex items-center gap-2 uppercase">
         <IconClipboard />
@@ -46,6 +48,16 @@ export function AsesmenPemainView({
 }) {
   const { selectedSchool, hydrate, isHydrating } = useSchoolStore();
   const { data: schoolInfo } = useSchoolInfo(selectedSchool?.id ?? "");
+  const [activeCategory, setActiveCategory] = useState<number | null>(null);
+
+  const { data: assessmentCategories } = useQuery(
+    getAllAssessmentCategoriesQueryOptions(),
+  );
+
+  const { data: filteredAssessments } = useQuery(
+    getAssessmentsByCategoryQueryOptions(activeCategory),
+  );
+
   // Consider it loading during hydration or when waiting for school info
   const isLoading = isHydrating || (selectedSchool && !schoolInfo);
 
@@ -80,6 +92,7 @@ export function AsesmenPemainView({
       </DashboardSectionContainer>
     );
   }
+
   return (
     <DashboardSectionContainer>
       {schoolInfo && <SchoolBanner schoolInfo={schoolInfo} />}
@@ -87,6 +100,9 @@ export function AsesmenPemainView({
         <p className="font-bold uppercase">daftar asesmen</p>
         <Tabs
           defaultValue="semuaKategori"
+          onChange={(value) =>
+            setActiveCategory(value === "semuaKategori" ? null : Number(value))
+          }
           color="dark"
           variant="pills"
           radius="md"
@@ -95,65 +111,32 @@ export function AsesmenPemainView({
             <Tabs.Tab value="semuaKategori" className="uppercase">
               semua kategori
             </Tabs.Tab>
-            <Tabs.Tab value="fisik" className="uppercase">
-              fisik
-            </Tabs.Tab>
-            <Tabs.Tab value="kecepatan" className="uppercase">
-              kecepatan
-            </Tabs.Tab>
-            <Tabs.Tab value="kelincahan" className="uppercase">
-              kelincahan
-            </Tabs.Tab>
-            <Tabs.Tab value="teknik" className="uppercase">
-              teknik
-            </Tabs.Tab>
+            {assessmentCategories?.map((category) => (
+              <Tabs.Tab
+                key={category.id}
+                value={category.id.toString()}
+                className="uppercase"
+              >
+                {category.name}
+              </Tabs.Tab>
+            ))}
           </Tabs.List>
 
           <div className="mt-14 space-y-6">
-            <TabsPanel
-              name="push up 1 menit"
-              category="fisik"
-              value="semuaKategori"
-            />
-            <TabsPanel
-              name="sprint 100 meter"
-              category="kecepatan"
-              value="semuaKategori"
-            />
-            <TabsPanel
-              name="shuttle run"
-              category="kelincahan"
-              value="semuaKategori"
-            />
-            <TabsPanel
-              name="short pass"
-              category="teknik"
-              value="semuaKategori"
-            />
-            <TabsPanel
-              name="long pass"
-              category="teknik"
-              value="semuaKategori"
-            />
-            <TabsPanel
-              name="sprint 50 meter"
-              category="kecepatan"
-              value="semuaKategori"
-            />
-            <TabsPanel
-              name="lari rintangan"
-              category="kelincahan"
-              value="semuaKategori"
-            />
-            <TabsPanel
-              name="placing shoot (pk area)"
-              category="teknik"
-              value="semuaKategori"
-            />
-            <TabsPanel name="plank" category="fisik" value="semuaKategori" />
+            {filteredAssessments?.map((assessment) => (
+              <TabsPanel
+                key={assessment.id}
+                name={assessment.name ?? ""}
+                category={
+                  assessmentCategories?.find(
+                    (cat) => cat.id === assessment.categoryId,
+                  )?.name ?? ""
+                }
+                value={activeCategory?.toString() ?? "semuaKategori"}
+              />
+            ))}
           </div>
         </Tabs>
-        <AssesmenPemainTable />
       </div>
     </DashboardSectionContainer>
   );

@@ -1,9 +1,8 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { assessments, gradeMetrics } from "@/db/drizzle/schema";
+import { assessments } from "@/db/drizzle/schema";
 import { multipleImageUploaderAndGetURL } from "@/features/ensiklopedi-posisi-pemain/utils/image-uploader";
-import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
@@ -15,7 +14,7 @@ export async function createAssesment(prevState: any, formData: FormData) {
   const validationResult = await zfd
     .formData({
       nama: zfd.text(z.string().min(1)),
-      kategori: zfd.text(z.string().min(1)),
+      kategori: zfd.numeric(z.number()),
       satuan: zfd.text(z.string().min(1)),
       deskripsi: zfd.text(z.string().min(1)),
       tujuan: zfd.text(z.string().min(1)),
@@ -42,24 +41,19 @@ export async function createAssesment(prevState: any, formData: FormData) {
   }
 
   try {
-    const { URLs } = await multipleImageUploaderAndGetURL(
-      validationResult.data?.image,
-      "assessments",
-    );
-
-    const publicUrls = URLs.map((url) => url.fullPath);
-
     await db.transaction(async (tx) => {
-      const gradeMetricResult = await tx
-        .select()
-        .from(gradeMetrics)
-        .where(eq(gradeMetrics.metric, validationResult.data.satuan));
+      const { URLs } = await multipleImageUploaderAndGetURL(
+        validationResult.data?.image,
+        "assessments",
+      );
+
+      const publicUrls = URLs.map((url) => url.fullPath);
 
       await tx.insert(assessments).values({
         id: uuidv7(),
         name: validationResult.data?.nama,
-        category: validationResult.data?.kategori,
-        gradeMetricId: gradeMetricResult[0].id,
+        categoryId: validationResult.data?.kategori,
+        gradeMetricId: validationResult.data?.satuan,
         description: validationResult.data?.deskripsi,
         mainGoal: validationResult.data?.tujuan,
         procedure: validationResult.data?.langkahAsesmen,

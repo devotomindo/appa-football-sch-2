@@ -229,7 +229,13 @@ export const gradeMetrics = pgTable("grade_metrics", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  metric: text("metric"),
+  metric: text("metric").notNull(),
+});
+
+export const assessmentCategories = pgTable("assessment_categories", {
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  name: text("name").notNull(),
 });
 
 export const assessments = pgTable("assessments", {
@@ -242,7 +248,9 @@ export const assessments = pgTable("assessments", {
   procedure: text("procedure").array(),
   gradeMetricId: uuid("grade_metric_id").references(() => gradeMetrics.id),
   isHigherGradeBetter: boolean("is_higher_grade_better"),
-  category: text("category"),
+  categoryId: bigint("category_id", { mode: "number" }).references(
+    () => assessmentCategories.id,
+  ),
   illustrationPath: text("illustration_path").array(),
 });
 
