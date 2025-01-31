@@ -5,7 +5,7 @@ import { getAssessmentsByCategoryQueryOptions } from "@/features/data-asesmen/ac
 import { Carousel } from "@mantine/carousel";
 import { Button, Modal } from "@mantine/core";
 import { IconEdit, IconNotes, IconTrash } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -62,6 +62,7 @@ export function PlayerFrame({
 }
 
 export function DataAsesmenView() {
+  const queryClient = useQueryClient();
   const { data: allProPlayersData, isLoading: allProPlayersIsLoading } =
     useQuery(getAllProPlayersQueryOptions());
   const { data: assessmentCategories } = useQuery(
@@ -69,12 +70,19 @@ export function DataAsesmenView() {
   );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedAssessmentId, setSelectedAssessmentId] = useState<
+    string | null
+  >(null);
 
   const { data: filteredAssessments, isLoading: allAssessmentIsLoading } =
     useQuery(getAssessmentsByCategoryQueryOptions(selectedCategory));
 
-  // const categories =
-  //   assessmentCategories?.map((category) => category.name) ?? [];
+  const handleDeleteSuccess = () => {
+    // Invalidate queries to trigger refetch
+    queryClient.invalidateQueries({ queryKey: ["assessments"] });
+    setIsDeleteModalOpen(false);
+    setSelectedAssessmentId(null);
+  };
 
   return (
     <div className="space-y-8">
@@ -197,37 +205,40 @@ export function DataAsesmenView() {
                     p={0}
                     className="h-6 w-6 min-w-0"
                     onClick={() => {
+                      setSelectedAssessmentId(item.id);
                       setIsDeleteModalOpen(true);
                     }}
                   >
                     <IconTrash size={24} className="!text-red-600" />
                   </Button>
                 </div>
-                <Modal
-                  title="Hapus Asesmen?"
-                  opened={isDeleteModalOpen}
-                  onClose={() => {
-                    setIsDeleteModalOpen(false);
-                  }}
-                  centered
-                  styles={{
-                    overlay: {
-                      backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    },
-                  }}
-                >
-                  <DeleteAsesmenForm
-                    onSuccess={() => {
-                      setIsDeleteModalOpen(false);
-                    }}
-                    assesmentId={item.id}
-                  />
-                </Modal>
               </div>
             );
           })
         )}
       </div>
+
+      <Modal
+        title="Hapus Asesmen?"
+        opened={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedAssessmentId(null);
+        }}
+        centered
+        styles={{
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+          },
+        }}
+      >
+        {selectedAssessmentId && (
+          <DeleteAsesmenForm
+            onSuccess={handleDeleteSuccess}
+            assesmentId={selectedAssessmentId}
+          />
+        )}
+      </Modal>
     </div>
   );
 }

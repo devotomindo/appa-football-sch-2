@@ -10,6 +10,7 @@ import {
   FileInput,
   Image,
   Select,
+  Switch,
   Textarea,
   TextInput,
 } from "@mantine/core";
@@ -50,6 +51,10 @@ export function CreateOrUpdateAsesmenForm({
   const [steps, setSteps] = useState<StepData[]>([
     { procedure: "", hasImage: false },
   ]);
+
+  const [isHigherValueBetter, setHigherValueBetter] = useState(
+    assessmentData?.isHigherGradeBetter ?? true, // Default to true if no data
+  );
 
   // Update steps when assessment data loads
   useEffect(() => {
@@ -122,6 +127,7 @@ export function CreateOrUpdateAsesmenForm({
     startTransition(() => {
       const formData = new FormData(e.currentTarget as HTMLFormElement);
 
+      formData.append("isHigherGradeBetter", isHigherValueBetter.toString());
       // Add steps data to formData
       steps.forEach((step, index) => {
         formData.append(`steps[${index}][procedure]`, step.procedure);
@@ -218,13 +224,21 @@ export function CreateOrUpdateAsesmenForm({
           error={actionState?.error?.kategori}
         />
         <Select
-          label="satuan"
+          label="Satuan Penilaian"
           data={gradingMetricsOptions}
           searchable
           name="satuan"
           value={gradingMetric}
           onChange={(value) => setGradingMetric(value)}
           error={actionState?.error?.satuan}
+        />
+        <Switch
+          label="Nilai Semakin Tinggi Semakin Baik"
+          checked={isHigherValueBetter}
+          onChange={(event) =>
+            setHigherValueBetter(event.currentTarget.checked)
+          }
+          error={actionState?.error?.isHigherGradeBetter}
         />
       </div>
 

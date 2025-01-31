@@ -252,7 +252,7 @@ export const assessments = pgTable("assessments", {
   ),
 });
 
-export const assessment_illustrations = pgTable("assessment_illustrations", {
+export const assessmentIllustrations = pgTable("assessment_illustrations", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

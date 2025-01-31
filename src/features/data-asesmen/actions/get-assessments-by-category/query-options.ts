@@ -1,11 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getAssessmentsByCategory } from ".";
 
-export const getAssessmentsByCategoryQueryOptions = (
+export function getAssessmentsByCategoryQueryOptions(
   categoryId: number | null,
-) =>
-  queryOptions({
-    queryKey: ["assessments", "by-category", categoryId],
+) {
+  return queryOptions({
+    queryKey: ["assessments", { categoryId }],
     queryFn: () => getAssessmentsByCategory(categoryId),
-    staleTime: Infinity,
   });
+}

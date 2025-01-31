@@ -1,7 +1,7 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { assessment_illustrations, assessments } from "@/db/drizzle/schema";
+import { assessmentIllustrations, assessments } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
 import { multipleImageUploader } from "@/lib/utils/image-uploader";
 import { getStorageBucketAndPath } from "@/lib/utils/supabase";
@@ -47,6 +47,7 @@ export async function editAssesment(prevState: any, formData: FormData) {
       deskripsi: zfd.text(z.string().min(1, "Deskripsi harus diisi")),
       tujuan: zfd.text(z.string().min(1, "Tujuan harus diisi")),
       steps: zfd.repeatable(z.array(StepSchema)),
+      isHigherGradeBetter: zfd.text(z.enum(["true", "false"])),
     })
     .safeParseAsync(formData);
 
@@ -62,6 +63,7 @@ export async function editAssesment(prevState: any, formData: FormData) {
         deskripsi: errorFormatted.deskripsi?._errors,
         tujuan: errorFormatted.tujuan?._errors,
         langkahAsesmen: errorFormatted.steps?._errors,
+        isHigherGradeBetter: errorFormatted.isHigherGradeBetter?._errors,
       },
     };
   }
@@ -79,6 +81,9 @@ export async function editAssesment(prevState: any, formData: FormData) {
           gradeMetricId: validationResult.data.satuan,
           description: validationResult.data.deskripsi,
           mainGoal: validationResult.data.tujuan,
+          isHigherGradeBetter:
+            validationResult.data.isHigherGradeBetter === "true" ? true : false,
+          updatedAt: new Date(),
         })
         .where(eq(assessments.id, assessmentId));
 
@@ -90,11 +95,11 @@ export async function editAssesment(prevState: any, formData: FormData) {
           // Find existing illustration
           const existing = await tx
             .select()
-            .from(assessment_illustrations)
+            .from(assessmentIllustrations)
             .where(
               and(
-                eq(assessment_illustrations.assessmentId, assessmentId),
-                eq(assessment_illustrations.orderNumber, index),
+                eq(assessmentIllustrations.assessmentId, assessmentId),
+                eq(assessmentIllustrations.orderNumber, index),
               ),
             )
             .limit(1)
@@ -129,15 +134,15 @@ export async function editAssesment(prevState: any, formData: FormData) {
           if (existing) {
             // Update existing
             await tx
-              .update(assessment_illustrations)
+              .update(assessmentIllustrations)
               .set({
                 procedure: step.procedure,
                 ...(imagePath ? { imagePath } : {}),
               })
-              .where(eq(assessment_illustrations.id, existing.id));
+              .where(eq(assessmentIllustrations.id, existing.id));
           } else {
             // Create new
-            await tx.insert(assessment_illustrations).values({
+            await tx.insert(assessmentIllustrations).values({
               id: uuidv7(),
               assessmentId,
               procedure: step.procedure,
@@ -151,8 +156,8 @@ export async function editAssesment(prevState: any, formData: FormData) {
       // Delete any remaining old illustrations and their images
       const oldIllustrations = await tx
         .select()
-        .from(assessment_illustrations)
-        .where(eq(assessment_illustrations.assessmentId, assessmentId));
+        .from(assessmentIllustrations)
+        .where(eq(assessmentIllustrations.assessmentId, assessmentId));
 
       const illustrationsToDelete = oldIllustrations.filter(
         (ill) => ill.orderNumber >= validationResult.data.steps.length,
@@ -169,12 +174,12 @@ export async function editAssesment(prevState: any, formData: FormData) {
       // Delete old illustration records
       if (illustrationsToDelete.length > 0) {
         await tx
-          .delete(assessment_illustrations)
+          .delete(assessmentIllustrations)
           .where(
             and(
-              eq(assessment_illustrations.assessmentId, assessmentId),
+              eq(assessmentIllustrations.assessmentId, assessmentId),
               gte(
-                assessment_illustrations.orderNumber,
+                assessmentIllustrations.orderNumber,
                 validationResult.data.steps.length,
               ),
             ),

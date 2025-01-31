@@ -2,8 +2,8 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import {
-  assessment_illustrations,
   assessmentCategories,
+  assessmentIllustrations,
   assessments,
   gradeMetrics,
 } from "@/db/drizzle/schema";
@@ -33,9 +33,9 @@ export async function getAssessmentById(id: string) {
 
   const illustrations = await db
     .select()
-    .from(assessment_illustrations)
-    .where(eq(assessment_illustrations.assessmentId, id))
-    .orderBy(assessment_illustrations.orderNumber); // ascending
+    .from(assessmentIllustrations)
+    .where(eq(assessmentIllustrations.assessmentId, id))
+    .orderBy(assessmentIllustrations.orderNumber); // ascending
 
   const illustrationUrls = await Promise.all(
     illustrations.map(async (ill) => {

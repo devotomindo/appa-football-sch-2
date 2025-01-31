@@ -1,7 +1,7 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { assessment_illustrations, assessments } from "@/db/drizzle/schema";
+import { assessmentIllustrations, assessments } from "@/db/drizzle/schema";
 import { multipleImageUploader } from "@/lib/utils/image-uploader";
 import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
@@ -31,6 +31,7 @@ export async function createAssesment(prevState: any, formData: FormData) {
       deskripsi: zfd.text(z.string().min(1)),
       tujuan: zfd.text(z.string().min(1)),
       steps: zfd.repeatable(z.array(StepSchema)),
+      isHigherGradeBetter: zfd.text(z.enum(["true", "false"])),
     })
     .safeParseAsync(formData);
 
@@ -46,6 +47,7 @@ export async function createAssesment(prevState: any, formData: FormData) {
         deskripsi: errorFormatted.deskripsi?._errors,
         tujuan: errorFormatted.tujuan?._errors,
         langkahAsesmen: errorFormatted.steps?._errors,
+        isHigherGradeBetter: errorFormatted.isHigherGradeBetter?._errors,
       },
     };
   }
@@ -72,13 +74,14 @@ export async function createAssesment(prevState: any, formData: FormData) {
         gradeMetricId: validationResult.data.satuan,
         description: validationResult.data.deskripsi,
         mainGoal: validationResult.data.tujuan,
-        isHigherGradeBetter: true,
+        isHigherGradeBetter:
+          validationResult.data.isHigherGradeBetter === "true" ? true : false,
       });
 
       // Insert illustrations with procedures
       await Promise.all(
         validationResult.data.steps.map((step, index) =>
-          tx.insert(assessment_illustrations).values({
+          tx.insert(assessmentIllustrations).values({
             id: uuidv7(),
             assessmentId,
             imagePath: imageUploads[index].URLs[0].fullPath,
