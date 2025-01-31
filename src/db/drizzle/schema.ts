@@ -259,6 +259,7 @@ export const assessment_illustrations = pgTable("assessment_illustrations", {
   assessmentId: uuid("assessment_id").references(() => assessments.id),
   imagePath: text("image_path").notNull(),
   procedure: text("procedure").notNull(),
+  orderNumber: smallint("order_number").notNull(),
 });
 
 export const proPlayers = pgTable("pro_players", {

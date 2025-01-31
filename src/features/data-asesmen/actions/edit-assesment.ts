@@ -1,42 +1,55 @@
 "use server";
 
+import { createDrizzleConnection } from "@/db/drizzle/connection";
+import { assessment_illustrations, assessments } from "@/db/drizzle/schema";
+import { multipleImageUploader } from "@/lib/utils/image-uploader";
+import { and, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
+const StepSchema = z.object({
+  procedure: z.string().min(1),
+  image: z
+    .instanceof(File)
+    .refine(
+      (val) => {
+        // Skip validation if it's an empty/undefined file
+        if (val.size === 0 && val.name === "undefined") return true;
+        return val.size < 1024 * 1024 * 5;
+      },
+      { message: "File foto maksimal 5MB" },
+    )
+    .refine(
+      (val) => {
+        // Skip validation if it's an empty/undefined file
+        if (val.size === 0 && val.name === "undefined") return true;
+        return val.type.includes("image");
+      },
+      { message: "File foto harus berupa gambar" },
+    )
+    .optional(),
+});
+
 export async function editAssesment(prevState: any, formData: FormData) {
-  // const db = createDrizzleConnection();
-  // const supabase = await createServerClient();
+  const db = createDrizzleConnection();
 
   const validationResult = await zfd
     .formData({
-      assessmentId: zfd.text(z.string()),
+      assessmentId: zfd.text(z.string().uuid()),
       nama: zfd.text(z.string().min(1, "Nama asesmen harus diisi")),
       kategori: zfd.numeric(z.number()),
       satuan: zfd.text(z.string().min(1, "Satuan harus dipilih")),
       deskripsi: zfd.text(z.string().min(1, "Deskripsi harus diisi")),
       tujuan: zfd.text(z.string().min(1, "Tujuan harus diisi")),
-      langkahAsesmen: zfd.repeatable(
-        z.array(z.string().min(1, "Langkah asesmen harus diisi")),
-      ),
-      images: zfd.repeatable(
-        z.array(
-          z.instanceof(File).refine(
-            (file) => {
-              // Allow empty files (no new upload)
-              if (file.size === 0) return true;
-              return file.size < 1024 * 1024 * 5;
-            },
-            {
-              message: "File foto maksimal 5MB",
-            },
-          ),
-        ),
-      ),
+      steps: zfd.repeatable(z.array(StepSchema)),
     })
     .safeParseAsync(formData);
 
   if (!validationResult.success) {
     const errorFormatted = validationResult.error.format() as any;
+
     return {
       error: {
         general: undefined,
@@ -45,39 +58,87 @@ export async function editAssesment(prevState: any, formData: FormData) {
         satuan: errorFormatted.satuan?._errors,
         deskripsi: errorFormatted.deskripsi?._errors,
         tujuan: errorFormatted.tujuan?._errors,
-        langkahAsesmen: errorFormatted.langkahAsesmen?._errors,
-        images: errorFormatted.images?._errors,
+        langkahAsesmen: errorFormatted.steps?._errors,
       },
     };
   }
 
   try {
-    let result: any;
+    await db.transaction(async (tx) => {
+      const assessmentId = validationResult.data.assessmentId;
 
-    // await db.transaction(async (tx) => {
-    //   // Get Old Image Paths
-    //   result = {
-    //     error: {
-    //       general: "WIP",
-    //     },
-    //   };
+      // Update main assessment data
+      await tx
+        .update(assessments)
+        .set({
+          name: validationResult.data.nama,
+          categoryId: validationResult.data.kategori,
+          gradeMetricId: validationResult.data.satuan,
+          description: validationResult.data.deskripsi,
+          mainGoal: validationResult.data.tujuan,
+        })
+        .where(eq(assessments.id, assessmentId));
 
-    //   return;
+      // Handle each step
+      await Promise.all(
+        validationResult.data.steps.map(async (step, index) => {
+          // Only upload new image if provided
+          let imagePath = undefined;
+          if (
+            step.image &&
+            step.image.size > 0 &&
+            step.image.name !== "undefined"
+          ) {
+            const newFileName = `${uuidv7()}.webp`;
+            const renamedFile = new File([step.image], newFileName, {
+              type: step.image.type,
+            });
+            const upload = await multipleImageUploader(
+              [renamedFile],
+              "assessments",
+            );
+            imagePath = upload.URLs[0].fullPath;
+          }
 
-    //   revalidatePath("/dashboard/admin/data-asesmen");
+          // Find existing illustration or create new
+          const existing = await tx
+            .select()
+            .from(assessment_illustrations)
+            .where(
+              and(
+                eq(assessment_illustrations.assessmentId, assessmentId),
+                eq(assessment_illustrations.orderNumber, index),
+              ),
+            )
+            .limit(1)
+            .then((rows) => rows[0]);
 
-    //   result = {
-    //     success: true,
-    //     message: "Berhasil mengubah asesmen",
-    //   };
-    // });
+          if (existing) {
+            // Update existing
+            await tx
+              .update(assessment_illustrations)
+              .set({
+                procedure: step.procedure,
+                ...(imagePath ? { imagePath } : {}),
+              })
+              .where(eq(assessment_illustrations.id, existing.id));
+          } else {
+            // Create new
+            await tx.insert(assessment_illustrations).values({
+              id: uuidv7(),
+              assessmentId,
+              procedure: step.procedure,
+              imagePath: imagePath!, // New steps must have image
+              orderNumber: index,
+            });
+          }
+        }),
+      );
+    });
 
-    return result;
+    revalidatePath("/dashboard/admin/data-asesmen");
+    return { message: "Berhasil mengubah asesmen" };
   } catch (error: any) {
-    return {
-      general: {
-        error: error.message,
-      },
-    };
+    return { error: { general: error.message } };
   }
 }

@@ -34,7 +34,8 @@ export async function getAssessmentById(id: string) {
   const illustrations = await db
     .select()
     .from(assessment_illustrations)
-    .where(eq(assessment_illustrations.assessmentId, id));
+    .where(eq(assessment_illustrations.assessmentId, id))
+    .orderBy(assessment_illustrations.orderNumber); // ascending
 
   const illustrationUrls = await Promise.all(
     illustrations.map(async (ill) => {
@@ -47,7 +48,7 @@ export async function getAssessmentById(id: string) {
 
       return {
         id: ill.id,
-        imageUrl: imageUrl,
+        imageUrl: imageUrl.data.publicUrl,
         procedure: ill.procedure,
       };
     }),

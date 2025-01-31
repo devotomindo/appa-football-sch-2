@@ -3,7 +3,7 @@ import { getAssessmentById } from ".";
 
 export function getAssessmentByIdQueryOptions(id: string) {
   return queryOptions({
-    queryKey: ["assesment", id],
+    queryKey: ["assessment", id],
     queryFn: () => getAssessmentById(id),
   });
 }

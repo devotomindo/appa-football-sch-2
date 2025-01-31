@@ -1,13 +1,27 @@
 "use server";
 
+import { createDrizzleConnection } from "@/db/drizzle/connection";
+import { assessment_illustrations, assessments } from "@/db/drizzle/schema";
+import { multipleImageUploader } from "@/lib/utils/image-uploader";
+import { revalidatePath } from "next/cache";
+import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-export async function createAssesment(prevState: any, formData: FormData) {
-  // const db = createDrizzleConnection();
+const StepSchema = z.object({
+  procedure: z.string().min(1),
+  image: z
+    .instanceof(File)
+    .refine((val) => val.size < 1024 * 1024 * 5, {
+      message: "File foto maksimal 5MB",
+    })
+    .refine((val) => val.type.includes("image"), {
+      message: "File foto harus berupa gambar",
+    }),
+});
 
-  // Debug log to see what's coming through
-  console.log("Form Data Images:", formData.getAll("images[]"));
+export async function createAssesment(prevState: any, formData: FormData) {
+  const db = createDrizzleConnection();
 
   const validationResult = await zfd
     .formData({
@@ -16,19 +30,7 @@ export async function createAssesment(prevState: any, formData: FormData) {
       satuan: zfd.text(z.string().min(1)),
       deskripsi: zfd.text(z.string().min(1)),
       tujuan: zfd.text(z.string().min(1)),
-      langkahAsesmen: zfd.repeatable(z.array(z.string().min(1))),
-      images: zfd.repeatable(
-        z.array(
-          z
-            .instanceof(File)
-            .refine((val) => val.size < 1024 * 1024 * 5, {
-              message: "File foto maksimal 5MB",
-            })
-            .refine((val) => val.type.includes("image"), {
-              message: "File foto harus berupa gambar",
-            }),
-        ),
-      ),
+      steps: zfd.repeatable(z.array(StepSchema)),
     })
     .safeParseAsync(formData);
 
@@ -37,50 +39,59 @@ export async function createAssesment(prevState: any, formData: FormData) {
 
     return {
       error: {
-        general: undefined,
+        general: errorFormatted._errors || errorFormatted.images[0]?._errors,
         nama: errorFormatted.nama?._errors,
         kategori: errorFormatted.kategori?._errors,
         satuan: errorFormatted.satuan?._errors,
         deskripsi: errorFormatted.deskripsi?._errors,
         tujuan: errorFormatted.tujuan?._errors,
-        langkahAsesmen: errorFormatted.langkahAsesmen?._errors,
-        images: errorFormatted["images[]"]?._errors,
+        langkahAsesmen: errorFormatted.steps?._errors,
       },
     };
   }
 
-  // try {
-  //   await db.transaction(async (tx) => {
-  //     const { URLs } = await multipleImageUploader(
-  //       validationResult.data?.images,
-  //       "assessments",
-  //     );
+  try {
+    await db.transaction(async (tx) => {
+      const assessmentId = uuidv7();
 
-  //     const publicUrls = URLs.map((url) => url.fullPath);
+      // Upload all images with UUID filenames
+      const imageUploads = await Promise.all(
+        validationResult.data.steps.map((step) => {
+          const newFileName = `${uuidv7()}.webp`;
+          const renamedFile = new File([step.image], newFileName, {
+            type: step.image.type,
+          });
+          return multipleImageUploader([renamedFile], "assessments");
+        }),
+      );
 
-  //     await tx.insert(assessments).values({
-  //       id: uuidv7(),
-  //       name: validationResult.data?.nama,
-  //       categoryId: validationResult.data?.kategori,
-  //       gradeMetricId: validationResult.data?.satuan,
-  //       description: validationResult.data?.deskripsi,
-  //       mainGoal: validationResult.data?.tujuan,
-  //       procedure: validationResult.data?.langkahAsesmen,
-  //       illustrationPath: publicUrls,
-  //       isHigherGradeBetter: true,
-  //     });
-  //   });
-  // } catch (error: any) {
-  //   return {
-  //     success: false,
-  //     message: error.message,
-  //   };
-  // }
+      await tx.insert(assessments).values({
+        id: assessmentId,
+        name: validationResult.data.nama,
+        categoryId: validationResult.data.kategori,
+        gradeMetricId: validationResult.data.satuan,
+        description: validationResult.data.deskripsi,
+        mainGoal: validationResult.data.tujuan,
+        isHigherGradeBetter: true,
+      });
 
-  // revalidatePath("/dashboard/admin/data-asesmen");
+      // Insert illustrations with procedures
+      await Promise.all(
+        validationResult.data.steps.map((step, index) =>
+          tx.insert(assessment_illustrations).values({
+            id: uuidv7(),
+            assessmentId,
+            imagePath: imageUploads[index].URLs[0].fullPath,
+            procedure: step.procedure,
+            orderNumber: index,
+          }),
+        ),
+      );
+    });
 
-  // return {
-  //   success: true,
-  //   message: "Data berhasil disimpan",
-  // };
+    revalidatePath("/dashboard/admin/data-asesmen");
+    return { message: "Berhasil membuat asesmen baru" };
+  } catch (error: any) {
+    return { error: { general: error.message } };
+  }
 }

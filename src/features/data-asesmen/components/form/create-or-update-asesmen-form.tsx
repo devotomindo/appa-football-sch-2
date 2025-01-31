@@ -6,7 +6,9 @@ import { formStateNotificationHelper } from "@/lib/notification/notification-hel
 import {
   ActionIcon,
   Button,
+  Card,
   FileInput,
+  Image,
   Select,
   Textarea,
   TextInput,
@@ -26,6 +28,13 @@ import { editAssesment } from "../../actions/edit-assesment";
 import { getAllGradeMetricsQueryOptions } from "../../actions/get-all-grade-metrics/query-options";
 import { getAssessmentByIdQueryOptions } from "../../actions/get-assesment-by-id/query-options";
 
+interface StepData {
+  procedure: string;
+  file?: File;
+  previewUrl?: string;
+  hasImage: boolean; // Track if step has an image (either uploaded or existing)
+}
+
 export function CreateOrUpdateAsesmenForm({
   state,
   id,
@@ -38,40 +47,71 @@ export function CreateOrUpdateAsesmenForm({
     enabled: Boolean(id),
   });
 
-  const router = useRouter();
-  const [langkahAsesmen, setLangkahAsesmen] = useState(
-    assessmentData?.illustrations.length || 1,
-  );
-  const [fileNames, setFileNames] = useState<string[]>(
-    // assessmentData?.illustrationPath || [],
-    [],
-  );
+  const [steps, setSteps] = useState<StepData[]>([
+    { procedure: "", hasImage: false },
+  ]);
 
-  const handleAddAsesmen = () => {
-    setLangkahAsesmen((prev) => prev + 1);
-  };
-
-  const handleRemoveCriteria = () => {
-    if (langkahAsesmen > 1) {
-      setLangkahAsesmen((prev) => prev - 1);
+  // Update steps when assessment data loads
+  useEffect(() => {
+    if (assessmentData?.illustrations) {
+      setSteps(
+        assessmentData.illustrations.map((ill) => ({
+          procedure: ill.procedure,
+          previewUrl: ill.imageUrl,
+          hasImage: true,
+        })),
+      );
     }
+  }, [assessmentData]);
+
+  const handleAddStep = () => {
+    setSteps((prev) => [...prev, { procedure: "", hasImage: false }]);
   };
 
-  const handleFileChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-
-    if (file) {
-      setFileNames((prev) => {
-        const newFileNames = [...prev];
-        newFileNames[index] = file.name;
-        return newFileNames;
+  const handleRemoveStep = (indexToRemove: number) => {
+    if (steps.length > 1) {
+      setSteps((prev) => {
+        const newSteps = [...prev];
+        if (newSteps[indexToRemove].previewUrl) {
+          URL.revokeObjectURL(newSteps[indexToRemove].previewUrl!);
+        }
+        newSteps.splice(indexToRemove, 1);
+        return newSteps;
       });
     }
   };
 
+  const handleFileChange = (index: number, file: File | null) => {
+    if (file) {
+      setSteps((prev) => {
+        const newSteps = [...prev];
+        // Cleanup old preview URL if it exists
+        if (newSteps[index].previewUrl) {
+          URL.revokeObjectURL(newSteps[index].previewUrl!);
+        }
+        newSteps[index] = {
+          ...newSteps[index],
+          file,
+          hasImage: true,
+          previewUrl: URL.createObjectURL(file),
+        };
+        return newSteps;
+      });
+    }
+  };
+
+  // Cleanup preview URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      steps.forEach((step) => {
+        if (step.previewUrl && step.file) {
+          URL.revokeObjectURL(step.previewUrl);
+        }
+      });
+    };
+  }, [steps]);
+
+  const router = useRouter();
   const [actionState, actionDispatch, actionIsPending] = useActionState(
     state === "create" ? createAssesment : editAssesment,
     undefined,
@@ -81,7 +121,25 @@ export function CreateOrUpdateAsesmenForm({
     e.preventDefault();
     startTransition(() => {
       const formData = new FormData(e.currentTarget as HTMLFormElement);
-      formData.append("assessmentId", assessmentData?.id ?? "");
+
+      // Add steps data to formData
+      steps.forEach((step, index) => {
+        formData.append(`steps[${index}][procedure]`, step.procedure);
+        // Only append file if it's a new upload
+        if (step.file) {
+          formData.append(`steps[${index}][image]`, step.file);
+        } else if (state === "edit") {
+          // Add empty file to maintain array structure
+          const emptyFile = new File([], "undefined", {
+            type: "application/octet-stream",
+          });
+          formData.append(`steps[${index}][image]`, emptyFile);
+        }
+      });
+
+      if (assessmentData?.id) {
+        formData.append("assessmentId", assessmentData.id);
+      }
       actionDispatch(formData);
     });
   };
@@ -191,69 +249,78 @@ export function CreateOrUpdateAsesmenForm({
         error={actionState?.error?.tujuan}
       />
 
-      <div className="space-y-4">
-        {[...Array(langkahAsesmen)].map((_, index) => (
-          <div key={index} className="flex items-end gap-4">
-            <div className="flex-1">
-              <TextInput
-                label={index === 0 ? "Langkah Asesmen" : ""}
-                name={`langkahAsesmen[${index}]`}
-                required
-                className="shadow-lg"
-                radius="md"
-                // defaultValue={assessmentData?.procedure?.[index] ?? ""}
-              />
-            </div>
-            <div className="w-[400px]">
-              <label
-                className={`block text-sm ${index === 0 ? "visible" : "invisible"}`}
-              >
-                Gambar Ilustrasi
-              </label>
-              <div className="relative h-[36px] w-full rounded-md border-2 border-dashed">
-                <FileInput
-                  name={`images[${index}]`}
-                  accept="image/*"
-                  onChange={(file: File | null) => {
-                    handleFileChange(index, {
-                      target: { files: file ? [file] : [] },
-                    } as any);
-                  }}
-                  placeholder={fileNames[index] || "Upload Gambar Ilustrasi"}
-                  className="w-full"
-                />
-
-                <div className="flex h-full items-center justify-center">
-                  <p className="truncate px-2 text-sm text-gray-500">
-                    {fileNames[index] || "Upload Gambar Ilustrasi"}
-                  </p>
-                </div>
-              </div>
-            </div>
-            {index === 0 ? (
-              <div className="flex items-end">
+      <div className="space-y-6">
+        {steps.map((step, index) => (
+          <div
+            key={index}
+            className="flex flex-row-reverse justify-between gap-2"
+          >
+            <div className="flex items-end">
+              {index === 0 ? (
                 <ActionIcon
-                  onClick={handleAddAsesmen}
+                  onClick={handleAddStep}
                   className="h-[36px] w-[36px] !bg-green-500 hover:!bg-green-600"
                   variant="filled"
                   radius="xl"
                 >
                   <IconPlus size={16} className="text-white" />
                 </ActionIcon>
-              </div>
-            ) : (
-              <div className="flex items-end">
+              ) : (
                 <ActionIcon
                   color="red"
                   variant="filled"
-                  onClick={() => handleRemoveCriteria()}
+                  onClick={() => handleRemoveStep(index)}
                   className="h-[36px] w-[36px]"
                   radius="xl"
                 >
                   <IconMinus size={16} />
                 </ActionIcon>
+              )}
+            </div>
+            <Card withBorder shadow="sm" p="md" radius="md" className="flex-1">
+              <div className="grid grid-cols-[2fr,1fr] gap-4">
+                <div className="space-y-4">
+                  <TextInput
+                    label={`Langkah Asesmen ${index + 1}`}
+                    value={step.procedure}
+                    onChange={(e) => {
+                      const newSteps = [...steps];
+                      newSteps[index].procedure = e.target.value;
+                      setSteps(newSteps);
+                    }}
+                    required
+                    className="shadow-sm"
+                    radius="md"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Gambar Ilustrasi</div>
+                  <FileInput
+                    accept="image/*"
+                    onChange={(file) => handleFileChange(index, file)}
+                    required={!step.hasImage}
+                    value={null}
+                    placeholder={
+                      step.hasImage
+                        ? "Gambar sudah diupload"
+                        : "Upload Gambar Ilustrasi"
+                    }
+                    className="w-full"
+                  />
+                  {step.previewUrl && (
+                    <Card withBorder p="xs">
+                      <Image
+                        src={step.previewUrl}
+                        alt={`Preview ${index + 1}`}
+                        height={200}
+                        fit="contain"
+                        className="rounded-md"
+                      />
+                    </Card>
+                  )}
+                </div>
               </div>
-            )}
+            </Card>
           </div>
         ))}
       </div>
