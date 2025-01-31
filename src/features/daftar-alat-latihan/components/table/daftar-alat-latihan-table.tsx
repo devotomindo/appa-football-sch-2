@@ -14,6 +14,7 @@ import { useMemo, useState } from "react";
 import { GetAllAlatLatihanResponse } from "../../actions/get-all-alat-latihan";
 import { getAllAlatLatihanQueryOptions } from "../../actions/get-all-alat-latihan/query-options";
 import { CreateOrUpdateAlatLatihanForm } from "../form/create-or-update-alat-latihan-form";
+import { DeleteAlatLatihanForm } from "../form/delete-alat-latihan-form";
 
 export function DaftarAlatLatihanTable() {
   // QUERY DATA
@@ -26,7 +27,7 @@ export function DaftarAlatLatihanTable() {
     GetAllAlatLatihanResponse[number] | null
   >(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  //   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // COLUMNS DEFINITION
   const columns = useMemo<MRT_ColumnDef<GetAllAlatLatihanResponse[number]>[]>(
@@ -71,7 +72,8 @@ export function DaftarAlatLatihanTable() {
                 color="red"
                 className="rounded-lg bg-[#FF0000] px-4 py-2 capitalize text-white shadow-xl"
                 onClick={() => {
-                  console.log("Delete", row.original.id);
+                  setSelectedRow(row.original);
+                  setIsDeleteModalOpen(true);
                 }}
               >
                 Hapus
@@ -109,24 +111,45 @@ export function DaftarAlatLatihanTable() {
       <MantineReactTable table={table} />
 
       {selectedRow && (
-        <Modal
-          opened={isEditModalOpen}
-          onClose={() => {
-            setSelectedRow(null);
-            setIsEditModalOpen(false);
-          }}
-          centered
-          title={`Edit ${selectedRow.name}`}
-        >
-          <CreateOrUpdateAlatLatihanForm
-            toolData={selectedRow}
-            onSuccess={() => {
+        <>
+          <Modal
+            opened={isEditModalOpen}
+            onClose={() => {
               setSelectedRow(null);
               setIsEditModalOpen(false);
-              tools.refetch();
             }}
-          />
-        </Modal>
+            centered
+            title={`Edit ${selectedRow.name}`}
+          >
+            <CreateOrUpdateAlatLatihanForm
+              toolData={selectedRow}
+              onSuccess={() => {
+                setSelectedRow(null);
+                setIsEditModalOpen(false);
+                tools.refetch();
+              }}
+            />
+          </Modal>
+
+          <Modal
+            opened={isDeleteModalOpen}
+            onClose={() => {
+              setSelectedRow(null);
+              setIsDeleteModalOpen(false);
+            }}
+            centered
+            title={`Hapus ${selectedRow.name}`}
+          >
+            <DeleteAlatLatihanForm
+              toolData={selectedRow}
+              onSuccess={() => {
+                setSelectedRow(null);
+                setIsDeleteModalOpen(false);
+                tools.refetch();
+              }}
+            />
+          </Modal>
+        </>
       )}
 
       <Modal

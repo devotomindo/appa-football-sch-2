@@ -103,12 +103,6 @@ export function DashboardAppshell({
 
   const member = schoolInfo?.isPremium;
 
-  console.log("member", member);
-  console.log("schoolInfo", schoolInfo);
-  console.log("userData", userData);
-  console.log("selectedSchool", selectedSchool);
-  console.log("isuUserAdminValue", isUserAdminValue);
-
   return (
     <>
       <AppShell
