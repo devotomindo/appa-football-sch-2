@@ -14,6 +14,7 @@ import {
 } from "react";
 import { createTool } from "../../actions/create-alat-latihan";
 import { GetAllAlatLatihanResponse } from "../../actions/get-all-alat-latihan";
+import { updateTool } from "../../actions/update-alat-latihan";
 
 export function CreateOrUpdateAlatLatihanForm({
   toolData,
@@ -27,8 +28,7 @@ export function CreateOrUpdateAlatLatihanForm({
   const fileUrl = fileValue ? URL.createObjectURL(fileValue) : null;
 
   const [actionState, actionDispatch, isActionPending] = useActionState(
-    //   toolData ? updateTool :
-    createTool,
+    toolData ? updateTool : createTool,
     undefined,
   );
 
@@ -36,6 +36,10 @@ export function CreateOrUpdateAlatLatihanForm({
     e.preventDefault();
     startTransition(() => {
       const formData = new FormData(e.currentTarget as HTMLFormElement);
+      if (toolData) {
+        formData.append("id", toolData.id);
+      }
+
       if (fileValue) {
         formData.append("image", fileValue);
       }
