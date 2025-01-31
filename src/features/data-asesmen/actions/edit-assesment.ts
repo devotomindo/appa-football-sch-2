@@ -2,8 +2,10 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { assessment_illustrations, assessments } from "@/db/drizzle/schema";
+import { createServerClient } from "@/db/supabase/server";
 import { multipleImageUploader } from "@/lib/utils/image-uploader";
-import { and, eq } from "drizzle-orm";
+import { getStorageBucketAndPath } from "@/lib/utils/supabase";
+import { and, eq, gte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
@@ -34,6 +36,7 @@ const StepSchema = z.object({
 
 export async function editAssesment(prevState: any, formData: FormData) {
   const db = createDrizzleConnection();
+  const supabase = await createServerClient();
 
   const validationResult = await zfd
     .formData({
@@ -82,25 +85,9 @@ export async function editAssesment(prevState: any, formData: FormData) {
       // Handle each step
       await Promise.all(
         validationResult.data.steps.map(async (step, index) => {
-          // Only upload new image if provided
           let imagePath = undefined;
-          if (
-            step.image &&
-            step.image.size > 0 &&
-            step.image.name !== "undefined"
-          ) {
-            const newFileName = `${uuidv7()}.webp`;
-            const renamedFile = new File([step.image], newFileName, {
-              type: step.image.type,
-            });
-            const upload = await multipleImageUploader(
-              [renamedFile],
-              "assessments",
-            );
-            imagePath = upload.URLs[0].fullPath;
-          }
 
-          // Find existing illustration or create new
+          // Find existing illustration
           const existing = await tx
             .select()
             .from(assessment_illustrations)
@@ -112,6 +99,32 @@ export async function editAssesment(prevState: any, formData: FormData) {
             )
             .limit(1)
             .then((rows) => rows[0]);
+
+          // Handle image upload and deletion if there's a new image
+          if (
+            step.image &&
+            step.image.size > 0 &&
+            step.image.name !== "undefined"
+          ) {
+            // Delete old image if it exists
+            if (existing?.imagePath) {
+              const { bucket, path } = getStorageBucketAndPath(
+                existing.imagePath,
+              );
+              await supabase.storage.from(bucket).remove([path]);
+            }
+
+            // Upload new image
+            const newFileName = `${uuidv7()}.webp`;
+            const renamedFile = new File([step.image], newFileName, {
+              type: step.image.type,
+            });
+            const upload = await multipleImageUploader(
+              [renamedFile],
+              "assessments",
+            );
+            imagePath = upload.URLs[0].fullPath;
+          }
 
           if (existing) {
             // Update existing
@@ -134,6 +147,39 @@ export async function editAssesment(prevState: any, formData: FormData) {
           }
         }),
       );
+
+      // Delete any remaining old illustrations and their images
+      const oldIllustrations = await tx
+        .select()
+        .from(assessment_illustrations)
+        .where(eq(assessment_illustrations.assessmentId, assessmentId));
+
+      const illustrationsToDelete = oldIllustrations.filter(
+        (ill) => ill.orderNumber >= validationResult.data.steps.length,
+      );
+
+      // Delete old images from storage
+      await Promise.all(
+        illustrationsToDelete.map(async (ill) => {
+          const { bucket, path } = getStorageBucketAndPath(ill.imagePath);
+          await supabase.storage.from(bucket).remove([path]);
+        }),
+      );
+
+      // Delete old illustration records
+      if (illustrationsToDelete.length > 0) {
+        await tx
+          .delete(assessment_illustrations)
+          .where(
+            and(
+              eq(assessment_illustrations.assessmentId, assessmentId),
+              gte(
+                assessment_illustrations.orderNumber,
+                validationResult.data.steps.length,
+              ),
+            ),
+          );
+      }
     });
 
     revalidatePath("/dashboard/admin/data-asesmen");
