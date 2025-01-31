@@ -297,6 +297,17 @@ export function DashboardAppshell({
                   leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
                   pathname={pathname}
                 />
+                <NavLink
+                  label="Pengaturan"
+                  onClick={toggle}
+                  component={Link}
+                  href="/dashboard/pengaturan"
+                  active={pathname === "/dashboard/pengaturan"}
+                  color={pathname === "/dashboard/pengaturan" ? "#E92222" : ""}
+                  variant="filled"
+                  styles={navLinkStyles}
+                  className="hover:!bg-[#E92222] hover:text-white"
+                />
               </>
             )}
 
