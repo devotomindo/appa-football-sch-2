@@ -7,7 +7,13 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 
-export function DetailEnsiklopediPosisiPemainView({ id }: { id: string }) {
+export function DetailEnsiklopediPosisiPemainView({
+  id,
+  isAdmin,
+}: {
+  id: string;
+  isAdmin: boolean;
+}) {
   const { data, isLoading } = useQuery(getEnsiklopediByIdQueryOptions(id));
 
   if (isLoading) {
@@ -103,7 +109,13 @@ export function DetailEnsiklopediPosisiPemainView({ id }: { id: string }) {
 
   return (
     <div className="space-y-8">
-      <Link href={"/dashboard/admin/ensiklopedi-posisi-pemain"}>
+      <Link
+        href={
+          isAdmin
+            ? "/dashboard/admin/ensiklopedi-posisi-pemain"
+            : "/dashboard/ensiklopedi-posisi-pemain"
+        }
+      >
         <Button
           className="flex w-32 flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2"
           leftSection={<IconArrowLeft size={18} />}

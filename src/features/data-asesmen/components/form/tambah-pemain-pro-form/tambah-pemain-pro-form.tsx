@@ -47,18 +47,6 @@ export function TambahPemainProForm({
   const [fileValue, setFileValue] = useState<File | null>(null);
   const fileUrl = fileValue ? URL.createObjectURL(fileValue) : null;
 
-  // const handleImageChange = (file: File | null) => {
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setImagePreview(reader.result as string);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   } else {
-  //     setImagePreview(null);
-  //   }
-  // };
-
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     startTransition(() => {
@@ -94,30 +82,6 @@ export function TambahPemainProForm({
       {actionState?.error?.general && (
         <div className="text-red-500">{actionState.error.general}</div>
       )}
-      {/* <div className="space-y-4">
-        {imagePreview && (
-          <div className="relative h-72 w-72 rounded-xl">
-            <Image
-              src={imagePreview}
-              alt="Preview"
-              className="h-full w-full rounded-xl object-contain"
-              width={500}
-              height={500}
-            />
-          </div>
-        )}
-        <FileInput
-          label="Foto Pemain"
-          accept="image/*"
-          name="foto"
-          onChange={handleImageChange}
-          className="shadow-lg"
-          radius="md"
-          required
-          withAsterisk={false}
-          error={actionState?.error?.foto}
-        />
-      </div> */}
       <div className="space-y-4">
         <FileInput
           label="Gambar Pemain Pro"

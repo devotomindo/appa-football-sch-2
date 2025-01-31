@@ -103,6 +103,12 @@ export function DashboardAppshell({
 
   const member = schoolInfo?.isPremium;
 
+  console.log("member", member);
+  console.log("schoolInfo", schoolInfo);
+  console.log("userData", userData);
+  console.log("selectedSchool", selectedSchool);
+  console.log("isuUserAdminValue", isUserAdminValue);
+
   return (
     <>
       <AppShell
@@ -255,7 +261,52 @@ export function DashboardAppshell({
                 )
               }
             />
-            {!isUserAdminValue && (
+            {!isUserAdminValue && selectedSchool?.role == "Athlete" && (
+              <>
+                <NavLink
+                  label="Pendaftaran Atlet"
+                  onClick={toggle}
+                  component={Link}
+                  href="/dashboard/pendaftaran-atlet"
+                  active={pathname === "/dashboard/pendaftaran-atlet"}
+                  color={
+                    pathname === "/dashboard/pendaftaran-atlet" ? "#E92222" : ""
+                  }
+                  variant="filled"
+                  styles={navLinkStyles}
+                  className="hover:!bg-[#E92222] hover:text-white"
+                />
+                <NavLink
+                  label="Hasil Asesmen"
+                  onClick={toggle}
+                  component={Link}
+                  href="/dashboard/hasil-asesmen"
+                  active={pathname === "/dashboard/hasil-asemen"}
+                  color={
+                    pathname === "/dashboard/hasil-asesmen" ? "#E92222" : ""
+                  }
+                  variant="filled"
+                  styles={navLinkStyles}
+                  className="hover:!bg-[#E92222] hover:text-white"
+                />
+                <NavLinkComponent
+                  label="Daftar Latihan Individu"
+                  path="metode-latihan-individu"
+                  toggle={toggle}
+                  leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                  pathname={pathname}
+                />
+                <NavLinkComponent
+                  label="Ensiklopedi Posisi Pemain"
+                  path="ensiklopedi-posisi-pemain"
+                  toggle={toggle}
+                  leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                  pathname={pathname}
+                />
+              </>
+            )}
+
+            {!isUserAdminValue && selectedSchool?.role !== "Athlete" && (
               <>
                 <NavLink
                   label="Pendaftaran Atlet"
@@ -440,15 +491,15 @@ export function DashboardAppshell({
             )}
             {/* END OF ADMIN MENU */}
 
-            <div className="absolute left-[-25%] top-[10%] -z-10 h-3/4">
-              <div className="relative h-full w-1/2">
+            <div className="absolute left-0 top-0 -z-10 h-full w-full overflow-hidden">
+              <div className="relative flex h-full w-full flex-col justify-center">
                 <Image
                   src={"/logo-tanpa-teks.png"}
                   alt=""
                   width={500}
                   height={500}
-                  className="h-full opacity-15"
-                  style={{ objectFit: "cover" }}
+                  className="z-0 h-full w-full -translate-x-1/2 transform opacity-25"
+                  style={{ objectFit: "contain" }}
                 />
               </div>
             </div>

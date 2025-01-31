@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllEnsiklopediPemainQueryOptions } from "../../actions/get-all-ensiklopedi-pemain/query-options";
 
-export function EnsiklopediPosisiPemainView() {
+export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
   const { data, isLoading } = useQuery(getAllEnsiklopediPemainQueryOptions());
 
   return (
@@ -15,15 +15,17 @@ export function EnsiklopediPosisiPemainView() {
         <p className="text-2xl font-bold uppercase">
           ENSIKLOPEDI POSISI PEMAIN
         </p>
-        <Link
-          href={
-            "/dashboard/admin/ensiklopedi-posisi-pemain/tambah-ensiklopedi-posisi-pemain"
-          }
-        >
-          <Button className="!bg-green-500 capitalize hover:!bg-green-600 focus-visible:outline-2">
-            tambahkan formasi baru
-          </Button>
-        </Link>
+        {isAdmin && (
+          <Link
+            href={
+              "/dashboard/admin/ensiklopedi-posisi-pemain/tambah-ensiklopedi-posisi-pemain"
+            }
+          >
+            <Button className="!bg-green-500 capitalize hover:!bg-green-600 focus-visible:outline-2">
+              tambahkan formasi baru
+            </Button>
+          </Link>
+        )}
       </div>
       {isLoading ? (
         <div>Loading...</div>
@@ -33,7 +35,11 @@ export function EnsiklopediPosisiPemainView() {
             data.map((formasi, index) => (
               <Link
                 key={index}
-                href={`/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${formasi.id}`}
+                href={
+                  isAdmin
+                    ? `/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${formasi.id}`
+                    : `/dashboard/ensiklopedi-posisi-pemain/${formasi.id}`
+                }
               >
                 <div className="space-y-4 rounded-xl border-2 p-12 shadow-xl">
                   <p className="text-center text-xl font-bold uppercase">
