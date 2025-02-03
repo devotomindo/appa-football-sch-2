@@ -2,6 +2,7 @@
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
+import { useSchoolStore } from "@/stores/school-store";
 import { IconPlus } from "@tabler/icons-react";
 import { redirect } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
@@ -14,6 +15,7 @@ export function MulaiAsesmenPemainForm({
   assessmentId: string;
   studentIds: string[];
 }) {
+  const selectedSchool = useSchoolStore((state) => state.selectedSchool);
   const [actionState, actionsDispatch, isActionPending] = useActionState(
     createStudentAssessment,
     undefined,
@@ -45,7 +47,9 @@ export function MulaiAsesmenPemainForm({
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         formData.append("assessmentId", assessmentId);
-        // Add each studentId as a separate entry
+        if (selectedSchool) {
+          formData.append("schoolId", selectedSchool?.id);
+        }
         studentIds.forEach((id) => {
           formData.append("studentIds", id);
         });
@@ -55,7 +59,12 @@ export function MulaiAsesmenPemainForm({
     >
       <SubmitButton
         loading={isActionPending}
-        disabled={!assessmentId || studentIds.length === 0 || isActionPending}
+        disabled={
+          !assessmentId ||
+          studentIds.length === 0 ||
+          isActionPending ||
+          !selectedSchool
+        }
         leftSection={<IconPlus />}
       >
         Mulai Asesmen

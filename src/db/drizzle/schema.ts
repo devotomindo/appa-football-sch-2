@@ -266,7 +266,12 @@ export const assessmentIllustrations = pgTable("assessment_illustrations", {
 export const assessmentSessions = pgTable("assessment_sessions", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-  assessmentId: uuid("assessment_id").references(() => assessments.id),
+  assessmentId: uuid("assessment_id")
+    .references(() => assessments.id)
+    .notNull(),
+  schoolId: uuid("school_id")
+    .references(() => schools.id)
+    .notNull(),
   isCompleted: boolean("is_completed").notNull().default(false),
 });
 

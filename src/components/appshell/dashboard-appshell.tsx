@@ -353,6 +353,19 @@ export function DashboardAppshell({
                   className="hover:!bg-[#E92222] hover:text-white"
                 />
                 <NavLink
+                  label="Daftar Asesmen"
+                  onClick={toggle}
+                  component={Link}
+                  href="/dashboard/daftar-asesmen"
+                  active={pathname === "/dashboard/daftar-asesmen"}
+                  color={
+                    pathname === "/dashboard/daftar-asesmen" ? "#E92222" : ""
+                  }
+                  variant="filled"
+                  styles={navLinkStyles}
+                  className="hover:!bg-[#E92222] hover:text-white"
+                />
+                <NavLink
                   label="Asesmen Pemain"
                   onClick={toggle}
                   component={Link}

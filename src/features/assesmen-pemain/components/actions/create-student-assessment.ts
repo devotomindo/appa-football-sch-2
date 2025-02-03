@@ -13,6 +13,7 @@ export async function createStudentAssessment(
     .formData({
       assessmentId: z.string().uuid(),
       studentIds: zfd.repeatable(z.array(z.string().uuid())),
+      schoolId: z.string().uuid(),
     })
     .safeParseAsync(formData);
 
@@ -36,6 +37,7 @@ export async function createStudentAssessment(
         .values({
           id: uuidv7(),
           assessmentId: validationResult.data.assessmentId,
+          schoolId: validationResult.data.schoolId,
         })
         .returning({ id: assessmentSessions.id })
         .then((res) => res[0].id);
