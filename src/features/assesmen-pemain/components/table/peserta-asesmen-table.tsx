@@ -1,184 +1,133 @@
 "use client";
 
-import { Tabs } from "@mantine/core";
+import { GetAllStudentsBySchoolIdResponse } from "@/features/school/action/get-all-students-by-school-id";
+import { getAllStudentsBySchoolIdQueryOptions } from "@/features/school/action/get-all-students-by-school-id/query-options";
+import { Avatar, Tabs } from "@mantine/core";
+import { useQuery } from "@tanstack/react-query";
 import {
   MantineReactTable,
   MRT_ColumnDef,
   useMantineReactTable,
 } from "mantine-react-table";
 import { useMemo, useState } from "react";
+import { MulaiAsesmenPemainForm } from "../form/mulai-asesmen-pemain-form";
 
-// type Person = {
-//   name: {
-//     firstName: string;
-//     lastName: string;
-//   };
-//   address: string;
-//   city: string;
-//   state: string;
-// };
+const AGE_GROUPS = ["Semua", "5-8", "9-12", "13-15", "16-18", "Other"] as const;
 
-type Peserta = {
-  nama: string;
-  posisi:
-    | "MIDFIELDER"
-    | "FORWARD"
-    | "GOALKEEPER"
-    | "STRIKER"
-    | "WINGER"
-    | "BACK";
-  kelompokUsia: "KU 13" | "KU 15" | "KU 17";
-};
-
-//nested data is ok, see accessorKeys in ColumnDef below
-// const data: Person[] = [
-//   {
-//     name: {
-//       firstName: "Zachary",
-//       lastName: "Davis",
-//     },
-//     address: "261 Battle Ford",
-//     city: "Columbus",
-//     state: "Ohio",
-//   },
-//   {
-//     name: {
-//       firstName: "Robert",
-//       lastName: "Smith",
-//     },
-//     address: "566 Brakus Inlet",
-//     city: "Westerville",
-//     state: "West Virginia",
-//   },
-//   {
-//     name: {
-//       firstName: "Kevin",
-//       lastName: "Yan",
-//     },
-//     address: "7777 Kuhic Knoll",
-//     city: "South Linda",
-//     state: "West Virginia",
-//   },
-//   {
-//     name: {
-//       firstName: "John",
-//       lastName: "Upton",
-//     },
-//     address: "722 Emie Stream",
-//     city: "Huntington",
-//     state: "Washington",
-//   },
-//   {
-//     name: {
-//       firstName: "Nathan",
-//       lastName: "Harris",
-//     },
-//     address: "1 Kuhic Knoll",
-//     city: "Ohiowa",
-//     state: "Nebraska",
-//   },
-// ];
-
-const pesertaData: Peserta[] = [
-  {
-    nama: "CRISTIANO RONALDO",
-    posisi: "STRIKER",
-    kelompokUsia: "KU 13",
-  },
-  {
-    nama: "lionel messi",
-    posisi: "STRIKER",
-    kelompokUsia: "KU 15",
-  },
-  {
-    nama: "de gea",
-    posisi: "GOALKEEPER",
-    kelompokUsia: "KU 17",
-  },
-  {
-    nama: "Erling Haaland",
-    posisi: "FORWARD",
-    kelompokUsia: "KU 13",
-  },
-  {
-    nama: "Luka Modrić",
-    posisi: "MIDFIELDER",
-    kelompokUsia: "KU 15",
-  },
-  {
-    nama: "Lamine Yamal",
-    posisi: "WINGER",
-    kelompokUsia: "KU 17",
-  },
-  {
-    nama: "Achraf Hakimi",
-    posisi: "BACK",
-    kelompokUsia: "KU 13",
-  },
-];
-
-export function PesertaAsesmenTable() {
-  const [activeTab, setActiveTab] = useState<string>("semua");
+export function PesertaAsesmenTable({
+  assessmentId,
+  schoolId,
+}: {
+  assessmentId: string;
+  schoolId: string;
+}) {
+  const [activeTab, setActiveTab] = useState<string>("Semua");
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
-  const columns = useMemo<MRT_ColumnDef<Peserta>[]>(
+  const schoolStudents = useQuery(
+    getAllStudentsBySchoolIdQueryOptions(schoolId),
+  );
+
+  const groupedStudents = useMemo(() => {
+    if (!schoolStudents.data) return {};
+
+    return schoolStudents.data.reduce(
+      (acc, student) => {
+        // Initialize "Semua" group if it doesn't exist
+        if (!acc["Semua"]) acc["Semua"] = [];
+        // Add to "Semua" group
+        acc["Semua"].push(student);
+
+        // Add to specific age group
+        const group = student.ageGroup ?? "Other";
+        if (!acc[group]) acc[group] = [];
+        if (group !== "Semua") acc[group].push(student);
+
+        return acc;
+      },
+      {} as Record<string, typeof schoolStudents.data>,
+    );
+  }, [schoolStudents.data]);
+
+  const columns = useMemo<
+    MRT_ColumnDef<GetAllStudentsBySchoolIdResponse[number]>[]
+  >(
     () => [
       {
-        accessorKey: "nama",
+        accessorKey: "userImageUrl",
+        header: "Foto",
+        size: 100,
+        Cell: ({ row }) => (
+          <Avatar
+            src={row.original.userImageUrl}
+            alt={row.original.userFullName ?? ""}
+            size={"xl"}
+            className="rounded-full"
+          />
+        ),
+      },
+      {
+        accessorKey: "userFullName",
         header: "Nama",
+        filterFn: "contains",
       },
       {
-        accessorKey: "posisi",
-        header: "Posisi",
-      },
-      {
-        accessorKey: "kelompokUsia",
-        header: "Kelompok Usia",
+        accessorKey: "age",
+        header: "Umur",
+        filterFn: "contains",
       },
     ],
     [],
   );
 
-  const filteredData = useMemo(() => {
-    if (activeTab === "semua") return pesertaData;
-    return pesertaData.filter(
-      (peserta) => peserta.kelompokUsia === `KU ${activeTab}`,
-    );
-  }, [activeTab]);
-
   const table = useMantineReactTable({
     columns,
-    data: filteredData,
+    data: groupedStudents[activeTab] ?? [],
     enableRowSelection: true,
     state: { rowSelection },
     onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.nama, // Use nama as unique identifier
+    getRowId: (row) => row.id,
   });
 
   return (
     <div className="space-y-4">
-      <Tabs
-        value={activeTab}
-        onChange={(value) => setActiveTab(value || "semua")}
-        color="dark"
-        variant="pills"
-        radius="md"
-      >
-        <Tabs.List className="space-x-4">
-          <Tabs.Tab value="semua" className="uppercase">
-            semua ku
-          </Tabs.Tab>
-          <Tabs.Tab value="13" className="uppercase">
-            ku 13
-          </Tabs.Tab>
-          <Tabs.Tab value="15" className="uppercase">
-            ku 15
-          </Tabs.Tab>
-          <Tabs.Tab value="17" className="uppercase">
-            ku 17
-          </Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
+      <div className="flex items-center justify-between">
+        <Tabs
+          value={activeTab}
+          color="dark"
+          variant="pills"
+          radius={"md"}
+          onChange={(value) => setActiveTab(value ?? AGE_GROUPS[0])}
+        >
+          <Tabs.List>
+            {AGE_GROUPS.map((group) => (
+              <Tabs.Tab
+                key={group}
+                value={group}
+                rightSection={
+                  <span
+                    className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${
+                      activeTab === group
+                        ? "bg-white text-black"
+                        : "bg-gray-700 text-gray-200"
+                    }`}
+                  >
+                    {groupedStudents[group]?.length ?? 0}
+                  </span>
+                }
+              >
+                {group}
+              </Tabs.Tab>
+            ))}
+          </Tabs.List>
+        </Tabs>
+
+        <MulaiAsesmenPemainForm
+          assessmentId={assessmentId}
+          studentIds={Object.keys(rowSelection)}
+        />
+      </div>
+
       <MantineReactTable table={table} />
     </div>
   );

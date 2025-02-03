@@ -15,10 +15,12 @@ import { getAssessmentsByCategoryQueryOptions } from "../../../data-asesmen/acti
 
 function TabsPanel({
   name,
+  id,
   category,
   value,
 }: {
   name: string;
+  id: string;
   category: string;
   value: string;
 }) {
@@ -32,7 +34,7 @@ function TabsPanel({
         {name} - {category}
       </div>
       <Link
-        href={`/dashboard/asesmen-pemain/asesmen/${name.toLowerCase().split(" ").join("-")}`}
+        href={`/dashboard/asesmen-pemain/asesmen/${id}`}
         className="rounded-xl bg-green-600 px-8 py-2 uppercase text-white"
       >
         lakukan asesmen
@@ -98,45 +100,50 @@ export function AsesmenPemainView({
       {schoolInfo && <SchoolBanner schoolInfo={schoolInfo} />}
       <div className="mt-10 space-y-4">
         <p className="font-bold uppercase">daftar asesmen</p>
-        <Tabs
-          defaultValue="semuaKategori"
-          onChange={(value) =>
-            setActiveCategory(value === "semuaKategori" ? null : Number(value))
-          }
-          color="dark"
-          variant="pills"
-          radius="md"
-        >
-          <Tabs.List className="space-x-4">
-            <Tabs.Tab value="semuaKategori" className="uppercase">
-              semua kategori
-            </Tabs.Tab>
-            {assessmentCategories?.map((category) => (
-              <Tabs.Tab
-                key={category.id}
-                value={category.id.toString()}
-                className="uppercase"
-              >
-                {category.name}
+        <div className="flex justify-between">
+          <Tabs
+            defaultValue="semuaKategori"
+            onChange={(value) =>
+              setActiveCategory(
+                value === "semuaKategori" ? null : Number(value),
+              )
+            }
+            color="dark"
+            variant="pills"
+            radius="md"
+          >
+            <Tabs.List className="space-x-4">
+              <Tabs.Tab value="semuaKategori" className="uppercase">
+                semua kategori
               </Tabs.Tab>
-            ))}
-          </Tabs.List>
+              {assessmentCategories?.map((category) => (
+                <Tabs.Tab
+                  key={category.id}
+                  value={category.id.toString()}
+                  className="uppercase"
+                >
+                  {category.name}
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
 
-          <div className="mt-14 space-y-6">
-            {filteredAssessments?.map((assessment) => (
-              <TabsPanel
-                key={assessment.id}
-                name={assessment.name ?? ""}
-                category={
-                  assessmentCategories?.find(
-                    (cat) => cat.id === assessment.categoryId,
-                  )?.name ?? ""
-                }
-                value={activeCategory?.toString() ?? "semuaKategori"}
-              />
-            ))}
-          </div>
-        </Tabs>
+            <div className="mt-14 space-y-6">
+              {filteredAssessments?.map((assessment) => (
+                <TabsPanel
+                  key={assessment.id}
+                  id={assessment.id}
+                  name={assessment.name ?? ""}
+                  category={
+                    assessmentCategories?.find(
+                      (cat) => cat.id === assessment.categoryId,
+                    )?.name ?? ""
+                  }
+                  value={activeCategory?.toString() ?? "semuaKategori"}
+                />
+              ))}
+            </div>
+          </Tabs>
+        </div>
       </div>
     </DashboardSectionContainer>
   );

@@ -308,11 +308,11 @@ export function CreateOrUpdateAsesmenForm({
                   />
                 </div>
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Gambar Ilustrasi</div>
                   <FileInput
                     accept="image/*"
                     onChange={(file) => handleFileChange(index, file)}
-                    required={!step.hasImage}
+                    required
+                    label="Gambar Ilustrasi"
                     value={null}
                     placeholder={
                       step.hasImage

@@ -1,7 +1,7 @@
 "use client";
 
+import { GetAllStudentsBySchoolIdResponse } from "@/features/school/action/get-all-students-by-school-id";
 import { getAllStudentsBySchoolIdQueryOptions } from "@/features/school/action/get-all-students-by-school-id/query-options";
-import { GetSchoolRegistrantsBySchoolIdResponse } from "@/features/school/action/get-school-registrants";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
 import { Avatar } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
@@ -22,7 +22,7 @@ export function DaftarPemainTable({ schoolId }: { schoolId: string }) {
 
   // COLUMNS DEFINITION
   const columns = useMemo<
-    MRT_ColumnDef<GetSchoolRegistrantsBySchoolIdResponse[number]>[]
+    MRT_ColumnDef<GetAllStudentsBySchoolIdResponse[number]>[]
   >(
     () => [
       {

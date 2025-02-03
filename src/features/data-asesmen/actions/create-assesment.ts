@@ -11,7 +11,9 @@ import { zfd } from "zod-form-data";
 const StepSchema = z.object({
   procedure: z.string().min(1),
   image: z
-    .instanceof(File)
+    .instanceof(File, {
+      message: "Langkah asesmen harus disertai gambar ilustrasi",
+    })
     .refine((val) => val.size < 1024 * 1024 * 5, {
       message: "File foto maksimal 5MB",
     })
@@ -40,7 +42,7 @@ export async function createAssesment(prevState: any, formData: FormData) {
 
     return {
       error: {
-        general: errorFormatted._errors || errorFormatted.images[0]?._errors,
+        general: errorFormatted.steps?.[0].image?._errors,
         nama: errorFormatted.nama?._errors,
         kategori: errorFormatted.kategori?._errors,
         satuan: errorFormatted.satuan?._errors,

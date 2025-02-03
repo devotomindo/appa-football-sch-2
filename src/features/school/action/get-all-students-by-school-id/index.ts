@@ -3,6 +3,7 @@
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { schoolRoleMembers, userProfiles } from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
+import { calculateAge, getAgeGroup } from "@/lib/utils/age";
 import { getStorageBucketAndPath } from "@/lib/utils/supabase";
 import { and, eq } from "drizzle-orm";
 import { cache } from "react";
@@ -25,6 +26,7 @@ export const getAllStudentsBySchoolId = cache(async function (
       userFullName: userProfiles.name,
       userAvatarPath: userProfiles.avatarPath,
       userUpdatedAt: userProfiles.updatedAt,
+      userBirthDate: userProfiles.birthDate,
     })
     .from(schoolRoleMembers)
     .leftJoin(userProfiles, eq(schoolRoleMembers.userId, userProfiles.id))
@@ -38,8 +40,13 @@ export const getAllStudentsBySchoolId = cache(async function (
 
   return Promise.all(
     results.map(async (result) => {
+      const age = result.userBirthDate
+        ? calculateAge(new Date(result.userBirthDate))
+        : null;
+      const ageGroup = age ? getAgeGroup(age) : null;
+
       if (!result.userAvatarPath) {
-        return { ...result, userImageUrl: null };
+        return { ...result, userImageUrl: null, age, ageGroup };
       }
 
       const { bucket, path } = getStorageBucketAndPath(result.userAvatarPath);
@@ -51,6 +58,8 @@ export const getAllStudentsBySchoolId = cache(async function (
       return {
         ...result,
         userImageUrl,
+        age,
+        ageGroup,
       };
     }),
   );

@@ -1,57 +1,54 @@
+"use client";
+
 import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
-import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { PesertaAsesmenTable } from "@/features/assesmen-pemain/components/table/peserta-asesmen-table";
+import { SchoolSession } from "@/lib/session";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import { getAssessmentByIdQueryOptions } from "../../actions/get-assesment-by-id/query-options";
 
-const mekanismeAsesmen = [
-  {
-    langkah: "langkah pertama",
-    deskripsi: "Peserta asesmen bersiap dengan posisi push up",
-  },
-  {
-    langkah: "langkah kedua",
-    deskripsi:
-      "Peserta asesmen melakukan push up sebanyak-banyaknya dalam waktu 1 menit",
-  },
-  {
-    langkah: "langkah ketiga",
-    deskripsi:
-      "Penguji menyimpan perolehan jumlah push up yang didapat oleh peserta",
-  },
-];
-
-export default async function AsesmenDetail({
-  params,
+export function AssessmentCoachView({
+  id,
+  schoolSession,
 }: {
-  params: Promise<{ name: string }>;
+  id: string;
+  schoolSession: SchoolSession;
 }) {
-  const { name } = await params;
+  const { data: assessment, isLoading } = useQuery(
+    getAssessmentByIdQueryOptions(id),
+  );
+
+  if (isLoading || !assessment) {
+    return <p>Loading...</p>;
+  }
 
   return (
-    <DashboardSectionContainer>
+    <div>
       <p className="font-bold uppercase">asesmen</p>
       <p className="text-5xl uppercase tracking-wider text-[#E92222]">
-        {name.split("-").join(" ")}
+        {assessment.name}
       </p>
       <div className="space-y-4 py-16">
         <p className="text-xl font-bold uppercase">mekanisme asesmen</p>
         <div className="grid grid-cols-3 gap-5">
-          {mekanismeAsesmen.map((item, index) => (
+          {assessment.illustrations.map((item, index) => (
             <BlackBackgroundContainer key={index}>
               <div className="relative z-10 grid h-full grid-cols-2 items-center gap-10">
                 <div className="h-full w-full">
                   <Image
-                    src={"/ball-2.jpg"}
-                    alt=""
+                    src={item.imageUrl}
+                    alt={item.procedure}
                     width={500}
                     height={500}
                     className="h-full w-full rounded-xl object-cover"
                   />
                 </div>
                 <div className="flex h-full flex-col gap-4">
-                  <p className="text-xl font-bold uppercase">{item.langkah}</p>
+                  <p className="text-lg font-bold capitalize">
+                    Langkah {index + 1}
+                  </p>
                   <p className="text-lg font-light capitalize">
-                    {item.deskripsi}
+                    {item.procedure}
                   </p>
                 </div>
               </div>
@@ -59,7 +56,7 @@ export default async function AsesmenDetail({
           ))}
         </div>
       </div>
-      <PesertaAsesmenTable />
-    </DashboardSectionContainer>
+      <PesertaAsesmenTable assessmentId={id} schoolId={schoolSession.id} />
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import {
   bigint,
   boolean,
   date,
+  doublePrecision,
   jsonb,
   numeric,
   pgSchema,
@@ -260,6 +261,25 @@ export const assessmentIllustrations = pgTable("assessment_illustrations", {
   imagePath: text("image_path").notNull(),
   procedure: text("procedure").notNull(),
   orderNumber: smallint("order_number").notNull(),
+});
+
+export const assessmentSessions = pgTable("assessment_sessions", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  assessmentId: uuid("assessment_id").references(() => assessments.id),
+  isCompleted: boolean("is_completed").notNull().default(false),
+});
+
+export const assessmentRecords = pgTable("assessment_records", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  assessmentSessionId: uuid("assessment_session_id")
+    .references(() => assessmentSessions.id)
+    .notNull(),
+  studentId: uuid("student_id")
+    .references(() => userProfiles.id)
+    .notNull(),
+  score: doublePrecision("score"),
 });
 
 export const proPlayers = pgTable("pro_players", {
