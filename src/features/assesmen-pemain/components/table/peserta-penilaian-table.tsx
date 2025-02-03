@@ -1,7 +1,7 @@
 "use client";
 
-import { GetAllStudentsBySchoolIdResponse } from "@/features/school/action/get-all-students-by-school-id";
-import { getAllStudentsBySchoolIdQueryOptions } from "@/features/school/action/get-all-students-by-school-id/query-options";
+import { GetStudentsBeingGradedByPenilaianIdResponse } from "@/features/data-asesmen/actions/get-students-being-graded-by-penilaian-id";
+import { getStudentsBeingGradedByPenilaianIdQueryOptions } from "@/features/data-asesmen/actions/get-students-being-graded-by-penilaian-id/query-options";
 import { Avatar, Tabs } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -10,22 +10,18 @@ import {
   useMantineReactTable,
 } from "mantine-react-table";
 import { useMemo, useState } from "react";
-import { MulaiAsesmenPemainForm } from "../form/mulai-asesmen-pemain-form";
 
 const AGE_GROUPS = ["Semua", "5-8", "9-12", "13-15", "16-18", "Other"] as const;
 
-export function PesertaAsesmenTable({
-  assessmentId,
-  schoolId,
+export function PesertaPenilaianTable({
+  penilaianId,
 }: {
-  assessmentId: string;
-  schoolId: string;
+  penilaianId: string;
 }) {
   const [activeTab, setActiveTab] = useState<string>("Semua");
-  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const schoolStudents = useQuery(
-    getAllStudentsBySchoolIdQueryOptions(schoolId),
+    getStudentsBeingGradedByPenilaianIdQueryOptions(penilaianId),
   );
 
   const groupedStudents = useMemo(() => {
@@ -50,7 +46,7 @@ export function PesertaAsesmenTable({
   }, [schoolStudents.data]);
 
   const columns = useMemo<
-    MRT_ColumnDef<GetAllStudentsBySchoolIdResponse[number]>[]
+    MRT_ColumnDef<GetStudentsBeingGradedByPenilaianIdResponse[number]>[]
   >(
     () => [
       {
@@ -83,10 +79,6 @@ export function PesertaAsesmenTable({
   const table = useMantineReactTable({
     columns,
     data: groupedStudents[activeTab] ?? [],
-    enableRowSelection: true,
-    state: { rowSelection },
-    onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.userId,
   });
 
   return (
@@ -121,11 +113,6 @@ export function PesertaAsesmenTable({
             ))}
           </Tabs.List>
         </Tabs>
-
-        <MulaiAsesmenPemainForm
-          assessmentId={assessmentId}
-          studentIds={Object.keys(rowSelection)}
-        />
       </div>
 
       <MantineReactTable table={table} />

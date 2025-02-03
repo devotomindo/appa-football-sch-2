@@ -40,26 +40,40 @@ export async function createStudentAssessment(
         .returning({ id: assessmentSessions.id })
         .then((res) => res[0].id);
 
-      // Insert Student Assessment Records concurrently
-      await Promise.all(
-        validationResult.data.studentIds.map((studentId: string) => {
-          tx.insert(assessmentRecords).values({
-            id: uuidv7(),
-            studentId: studentId,
-            assessmentSessionId: assessmentSessionId,
-          });
-        }),
-      );
+      // Insert Student Assessment Records concurrently and ensure they all complete
+      try {
+        await Promise.all(
+          validationResult.data.studentIds.map((studentId: string) => {
+            console.log("Inserting assessment record for student:", studentId);
 
-      result = {
-        message: "Sesi Asesmen Dimulai",
-        assessmentSessionId,
-      };
+            tx.insert(assessmentRecords)
+              .values({
+                id: uuidv7(),
+                studentId: studentId,
+                assessmentSessionId: assessmentSessionId,
+              })
+              .execute();
+          }),
+        );
+
+        // Only set result if all operations succeeded
+        result = {
+          message: "Sesi Asesmen Dimulai",
+          assessmentSessionId,
+        };
+      } catch (error) {
+        console.error("Failed to insert assessment records:", error);
+        throw error; // This will trigger transaction rollback
+      }
     });
 
+    // Only return success if we have a result
+    if (!result) {
+      throw new Error("Transaction failed to complete");
+    }
     return result;
   } catch (error) {
-    console.error("Transaction error:", error); // Add this for debugging
+    console.error("Transaction error:", error);
     return {
       error: {
         general: "Terjadi kesalahan saat membuat sesi asesmen",
