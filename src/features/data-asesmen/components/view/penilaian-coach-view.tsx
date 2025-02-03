@@ -2,18 +2,11 @@
 
 import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
 import { PesertaPenilaianTable } from "@/features/assesmen-pemain/components/table/peserta-penilaian-table";
-import { SchoolSession } from "@/lib/session";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { getPenilaianByIdQueryOptions } from "../../actions/get-penilaian-by-id/query-options";
 
-export function PenilaianCoachView({
-  id,
-  schoolSession,
-}: {
-  id: string;
-  schoolSession: SchoolSession;
-}) {
+export function PenilaianCoachView({ id }: { id: string }) {
   const { data: assessment, isLoading } = useQuery(
     getPenilaianByIdQueryOptions(id),
   );
