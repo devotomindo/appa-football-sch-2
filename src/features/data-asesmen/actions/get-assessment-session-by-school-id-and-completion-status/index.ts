@@ -30,6 +30,10 @@ export async function getAssessmentSessionBySchoolIdAndCompletionStatus({
   schoolId,
   isCompleted,
 }: GetAssessmentSessionBySchoolIdAndCompletionStatusParams) {
+  if (!schoolId) {
+    return [];
+  }
+
   const db = createDrizzleConnection();
 
   const conditions = [eq(assessmentSessions.schoolId, schoolId)];

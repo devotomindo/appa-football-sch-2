@@ -13,25 +13,27 @@ import Link from "next/link";
 
 export function DaftarAsesmenView() {
   const selectedSchool = useSchoolStore((state) => state);
-  const { data: schoolInfo } = useSchoolInfo(
-    selectedSchool.selectedSchool?.id ?? "",
-  );
+
+  const schoolId = selectedSchool.selectedSchool?.id ?? "";
+  const { data: schoolInfo } = useSchoolInfo(schoolId);
 
   // Query for ongoing assessments
-  const ongoingAssessmentsQuery = useQuery(
-    getAssessmentSessionBySchoolIdAndCompletionStatusQueryOptions({
-      schoolId: selectedSchool.selectedSchool?.id ?? "",
+  const ongoingAssessmentsQuery = useQuery({
+    ...getAssessmentSessionBySchoolIdAndCompletionStatusQueryOptions({
+      schoolId,
       isCompleted: false,
     }),
-  );
+    enabled: Boolean(schoolId), // Only run query when schoolId exists
+  });
 
   // Query for completed assessments
-  const completedAssessmentsQuery = useQuery(
-    getAssessmentSessionBySchoolIdAndCompletionStatusQueryOptions({
-      schoolId: selectedSchool.selectedSchool?.id ?? "",
+  const completedAssessmentsQuery = useQuery({
+    ...getAssessmentSessionBySchoolIdAndCompletionStatusQueryOptions({
+      schoolId,
       isCompleted: true,
     }),
-  );
+    enabled: Boolean(schoolId), // Only run query when schoolId exists
+  });
 
   // Consider it loading during hydration or when waiting for school info
   const isLoading = selectedSchool && !schoolInfo;

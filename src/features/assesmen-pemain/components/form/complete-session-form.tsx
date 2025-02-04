@@ -2,8 +2,10 @@
 
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { completeAssessmentSession } from "@/features/data-asesmen/actions/complete-assessment-session";
+import { getPenilaianByIdQueryOptions } from "@/features/data-asesmen/actions/get-penilaian-by-id/query-options";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
+import { useQueryClient } from "@tanstack/react-query";
 import { startTransition, useActionState, useEffect } from "react";
 
 export function CompleteSessionForm({
@@ -18,12 +20,20 @@ export function CompleteSessionForm({
     undefined,
   );
 
+  const queryClient = useQueryClient();
+
   const actionEffectEvent = useEffectEvent((state: typeof actionState) => {
     if (state) {
       formStateNotificationHelper({
         state,
         successCallback: () => {
           onSuccess?.();
+
+          // Invalidate the query to refetch the data
+          queryClient.invalidateQueries(
+            getPenilaianByIdQueryOptions(sessionId),
+            // Todo: Invalidate getAssessmentSessionBySchoolIdAndCompletionStatusQueryOptions
+          );
         },
       });
     }
