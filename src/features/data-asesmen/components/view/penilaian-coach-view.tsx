@@ -54,7 +54,10 @@ export function PenilaianCoachView({ id }: { id: string }) {
             ))}
           </div>
         </div>
-        <PesertaPenilaianTable penilaianId={id} />
+        <PesertaPenilaianTable
+          penilaianId={id}
+          gradeMetric={assessment.grademetricName ?? undefined}
+        />
       </div>
     );
   }

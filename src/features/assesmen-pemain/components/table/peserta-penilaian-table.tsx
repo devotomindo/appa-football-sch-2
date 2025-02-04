@@ -2,7 +2,9 @@
 
 import { GetStudentsBeingGradedByPenilaianIdResponse } from "@/features/data-asesmen/actions/get-students-being-graded-by-penilaian-id";
 import { getStudentsBeingGradedByPenilaianIdQueryOptions } from "@/features/data-asesmen/actions/get-students-being-graded-by-penilaian-id/query-options";
-import { Avatar, Tabs } from "@mantine/core";
+import { ActionIcon, Avatar, Badge, Button, Modal, Tabs } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   MantineReactTable,
@@ -10,13 +12,17 @@ import {
   useMantineReactTable,
 } from "mantine-react-table";
 import { useMemo, useState } from "react";
+import { CompleteSessionForm } from "../form/complete-session-form";
+import { RecordPenilaianForm } from "../form/record-penilaian-form";
 
 const AGE_GROUPS = ["Semua", "5-8", "9-12", "13-15", "16-18", "Other"] as const;
 
 export function PesertaPenilaianTable({
   penilaianId,
+  gradeMetric,
 }: {
   penilaianId: string;
+  gradeMetric?: string;
 }) {
   const [activeTab, setActiveTab] = useState<string>("Semua");
 
@@ -45,6 +51,57 @@ export function PesertaPenilaianTable({
     );
   }, [schoolStudents.data]);
 
+  // Track modified values and their original values
+  const [modifiedScores, setModifiedScores] = useState<
+    Map<
+      string,
+      {
+        original: number | undefined;
+        current: number | undefined;
+      }
+    >
+  >(new Map());
+
+  const handleScoreChange = (
+    recordId: string,
+    newValue: number | undefined,
+    originalValue: number | null | undefined, // Update type to include null
+  ) => {
+    setModifiedScores((prev) => {
+      const next = new Map(prev);
+      // Only track if value is different from original (accounting for null)
+      if (newValue !== (originalValue ?? undefined)) {
+        next.set(recordId, {
+          original: originalValue ?? undefined,
+          current: newValue,
+        });
+      } else {
+        next.delete(recordId); // Remove if value matches original
+      }
+      return next;
+    });
+  };
+
+  const handleScoreSaved = (
+    recordId: string,
+    newValue: number | undefined | null,
+  ) => {
+    setModifiedScores((prev) => {
+      const next = new Map(prev);
+      // Remove from modified scores and update schoolStudents data
+      next.delete(recordId);
+
+      // Update the data in the table
+      schoolStudents.data?.forEach((student) => {
+        if (student.id === recordId) {
+          student.score = newValue ?? null;
+        }
+      });
+
+      return next;
+    });
+  };
+
   const columns = useMemo<
     MRT_ColumnDef<GetStudentsBeingGradedByPenilaianIdResponse[number]>[]
   >(
@@ -72,14 +129,58 @@ export function PesertaPenilaianTable({
         header: "Umur",
         filterFn: "contains",
       },
+      {
+        header: `Nilai (${gradeMetric})`,
+        Cell: ({ row }) => {
+          const hasRealChanges = modifiedScores.has(row.original.id);
+          return (
+            <div className="flex items-center gap-2">
+              <RecordPenilaianForm
+                recordId={row.original.id}
+                score={row.original.score ?? undefined}
+                onSuccess={() =>
+                  handleScoreSaved(row.original.id, row.original.score)
+                }
+                onChange={(newValue) =>
+                  handleScoreChange(
+                    row.original.id,
+                    newValue,
+                    row.original.score ?? undefined,
+                  )
+                }
+              />
+              {hasRealChanges && (
+                <ActionIcon radius={"xl"} color="yellow">
+                  <IconAlertCircle />
+                </ActionIcon>
+              )}
+            </div>
+          );
+        },
+      },
     ],
-    [],
+    [modifiedScores, schoolStudents.data], // Add schoolStudents.data to dependencies
   );
 
   const table = useMantineReactTable({
     columns,
     data: groupedStudents[activeTab] ?? [],
   });
+
+  const [isEndModalOpen, setIsEndModalOpen] = useState(false);
+
+  const handleCompleteSession = () => {
+    if (modifiedScores.size > 0) {
+      notifications.show({
+        color: "yellow",
+        title: "Perubahan Belum Tersimpan",
+        message: `Terdapat ${modifiedScores.size} nilai yang belum tersimpan. Harap simpan semua perubahan sebelum menyelesaikan sesi.`,
+      });
+      return;
+    }
+
+    setIsEndModalOpen(true);
+  };
 
   return (
     <div className="space-y-4">
@@ -116,6 +217,30 @@ export function PesertaPenilaianTable({
       </div>
 
       <MantineReactTable table={table} />
+
+      <div className="mt-6 flex items-center justify-end gap-4">
+        {modifiedScores.size > 0 && (
+          <Badge color="yellow" size="lg">
+            {modifiedScores.size} perubahan belum tersimpan
+          </Badge>
+        )}
+        <Button color="green" onClick={handleCompleteSession} className="px-6">
+          Selesaikan Penilaian
+        </Button>
+      </div>
+
+      <Modal
+        title="Selesaikan Penilaian"
+        opened={isEndModalOpen}
+        onClose={() => setIsEndModalOpen(false)}
+      >
+        <CompleteSessionForm
+          sessionId={penilaianId}
+          onSuccess={() => {
+            setIsEndModalOpen(false);
+          }}
+        />
+      </Modal>
     </div>
   );
 }

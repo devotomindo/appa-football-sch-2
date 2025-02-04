@@ -21,6 +21,7 @@ export const getStudentsBeingGradedByPenilaianId = cache(async function (
   const results = await db
     .select({
       id: assessmentRecords.id,
+      score: assessmentRecords.score,
       userFullName: userProfiles.name,
       userAvatarPath: userProfiles.avatarPath,
       userUpdatedAt: userProfiles.updatedAt,
