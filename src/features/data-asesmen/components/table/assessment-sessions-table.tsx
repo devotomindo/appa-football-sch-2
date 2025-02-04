@@ -46,6 +46,15 @@ export function AssessmentSessionsTable({
         filterVariant: "date-range",
       },
       {
+        accessorFn: (row) =>
+          row.completedAt
+            ? dayjs(row.completedAt).format("DD/MM/YYYY, HH:mm")
+            : "-",
+        id: "completedAt",
+        header: "Tanggal Selesai",
+        filterVariant: "date-range",
+      },
+      {
         header: "Aksi",
         size: 100,
         Cell: ({ row }) => (

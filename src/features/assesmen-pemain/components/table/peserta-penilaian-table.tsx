@@ -19,9 +19,11 @@ const AGE_GROUPS = ["Semua", "5-8", "9-12", "13-15", "16-18", "Other"] as const;
 
 export function PesertaPenilaianTable({
   penilaianId,
+  isPenilaianCompleted,
   gradeMetric,
 }: {
   penilaianId: string;
+  isPenilaianCompleted: boolean;
   gradeMetric?: string;
 }) {
   const [activeTab, setActiveTab] = useState<string>("Semua");
@@ -132,30 +134,38 @@ export function PesertaPenilaianTable({
       {
         header: `Nilai (${gradeMetric})`,
         Cell: ({ row }) => {
-          const hasRealChanges = modifiedScores.has(row.original.id);
-          return (
-            <div className="flex items-center gap-2">
-              <RecordPenilaianForm
-                recordId={row.original.id}
-                score={row.original.score ?? undefined}
-                onSuccess={() =>
-                  handleScoreSaved(row.original.id, row.original.score)
-                }
-                onChange={(newValue) =>
-                  handleScoreChange(
-                    row.original.id,
-                    newValue,
-                    row.original.score ?? undefined,
-                  )
-                }
-              />
-              {hasRealChanges && (
-                <ActionIcon radius={"xl"} color="yellow">
-                  <IconAlertCircle />
-                </ActionIcon>
-              )}
-            </div>
-          );
+          if (!isPenilaianCompleted) {
+            const hasRealChanges = modifiedScores.has(row.original.id);
+            return (
+              <div className="flex items-center gap-2">
+                <RecordPenilaianForm
+                  recordId={row.original.id}
+                  score={row.original.score ?? undefined}
+                  onSuccess={() =>
+                    handleScoreSaved(row.original.id, row.original.score)
+                  }
+                  onChange={(newValue) =>
+                    handleScoreChange(
+                      row.original.id,
+                      newValue,
+                      row.original.score ?? undefined,
+                    )
+                  }
+                />
+                {hasRealChanges && (
+                  <ActionIcon radius={"xl"} color="yellow">
+                    <IconAlertCircle />
+                  </ActionIcon>
+                )}
+              </div>
+            );
+          } else {
+            return (
+              <div className="flex items-center gap-2">
+                {row.original.score ?? "-"}
+              </div>
+            );
+          }
         },
       },
     ],
@@ -224,9 +234,15 @@ export function PesertaPenilaianTable({
             {modifiedScores.size} perubahan belum tersimpan
           </Badge>
         )}
-        <Button color="green" onClick={handleCompleteSession} className="px-6">
-          Selesaikan Penilaian
-        </Button>
+        {!isPenilaianCompleted && (
+          <Button
+            color="green"
+            onClick={handleCompleteSession}
+            className="px-6"
+          >
+            Selesaikan Penilaian
+          </Button>
+        )}
       </div>
 
       <Modal

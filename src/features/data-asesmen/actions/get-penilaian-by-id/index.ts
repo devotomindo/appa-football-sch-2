@@ -16,6 +16,15 @@ export async function getPenilaianById(id: string) {
   const db = createDrizzleConnection();
   const supabase = await createServerClient();
 
+  const completedAt = await db
+    .select({
+      completedAt: assessmentSessions.completedAt,
+    })
+    .from(assessmentSessions)
+    .where(eq(assessmentSessions.id, id))
+    .limit(1)
+    .then((res) => res[0].completedAt);
+
   const assessmentId = await db
     .select({
       assessmentId: assessmentSessions.assessmentId,
@@ -73,5 +82,6 @@ export async function getPenilaianById(id: string) {
     categoryName: assessment.categoryName,
     grademetricName: assessment.grademetricName,
     illustrations: illustrationUrls,
+    completedAt,
   };
 }

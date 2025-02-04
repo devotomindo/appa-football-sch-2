@@ -272,7 +272,7 @@ export const assessmentSessions = pgTable("assessment_sessions", {
   schoolId: uuid("school_id")
     .references(() => schools.id)
     .notNull(),
-  isCompleted: boolean("is_completed").notNull().default(false),
+  completedAt: timestamp("completed_at"),
 });
 
 export const assessmentRecords = pgTable("assessment_records", {

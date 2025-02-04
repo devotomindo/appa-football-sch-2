@@ -31,19 +31,19 @@ export async function completeAssessmentSession(
       await tx
         .update(assessmentSessions)
         .set({
-          isCompleted: true,
+          completedAt: new Date(),
         })
         .where(eq(assessmentSessions.id, validationResult.data.sessionId));
     });
 
     return {
-      message: "Session berhasil diselesaikan",
+      message: "Sesi berhasil diselesaikan",
     };
   } catch (error) {
     console.error("Error: ", error);
     return {
       error: {
-        general: "Gagal menyelesaikan session",
+        general: "Gagal menyelesaikan sesi",
       },
     };
   }

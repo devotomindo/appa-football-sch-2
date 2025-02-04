@@ -70,7 +70,11 @@ export function DaftarAsesmenView() {
       <div className="mt-10 space-y-4">
         <div className="flex items-center justify-between">
           <p className="font-bold uppercase">daftar asesmen</p>
-          <Button component={Link} href="/dashboard/asesmen/baru" color="blue">
+          <Button
+            component={Link}
+            href="/dashboard/asesmen-pemain"
+            color="blue"
+          >
             Sesi Baru
           </Button>
         </div>

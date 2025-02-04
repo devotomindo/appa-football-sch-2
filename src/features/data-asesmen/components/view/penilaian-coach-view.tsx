@@ -56,6 +56,7 @@ export function PenilaianCoachView({ id }: { id: string }) {
         </div>
         <PesertaPenilaianTable
           penilaianId={id}
+          isPenilaianCompleted={assessment.completedAt !== null}
           gradeMetric={assessment.grademetricName ?? undefined}
         />
       </div>
