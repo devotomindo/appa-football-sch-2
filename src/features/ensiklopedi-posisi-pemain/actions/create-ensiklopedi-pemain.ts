@@ -1,16 +1,12 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import {
-  formationPositioning,
-  formations,
-  positions,
-} from "@/db/drizzle/schema";
+import { formationPositioning, formations } from "@/db/drizzle/schema";
 import {
   multipleImageUploader,
   singleImageUploader,
 } from "@/lib/utils/image-uploader";
-import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -21,23 +17,25 @@ export async function createEnskilopediPemain(
 ) {
   const validationResult = await zfd
     .formData({
-      nama: zfd.text(z.string().min(1)),
+      nama: zfd.text(z.string().min(3, "Nama formasi minimal 3 karakter")),
       deskripsi: zfd.text(z.string().min(1)),
-      posisi: zfd.repeatable(z.array(z.string())),
+      posisi: zfd.repeatable(
+        z.array(zfd.repeatable(z.array(z.string().nonempty()))),
+      ),
       karakter: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string().min(1)))),
       ),
       posisiMenyerang: zfd.repeatable(
-        z.array(zfd.repeatable(z.array(z.string().min(1)))),
+        z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
       posisiBertahan: zfd.repeatable(
-        z.array(zfd.repeatable(z.array(z.string().min(1)))),
+        z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
       gambarPosisiMenyerang: zfd.repeatable(
-        z.array(zfd.file(z.instanceof(File))),
+        z.array(zfd.file(z.instanceof(File).optional())),
       ),
       gambarPosisiBertahan: zfd.repeatable(
-        z.array(zfd.file(z.instanceof(File))),
+        z.array(zfd.file(z.instanceof(File).optional())),
       ),
       gambarFormasiAsli: zfd.file(z.instanceof(File)),
       gambarTransisiMenyerang: zfd.file(z.instanceof(File)),
@@ -45,14 +43,12 @@ export async function createEnskilopediPemain(
     })
     .safeParseAsync(formData);
 
-  const db = createDrizzleConnection();
-
   if (!validationResult.success) {
     const errorFormatted = validationResult.error.format() as any;
 
     return {
       error: {
-        general: undefined,
+        general: "Terjadi kesalahan saat menyimpan data. Mohon dicek kembali",
         nama: errorFormatted.nama?._errors,
         deskripsi: errorFormatted.deskripsi?._errors,
         posisi: errorFormatted.posisi?._errors,
@@ -69,14 +65,20 @@ export async function createEnskilopediPemain(
     };
   }
 
+  const db = createDrizzleConnection();
+
   try {
     const { URLs: gambarPosisiMenyerangURLs } = await multipleImageUploader(
-      validationResult.data.gambarPosisiMenyerang,
+      validationResult.data.gambarPosisiMenyerang.filter(
+        (file): file is File => file !== undefined,
+      ),
       "offense_illustration",
     );
 
     const { URLs: gambarPosisiBertahanURLs } = await multipleImageUploader(
-      validationResult.data.gambarPosisiBertahan,
+      validationResult.data.gambarPosisiBertahan.filter(
+        (file): file is File => file !== undefined,
+      ),
       "defense_illustration",
     );
 
@@ -111,37 +113,32 @@ export async function createEnskilopediPemain(
         defenseTransitionImagePath: gambarTransisiBertahanURL,
       });
 
-      // Get position IDs for the selected positions
-      const positionRecords = [];
-      for (const position of validationResult.data.posisi) {
-        const id = await tx
-          .select({ id: positions.id })
-          .from(positions)
-          .where(eq(positions.name, position));
-        positionRecords.push(id[0]); // Get first result since position names should be unique
-      }
-
       // Insert formation-position relationships
-      for (let i = 0; i < positionRecords.length; i++) {
+      for (let i = 0; i < validationResult.data.posisi.length; i++) {
         await tx.insert(formationPositioning).values({
           id: uuidv7(),
           formationId: idFormations,
-          positionId: positionRecords[i].id,
+          positionId: validationResult.data.posisi[i][0],
           characteristics: validationResult.data.karakter[i],
-          offenseDescription: validationResult.data.posisiMenyerang[i],
-          offenseIllustrationPath: gambarPosisiMenyerangURLs[i].fullPath,
-          defenseDescription: validationResult.data.posisiBertahan[i],
-          defenseIllustrationPath: gambarPosisiBertahanURLs[i].fullPath,
+          offenseDescription: validationResult.data.posisiMenyerang?.[i] ?? [],
+          offenseIllustrationPath: gambarPosisiMenyerangURLs[i]?.fullPath,
+          defenseDescription: validationResult.data.posisiBertahan?.[i] ?? [],
+          defenseIllustrationPath: gambarPosisiBertahanURLs[i]?.fullPath,
           positionNumber: i + 1,
         });
       }
     });
   } catch (error: any) {
+    console.error("Error creating ensiklopedi:", error);
     return {
       success: false,
-      message: error.message,
+      error: {
+        general: error.message || "Terjadi kesalahan saat menyimpan data",
+      },
     };
   }
+
+  revalidatePath("/dashboard/admin/ensiklopedi-posisi-pemain");
 
   return {
     success: true,

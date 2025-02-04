@@ -1,12 +1,19 @@
 "use client";
 
-import { FileInput } from "@mantine/core";
+import { Button, FileInput } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export function PosisiMenyerangImageInput({ posisi }: { posisi: number }) {
+export function PosisiMenyerangImageInput({
+  posisi,
+  defaultValue,
+}: {
+  posisi: number;
+  defaultValue?: string;
+}) {
   const [gambar, setGambar] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState<string>(defaultValue || "");
 
   useEffect(() => {
     if (gambar) {
@@ -15,6 +22,11 @@ export function PosisiMenyerangImageInput({ posisi }: { posisi: number }) {
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
+
+  const handleClear = () => {
+    setGambar(null);
+    setPreview("");
+  };
 
   return (
     <div className="">
@@ -27,6 +39,15 @@ export function PosisiMenyerangImageInput({ posisi }: { posisi: number }) {
             width={500}
             height={500}
           />
+          <Button
+            leftSection={<IconTrash size={16} />}
+            variant="light"
+            color="red"
+            className="absolute right-2 top-2"
+            onClick={handleClear}
+          >
+            Hapus
+          </Button>
         </div>
       )}
       <FileInput
@@ -43,9 +64,15 @@ export function PosisiMenyerangImageInput({ posisi }: { posisi: number }) {
   );
 }
 
-export function PosisiBertahanImageInput({ posisi }: { posisi: number }) {
+export function PosisiBertahanImageInput({
+  posisi,
+  defaultValue,
+}: {
+  posisi: number;
+  defaultValue?: string;
+}) {
   const [gambar, setGambar] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState<string>(defaultValue || "");
 
   useEffect(() => {
     if (gambar) {
@@ -54,6 +81,11 @@ export function PosisiBertahanImageInput({ posisi }: { posisi: number }) {
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
+
+  const handleClear = () => {
+    setGambar(null);
+    setPreview("");
+  };
 
   return (
     <div className="">
@@ -66,6 +98,15 @@ export function PosisiBertahanImageInput({ posisi }: { posisi: number }) {
             width={500}
             height={500}
           />
+          <Button
+            leftSection={<IconTrash size={16} />}
+            variant="light"
+            color="red"
+            className="absolute right-2 top-2"
+            onClick={handleClear}
+          >
+            Hapus
+          </Button>
         </div>
       )}
       <FileInput
@@ -82,9 +123,13 @@ export function PosisiBertahanImageInput({ posisi }: { posisi: number }) {
   );
 }
 
-export function FormasiAsliImageInput() {
+export function FormasiAsliImageInput({
+  defaultValue,
+}: {
+  defaultValue?: string;
+}) {
   const [gambar, setGambar] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState<string>(defaultValue || "");
 
   useEffect(() => {
     if (gambar) {
@@ -94,6 +139,11 @@ export function FormasiAsliImageInput() {
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
+
+  const handleClear = () => {
+    setGambar(null);
+    setPreview("");
+  };
 
   return (
     <div>
@@ -106,6 +156,15 @@ export function FormasiAsliImageInput() {
             width={500}
             height={500}
           />
+          <Button
+            leftSection={<IconTrash size={16} />}
+            variant="light"
+            color="red"
+            className="absolute right-2 top-2"
+            onClick={handleClear}
+          >
+            Hapus
+          </Button>
         </div>
       )}
       <FileInput
@@ -121,9 +180,13 @@ export function FormasiAsliImageInput() {
   );
 }
 
-export function TransisiMenyerangImageInput() {
+export function TransisiMenyerangImageInput({
+  defaultValue,
+}: {
+  defaultValue?: string;
+}) {
   const [gambar, setGambar] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState<string>(defaultValue || "");
 
   useEffect(() => {
     if (gambar) {
@@ -132,6 +195,11 @@ export function TransisiMenyerangImageInput() {
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
+
+  const handleClear = () => {
+    setGambar(null);
+    setPreview("");
+  };
 
   return (
     <div className="">
@@ -144,6 +212,15 @@ export function TransisiMenyerangImageInput() {
             width={500}
             height={500}
           />
+          <Button
+            leftSection={<IconTrash size={16} />}
+            variant="light"
+            color="red"
+            className="absolute right-2 top-2"
+            onClick={handleClear}
+          >
+            Hapus
+          </Button>
         </div>
       )}
       <FileInput
@@ -159,9 +236,13 @@ export function TransisiMenyerangImageInput() {
   );
 }
 
-export function TransisiBertahanImageInput() {
+export function TransisiBertahanImageInput({
+  defaultValue,
+}: {
+  defaultValue?: string;
+}) {
   const [gambar, setGambar] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState<string>(defaultValue || "");
 
   useEffect(() => {
     if (gambar) {
@@ -170,6 +251,11 @@ export function TransisiBertahanImageInput() {
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
+
+  const handleClear = () => {
+    setGambar(null);
+    setPreview("");
+  };
 
   return (
     <div className="">
@@ -182,6 +268,15 @@ export function TransisiBertahanImageInput() {
             width={500}
             height={500}
           />
+          <Button
+            leftSection={<IconTrash size={16} />}
+            variant="light"
+            color="red"
+            className="absolute right-2 top-2"
+            onClick={handleClear}
+          >
+            Hapus
+          </Button>
         </div>
       )}
       <FileInput

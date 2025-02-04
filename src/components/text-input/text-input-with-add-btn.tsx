@@ -76,11 +76,13 @@ export function TextInputWithAddBtn({
 export function KarakterInput({
   posisi,
   error,
+  defaultValue = [""],
 }: {
   posisi: number;
   error?: string;
+  defaultValue?: string[];
 }) {
-  const [karakter, setKarakter] = useState<string[]>([""]);
+  const [karakter, setKarakter] = useState<string[]>(defaultValue);
 
   return (
     <TextInputWithAddBtn
@@ -93,8 +95,15 @@ export function KarakterInput({
   );
 }
 
-export function PosisiMenyerangInput({ posisi }: { posisi: number }) {
-  const [posisiMenyerang, setPosisiMenyerang] = useState<string[]>([""]);
+export function PosisiMenyerangInput({
+  posisi,
+  defaultValue = [""],
+}: {
+  posisi: number;
+  defaultValue?: string[];
+}) {
+  const [posisiMenyerang, setPosisiMenyerang] =
+    useState<string[]>(defaultValue);
 
   return (
     <TextInputWithAddBtn
@@ -106,8 +115,14 @@ export function PosisiMenyerangInput({ posisi }: { posisi: number }) {
   );
 }
 
-export function PosisiBertahanInput({ posisi }: { posisi: number }) {
-  const [posisiBertahan, setPosisiBertahan] = useState<string[]>([""]);
+export function PosisiBertahanInput({
+  posisi,
+  defaultValue = [""],
+}: {
+  posisi: number;
+  defaultValue?: string[];
+}) {
+  const [posisiBertahan, setPosisiBertahan] = useState<string[]>(defaultValue);
 
   return (
     <TextInputWithAddBtn

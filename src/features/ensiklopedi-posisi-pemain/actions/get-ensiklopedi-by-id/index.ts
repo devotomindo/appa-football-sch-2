@@ -8,8 +8,13 @@ import {
 } from "@/db/drizzle/schema";
 import { getImageURL } from "@/lib/utils/image-uploader";
 import { eq } from "drizzle-orm";
+import { cache } from "react";
 
-export async function getEnsiklopediById(id: string) {
+export type GetEnsiklopediByIdResponse = Awaited<
+  ReturnType<typeof getEnsiklopediById>
+>;
+
+export const getEnsiklopediById = cache(async function (id: string) {
   const db = createDrizzleConnection();
 
   return db
@@ -31,6 +36,7 @@ export async function getEnsiklopediById(id: string) {
 
       const daftarPosisi = await Promise.all(
         data.map(async (item) => ({
+          id: item.formation_positioning.id,
           idPosisi: item.positions?.id ?? "",
           namaPosisi: item.positions?.name ?? "",
           karakteristik: item.formation_positioning.characteristics,
@@ -51,6 +57,7 @@ export async function getEnsiklopediById(id: string) {
       );
 
       return {
+        idFormasi: data[0]?.formations?.id ?? "",
         namaFormasi: data[0]?.formations?.name ?? "",
         gambarFormasiDefault: gambarFormasiURL,
         gambarOffense: gambarOffenseURL,
@@ -61,4 +68,4 @@ export async function getEnsiklopediById(id: string) {
         ),
       };
     });
-}
+});

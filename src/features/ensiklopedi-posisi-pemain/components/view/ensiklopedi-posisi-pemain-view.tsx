@@ -40,18 +40,20 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
                     ? `/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${formasi.id}`
                     : `/dashboard/ensiklopedi-posisi-pemain/${formasi.id}`
                 }
+                className="flex justify-center"
               >
-                <div className="space-y-4 rounded-xl border-2 p-12 shadow-xl">
+                <div className="flex h-[400px] w-[300px] flex-col items-center gap-4 rounded-xl border-2 p-8 shadow-xl">
                   <p className="text-center text-xl font-bold uppercase">
                     formasi {formasi.namaFormasi}
                   </p>
-                  <div className="relative">
+                  <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
                     <Image
                       src={formasi.gambarFormasiDefault || "/formasi.png"}
                       alt="formasi default"
                       width={500}
                       height={500}
                       priority
+                      className="h-full w-full rounded-xl object-cover shadow-xl"
                     />
                   </div>
                 </div>

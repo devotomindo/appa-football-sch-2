@@ -13,6 +13,8 @@ import {
   PosisiMenyerangInput,
 } from "@/components/text-input/text-input-with-add-btn";
 import { GetAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
+import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
+import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
 import {
   Accordion,
   Alert,
@@ -24,16 +26,24 @@ import {
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { startTransition, useActionState, useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
+import {
+  FormEvent,
+  startTransition,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
 import { createEnskilopediPemain } from "../../actions/create-ensiklopedi-pemain";
+import { editEnskilopediPemain } from "../../actions/edit-enskilopedi-pemain";
+import { GetEnsiklopediByIdResponse } from "../../actions/get-ensiklopedi-by-id";
 
-interface PosisiData {
-  id: string;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// interface PosisiData {
+//   id: string;
+//   name: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
 
 const daftarPosisi = [
   {
@@ -71,12 +81,21 @@ const daftarPosisi = [
   },
 ];
 
-export function EnsiklopediPosisiPemainForm() {
+export function EnsiklopediPosisiPemainForm({
+  isEdit = false,
+  initialData,
+}: {
+  isEdit?: boolean;
+  initialData?: GetEnsiklopediByIdResponse;
+}) {
   const { data: posisiData } = useQuery(GetAllPositionsQueryOptions());
   const router = useRouter();
+  const [selectedPositions, setSelectedPositions] = useState<{
+    [key: string]: string;
+  }>({});
 
   const [actionState, actionDispatch, isActionPending] = useActionState(
-    createEnskilopediPemain,
+    isEdit ? editEnskilopediPemain : createEnskilopediPemain,
     null,
   );
 
@@ -93,45 +112,131 @@ export function EnsiklopediPosisiPemainForm() {
     }
   }, [actionState?.message, actionState?.success, router]);
 
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    startTransition(() => {
+      const formData = new FormData(e.currentTarget as HTMLFormElement);
+
+      // Append idFormasi if in edit mode
+      if (initialData?.idFormasi) {
+        formData.append("idFormasi", initialData.idFormasi);
+
+        // Append idPosisi for each position in edit mode
+        initialData.daftarPosisi.forEach((pos, index) => {
+          if (pos.idPosisi) {
+            formData.append(`idPosisiFormasi[${index}]`, pos.id);
+          }
+        });
+      }
+
+      actionDispatch(formData);
+    });
+  };
+
+  const actionEffectEvent = useEffectEvent((state: typeof actionState) => {
+    if (state) {
+      formStateNotificationHelper({
+        state,
+        successCallback: () => {
+          if (isEdit) {
+            redirect(
+              `/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${initialData?.idFormasi}`,
+            );
+          } else {
+            redirect("/dashboard/admin/ensiklopedi-posisi-pemain/");
+          }
+        },
+      });
+    }
+  });
+
+  useEffect(
+    () => actionEffectEvent(actionState),
+    [actionState, actionEffectEvent],
+  );
+
+  useEffect(() => {
+    if (initialData) {
+      // Set initial selected positions
+      const initialPositions: { [key: string]: string } = {};
+      initialData.daftarPosisi.forEach((pos, index) => {
+        initialPositions[`Posisi #${index + 1}`] = pos.idPosisi;
+      });
+      setSelectedPositions(initialPositions);
+    }
+  }, [initialData]);
+
   const items = daftarPosisi.map((item, index) => (
     <Accordion.Item key={item.value} value={item.value}>
       <Accordion.Control>{item.value}</Accordion.Control>
       <Accordion.Panel>
         <Select
           label="Pilih Posisi"
-          placeholder="Pick value"
           data={posisiData
-            ?.sort((a: PosisiData, b: PosisiData) =>
-              a.name.localeCompare(b.name),
+            ?.filter(
+              (position) =>
+                !Object.values(selectedPositions).includes(position.id) ||
+                selectedPositions[item.value] === position.id,
             )
-            .map((value) => value.name)}
+            .map((position) => ({
+              label: position.name,
+              value: position.id,
+            }))}
+          value={selectedPositions[item.value]}
+          onChange={(value) => {
+            setSelectedPositions((prev) => ({
+              ...prev,
+              [item.value]: value || "",
+            }));
+          }}
           searchable
-          name="posisi"
+          name={`posisi[${index}]`}
           error={actionState?.error?.posisi}
+          allowDeselect
         />
       </Accordion.Panel>
       <Accordion.Panel>
-        <KarakterInput posisi={index} error={actionState?.error?.karakter} />
+        <KarakterInput
+          posisi={index}
+          error={actionState?.error?.karakter}
+          defaultValue={
+            initialData?.daftarPosisi[index]?.karakteristik ?? undefined
+          }
+        />
       </Accordion.Panel>
       <Accordion.Panel>
-        <PosisiMenyerangInput posisi={index} />
-        <PosisiMenyerangImageInput posisi={index} />
+        <PosisiMenyerangInput
+          posisi={index}
+          defaultValue={
+            initialData?.daftarPosisi[index]?.deskripsiOffense ?? undefined
+          }
+        />
+        <PosisiMenyerangImageInput
+          posisi={index}
+          defaultValue={
+            initialData?.daftarPosisi[index]?.gambarOffense ?? undefined
+          }
+        />
       </Accordion.Panel>
       <Accordion.Panel>
-        <PosisiBertahanInput posisi={index} />
-        <PosisiBertahanImageInput posisi={index} />
+        <PosisiBertahanInput
+          posisi={index}
+          defaultValue={
+            initialData?.daftarPosisi[index]?.deskripsiDefense ?? undefined
+          }
+        />
+        <PosisiBertahanImageInput
+          posisi={index}
+          defaultValue={
+            initialData?.daftarPosisi[index]?.gambarDefense ?? undefined
+          }
+        />
       </Accordion.Panel>
     </Accordion.Item>
   ));
 
   return (
-    <form
-      className="space-y-8"
-      onSubmit={(e) => {
-        e.preventDefault();
-        startTransition(() => actionDispatch(new FormData(e.currentTarget)));
-      }}
-    >
+    <form className="space-y-8" onSubmit={handleSubmit}>
       {actionState?.error?.general ? (
         <Alert variant="light" color="red" icon={<IconInfoCircle />} mb="1rem">
           {actionState.error.general}
@@ -146,6 +251,7 @@ export function EnsiklopediPosisiPemainForm() {
         className="shadow-lg"
         radius={"md"}
         error={actionState?.error?.nama}
+        defaultValue={initialData?.namaFormasi}
       />
 
       <Textarea
@@ -157,6 +263,7 @@ export function EnsiklopediPosisiPemainForm() {
         className="shadow-lg"
         radius={"md"}
         error={actionState?.error?.deskripsi}
+        defaultValue={initialData?.deskripsiFormasi}
       />
 
       <Accordion variant="separated" defaultValue="Posisi #1" radius={"md"}>
@@ -170,19 +277,25 @@ export function EnsiklopediPosisiPemainForm() {
         <div className="flex gap-8">
           <div className="w-[300px]">
             <div className="text-sm font-bold capitalize">formasi asli</div>
-            <FormasiAsliImageInput />
+            <FormasiAsliImageInput
+              defaultValue={initialData?.gambarFormasiDefault}
+            />
           </div>
           <div className="w-[300px]">
             <div className="text-sm font-bold capitalize">
               transisi menyerang
             </div>
-            <TransisiMenyerangImageInput />
+            <TransisiMenyerangImageInput
+              defaultValue={initialData?.gambarOffense}
+            />
           </div>
           <div className="w-[300px]">
             <div className="text-sm font-bold capitalize">
               transisi bertahan
             </div>
-            <TransisiBertahanImageInput />
+            <TransisiBertahanImageInput
+              defaultValue={initialData?.gambarDefense}
+            />
           </div>
         </div>
       </div>
