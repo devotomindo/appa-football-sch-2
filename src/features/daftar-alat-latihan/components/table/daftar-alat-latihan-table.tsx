@@ -3,7 +3,6 @@
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
 import { Button, Modal } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import "dayjs/locale/id";
 import {
   MantineReactTable,
   MRT_ColumnDef,

@@ -249,6 +249,7 @@ export function PesertaPenilaianTable({
         title="Selesaikan Penilaian"
         opened={isEndModalOpen}
         onClose={() => setIsEndModalOpen(false)}
+        centered
       >
         <CompleteSessionForm
           sessionId={penilaianId}
