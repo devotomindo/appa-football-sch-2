@@ -194,6 +194,18 @@ export const trainingTools = pgTable("training_tools", {
   minCount: smallint("min_count").notNull(),
 });
 
+export const trainingProcedureAssignment = pgTable(
+  "training_procedure_assignment",
+  {
+    id: uuid("id").primaryKey(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    studentId: uuid("student_id").references(() => schoolRoleMembers.id),
+    trainingId: uuid("training_id").references(() => trainingProcedure.id),
+  },
+);
+
+// End of Training Procedure
+
 export const formationPositioning = pgTable("formation_positioning", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),

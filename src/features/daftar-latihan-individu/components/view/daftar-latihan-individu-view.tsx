@@ -7,10 +7,14 @@ import Link from "next/link";
 
 export function DaftarLatihanIndividuView({
   isAdmin = false,
+  studentId,
 }: {
   isAdmin: boolean;
+  studentId?: string;
 }) {
-  const { data, isLoading } = useQuery(getAllLatihanIndividuQueryOptions());
+  const { data, isLoading } = useQuery(
+    getAllLatihanIndividuQueryOptions(studentId),
+  );
 
   return (
     <div className="mt-10 space-y-4">
