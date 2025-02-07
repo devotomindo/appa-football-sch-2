@@ -4,6 +4,7 @@ export type SchoolSession = {
   id: string;
   name: string;
   role: string;
+  studentId: string; // Changed from optional to required
 };
 
 export async function getSchoolSession(): Promise<SchoolSession | null> {
@@ -40,6 +41,7 @@ export async function setSchoolSession(
     id: school.id,
     name: school.name,
     role: school.role,
+    studentId: school.studentId,
   };
 
   cookieStore.set("selected-school", JSON.stringify(minimalSchoolData), {

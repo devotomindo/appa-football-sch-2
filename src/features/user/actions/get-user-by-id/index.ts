@@ -30,6 +30,7 @@ export const getUserById = cache(async function (id: string) {
           id: string;
           name: string;
           role: string;
+          studentId: string;
         }[]
       >`
         COALESCE(
@@ -38,7 +39,8 @@ export const getUserById = cache(async function (id: string) {
               json_build_object(
                 'id', s.id,
                 'name', s.name,
-                'role', sr.name
+                'role', sr.name,
+                'studentId', srm.id
               )
             )
             FROM school_role_members srm

@@ -9,6 +9,7 @@ type School = {
   id: string;
   name: string;
   role: string;
+  studentId: string; // Changed from optional to required
 };
 
 export function SchoolSwitcher({ schools }: { schools: School[] }) {
