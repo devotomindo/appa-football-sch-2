@@ -17,7 +17,12 @@ export async function createEnskilopediPemain(
 ) {
   const validationResult = await zfd
     .formData({
-      nama: zfd.text(z.string().min(3, "Nama formasi minimal 3 karakter")),
+      nama: zfd.text(
+        z
+          .string()
+          .min(3, "Nama formasi minimal 3 karakter")
+          .max(3, "Nama formasi maksimal 3 karakter"),
+      ),
       deskripsi: zfd.text(z.string().min(1)),
       posisi: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string().nonempty()))),
@@ -106,7 +111,7 @@ export async function createEnskilopediPemain(
       // Insert formation first
       await tx.insert(formations).values({
         id: idFormations,
-        name: validationResult.data.nama,
+        name: validationResult.data.nama.split("").join("-"),
         description: validationResult.data.deskripsi,
         defaultFormationImagePath: gambarFormasiAsliURL,
         offenseTransitionImagePath: gambarTransisiMenyerangURL,

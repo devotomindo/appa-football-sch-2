@@ -8,8 +8,10 @@ import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import type { SchoolSession } from "@/lib/session";
 import { useSchoolStore } from "@/stores/school-store";
 import { Button } from "@mantine/core";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect } from "react";
+import { getSchoolMemberQuantityQueryOptions } from "../actions/get-school-member-quantity/query-options";
 
 export interface DashboardViewProps {
   userData: GetUserByIdResponse;
@@ -25,6 +27,9 @@ export function DashboardView({
   const { data: schoolInfo } = useSchoolInfo(selectedSchool?.id ?? "");
   // Consider it loading during hydration or when waiting for school info
   const isLoading = isHydrating || (selectedSchool && !schoolInfo);
+  const { data: schoolMemberQuantity } = useQuery(
+    getSchoolMemberQuantityQueryOptions(schoolInfo?.id ?? ""),
+  );
 
   useEffect(() => {
     hydrate(initialSchoolSession);
@@ -87,7 +92,7 @@ export function DashboardView({
             <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
               <BlackBackgroundContainer>
                 <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                  5
+                  {schoolMemberQuantity?.totalPelatih}
                 </p>
                 <p className="relative z-10 font-bold capitalize">
                   total pelatih
@@ -95,39 +100,39 @@ export function DashboardView({
               </BlackBackgroundContainer>
               <BlackBackgroundContainer>
                 <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                  60
+                  {schoolMemberQuantity?.pemainKU8}
                 </p>
                 <p className="relative z-10 font-bold capitalize">
-                  pemain ku-8
+                  pemain kelompok umur 5-8 tahun
                 </p>
               </BlackBackgroundContainer>
               <BlackBackgroundContainer>
                 <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                  40
+                  {schoolMemberQuantity?.pemainKU10}
                 </p>
                 <p className="relative z-10 font-bold capitalize">
-                  pemain ku-10
+                  pemain kelompok umur 9-12 tahun
                 </p>
               </BlackBackgroundContainer>
               <BlackBackgroundContainer>
                 <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                  35
+                  {schoolMemberQuantity?.pemainKU13}
                 </p>
                 <p className="relative z-10 font-bold capitalize">
-                  pemain ku-13
+                  pemain kelompok umur 13-15 tahun
                 </p>
               </BlackBackgroundContainer>
               <BlackBackgroundContainer>
                 <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                  30
+                  {schoolMemberQuantity?.pemainKU15}
                 </p>
                 <p className="relative z-10 font-bold capitalize">
-                  pemain ku-15
+                  pemain kelompok umur 16-18 tahun
                 </p>
               </BlackBackgroundContainer>
               <BlackBackgroundContainer>
                 <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                  35
+                  {schoolMemberQuantity?.pemainKU17}
                 </p>
                 <p className="relative z-10 font-bold capitalize">
                   pemain ku-17

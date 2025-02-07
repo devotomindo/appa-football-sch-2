@@ -2,15 +2,22 @@
 
 import { createServerClient } from "@/db/supabase/server";
 import { imageCompressor } from "@/lib/utils/image-compressor";
+import { v7 as uuidv7 } from "uuid";
+
+function getFileExtension(filename: string): string {
+  return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2);
+}
 
 export async function singleImageUploader(image: File, path: string) {
   const supabase = await createServerClient();
+  const extension = getFileExtension(image.name);
+  const newFileName = `${uuidv7()}.${extension}`;
 
   const compressedImageFormasiAsli = await imageCompressor(image);
 
   const { error, data } = await supabase.storage
     .from(path)
-    .upload(`${compressedImageFormasiAsli.name}`, compressedImageFormasiAsli, {
+    .upload(newFileName, compressedImageFormasiAsli, {
       upsert: true,
     });
 
@@ -21,15 +28,17 @@ export async function singleImageUploader(image: File, path: string) {
 
 export async function multipleImageUploader(images: File[], path: string) {
   const supabase = await createServerClient();
-
   const URLs: Array<{ fullPath: string }> = [];
 
   for (const file of images) {
+    const extension = getFileExtension(file.name);
+    const newFileName = `${uuidv7()}.${extension}`;
+
     const compressedImage = await imageCompressor(file);
 
     const { error: uploadError, data } = await supabase.storage
       .from(path)
-      .upload(`${compressedImage.name}`, compressedImage, {
+      .upload(newFileName, compressedImage, {
         upsert: true,
       });
 

@@ -38,13 +38,6 @@ import { createEnskilopediPemain } from "../../actions/create-ensiklopedi-pemain
 import { editEnskilopediPemain } from "../../actions/edit-enskilopedi-pemain";
 import { GetEnsiklopediByIdResponse } from "../../actions/get-ensiklopedi-by-id";
 
-// interface PosisiData {
-//   id: string;
-//   name: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
-
 const daftarPosisi = [
   {
     value: "Posisi #1",
@@ -244,7 +237,7 @@ export function EnsiklopediPosisiPemainForm({
       ) : null}
       <TextInput
         label="Nama Formasi"
-        placeholder="Masukkan nama formasi contoh: 4-4-2, 4-3-3, dan lain-lain"
+        placeholder="Masukkan nama formasi contoh: 442, 433, dan lain-lain"
         required
         withAsterisk={false}
         name="nama"
