@@ -21,6 +21,7 @@ import { useDisclosure } from "@mantine/hooks";
 import {
   IconHome,
   IconHomeFilled,
+  IconMoneybag,
   IconTool,
   IconUserCircle,
   IconUsersGroup,
@@ -121,8 +122,6 @@ export function DashboardAppshell({
 
                 {/* <DatetimeComponent /> */}
               </div>
-
-              {/* Center: Add SchoolSwitcher */}
 
               {/* user avatar */}
               <div className="flex items-center space-x-1">
@@ -349,6 +348,13 @@ export function DashboardAppshell({
                   path="/admin/data-asesmen"
                   toggle={toggle}
                   leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                  pathname={pathname}
+                />
+                <NavLinkComponent
+                  label="Daftar Paket"
+                  path="/admin/daftar-paket"
+                  toggle={toggle}
+                  leftSection={<IconMoneybag size="1.25rem" stroke={1.5} />}
                   pathname={pathname}
                 />
                 <NavLinkComponent

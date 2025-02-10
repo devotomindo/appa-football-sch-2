@@ -323,3 +323,15 @@ export const proPlayerAssessments = pgTable("pro_player_assessments", {
   assessmentId: uuid("assessment_id").references(() => assessments.id),
   score: numeric("score"),
 });
+
+// Start of Transactions
+export const packages = pgTable("packages", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  name: text("name").notNull(),
+  price: bigint("price", { mode: "number" }).notNull(),
+  description: text("description").notNull(),
+  monthDuration: smallint("month_duration").notNull(),
+  quotaAddition: smallint("quota_addition").notNull(),
+});
