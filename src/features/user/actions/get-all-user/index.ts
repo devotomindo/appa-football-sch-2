@@ -34,7 +34,8 @@ export const getAllUser = cache(async function () {
               json_build_object(
                 'id', s.id,
                 'name', s.name,
-                'role', sr.name
+                'role', sr.name,
+                'studentId', srm.id
               )
             )
             FROM school_role_members srm

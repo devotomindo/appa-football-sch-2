@@ -46,8 +46,6 @@ export async function createStudentAssessment(
       try {
         await Promise.all(
           validationResult.data.studentIds.map((studentId: string) => {
-            console.log("Inserting assessment record for student:", studentId);
-
             tx.insert(assessmentRecords)
               .values({
                 id: uuidv7(),

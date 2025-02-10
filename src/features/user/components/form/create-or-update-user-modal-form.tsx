@@ -3,7 +3,6 @@
 import { createUser } from "@/features/user/actions/create-user";
 import { getAllUserRoleQueryOptions } from "@/features/user/actions/get-all-user-role/query-options";
 import { getAllUserQueryOptions } from "@/features/user/actions/get-all-user/query-options";
-import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { getUserByIdQueryOptions } from "@/features/user/actions/get-user-by-id/query-options";
 import { updateUser } from "@/features/user/actions/update-user";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
@@ -18,9 +17,10 @@ import {
 } from "@mantine/core";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { startTransition, useActionState, useEffect } from "react";
+import { GetAllUserResponse } from "../../actions/get-all-user";
 
 type CreateOrUpdateUserModalFormProps = {
-  userData?: GetUserByIdResponse | null;
+  userData?: GetAllUserResponse[number] | null;
   isOpen: boolean;
   onClose: () => void;
   successCallback?: () => void;
