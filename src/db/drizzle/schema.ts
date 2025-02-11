@@ -334,4 +334,5 @@ export const packages = pgTable("packages", {
   description: text("description").notNull(),
   monthDuration: smallint("month_duration").notNull(),
   quotaAddition: smallint("quota_addition").notNull(),
+  isDeleted: boolean("is_deleted").notNull().default(false),
 });

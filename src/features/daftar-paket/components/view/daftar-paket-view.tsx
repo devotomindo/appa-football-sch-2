@@ -3,6 +3,7 @@
 import { formatRupiah } from "@/lib/utils/format-rupiah";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
 import { Button, Modal } from "@mantine/core";
+import { modals } from "@mantine/modals";
 import { IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -12,19 +13,25 @@ import {
   type MRT_ColumnDef,
 } from "mantine-react-table";
 import { useMemo, useState } from "react";
-// import type { GetAllPackagesResponse } from "../actions/get-all-daftar-paket";
-// import { getAllPackagesQueryOptions } from "../actions/get-all-daftar-paket/query-options";
-// import { CreatePaketForm } from "../components/forms/create-paket-form";
 import { GetAllPackagesResponse } from "../../actions/get-all-daftar-paket";
 import { getAllPackagesQueryOptions } from "../../actions/get-all-daftar-paket/query-options";
-import { CreatePaketForm } from "../forms/create-paket-form";
+import { CreateOrUpdatePaketForm } from "../forms/create-or-update-paket-form";
+import { DeletePaketForm } from "../forms/delete-paket-form";
 
 export function DaftarPaketView() {
-  // QUERY DATA
   const packagesQuery = useQuery(getAllPackagesQueryOptions());
 
-  // State Definitions
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPaket, setSelectedPaket] = useState<
+    GetAllPackagesResponse[number] | undefined
+  >();
+
+  const openDeleteModal = (id: string) =>
+    modals.open({
+      title: "Hapus Paket",
+      centered: true,
+      children: <DeletePaketForm paketId={id} />,
+    });
 
   const columns = useMemo<MRT_ColumnDef<GetAllPackagesResponse[number]>[]>(
     () => [
@@ -61,8 +68,34 @@ export function DaftarPaketView() {
         header: "Dibuat",
         filterVariant: "date-range",
       },
+      {
+        header: "Actions",
+        enableColumnFilter: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              size="xs"
+              color="blue"
+              onClick={() => {
+                setSelectedPaket(row.original);
+                setIsModalOpen(true);
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              size="xs"
+              color="red"
+              onClick={() => openDeleteModal(row.original.id)}
+            >
+              Hapus
+            </Button>
+          </div>
+        ),
+      },
     ],
-    [],
+    [setSelectedPaket, setIsModalOpen],
   );
 
   const table = useMantineReactTable({
@@ -90,11 +123,20 @@ export function DaftarPaketView() {
 
       <Modal
         opened={isModalOpen}
-        title="Buat Paket Baru"
-        onClose={() => setIsModalOpen(false)}
+        title={selectedPaket ? "Update Paket" : "Buat Paket Baru"}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedPaket(undefined);
+        }}
         centered
       >
-        <CreatePaketForm onSuccess={() => setIsModalOpen(false)} />
+        <CreateOrUpdatePaketForm
+          paketData={selectedPaket}
+          onSuccess={() => {
+            setIsModalOpen(false);
+            setSelectedPaket(undefined);
+          }}
+        />
       </Modal>
 
       <MantineReactTable table={table} />
