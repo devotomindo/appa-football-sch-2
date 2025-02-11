@@ -34,11 +34,11 @@ export function DaftarPenugasanLatihanIndividuView({
     () => [
       {
         header: "Latihan",
-        accessorKey: "training.name",
+        accessorKey: "name",
       },
       {
         header: "Deskripsi",
-        accessorKey: "training.description",
+        accessorKey: "description",
       },
       {
         header: "Aksi",

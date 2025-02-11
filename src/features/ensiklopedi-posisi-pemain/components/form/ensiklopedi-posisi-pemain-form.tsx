@@ -174,7 +174,8 @@ export function EnsiklopediPosisiPemainForm({
             .map((position) => ({
               label: position.name,
               value: position.id,
-            }))}
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label))}
           value={selectedPositions[item.value]}
           onChange={(value) => {
             setSelectedPositions((prev) => ({
@@ -187,6 +188,15 @@ export function EnsiklopediPosisiPemainForm({
           error={actionState?.error?.posisi}
           allowDeselect
         />
+        {selectedPositions[item.value] && (
+          <div className="mt-2 rounded-md bg-gray-600 p-2 text-sm text-white">
+            {
+              posisiData?.find(
+                (pos) => pos.id === selectedPositions[item.value],
+              )?.description
+            }
+          </div>
+        )}
       </Accordion.Panel>
       <Accordion.Panel>
         <KarakterInput
@@ -272,6 +282,7 @@ export function EnsiklopediPosisiPemainForm({
             <div className="text-sm font-bold capitalize">formasi asli</div>
             <FormasiAsliImageInput
               defaultValue={initialData?.gambarFormasiDefault}
+              error={actionState?.error?.gambarFormasiAsli}
             />
           </div>
           <div className="w-[300px]">
@@ -280,6 +291,7 @@ export function EnsiklopediPosisiPemainForm({
             </div>
             <TransisiMenyerangImageInput
               defaultValue={initialData?.gambarOffense}
+              error={actionState?.error?.gambarTransisiMenyerang}
             />
           </div>
           <div className="w-[300px]">
@@ -288,6 +300,7 @@ export function EnsiklopediPosisiPemainForm({
             </div>
             <TransisiBertahanImageInput
               defaultValue={initialData?.gambarDefense}
+              error={actionState?.error?.gambarTransisiBertahan}
             />
           </div>
         </div>

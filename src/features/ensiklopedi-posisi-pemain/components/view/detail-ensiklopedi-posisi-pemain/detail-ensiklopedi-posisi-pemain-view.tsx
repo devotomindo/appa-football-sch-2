@@ -45,6 +45,9 @@ export function DetailEnsiklopediPosisiPemainView({
               <div className="flex w-1/4 justify-start rounded-xl border-2 p-4 shadow-lg">
                 <p>{posisi.namaPosisi}</p>
               </div>
+              <div className="rounded-md bg-gray-600 p-2 text-sm text-white">
+                {posisi.deskripsiPosisi}
+              </div>
             </div>
           </Accordion.Panel>
         )}

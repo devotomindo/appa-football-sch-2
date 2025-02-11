@@ -51,7 +51,7 @@ export function PesertaPenilaianTable({
       },
       {} as Record<string, typeof schoolStudents.data>,
     );
-  }, [schoolStudents, schoolStudents.data]);
+  }, [schoolStudents.data]);
 
   // Track modified values and their original values
   const [modifiedScores, setModifiedScores] = useState<

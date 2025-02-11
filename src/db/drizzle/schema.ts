@@ -236,6 +236,7 @@ export const positions = pgTable("positions", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   name: text("name").notNull(),
+  description: text("description").notNull(),
 });
 
 export const gradeMetrics = pgTable("grade_metrics", {

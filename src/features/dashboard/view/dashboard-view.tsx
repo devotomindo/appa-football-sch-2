@@ -2,7 +2,6 @@
 import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { getAssessmentScoresWithStudentIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-with-student-id/query-options";
-import { HasilAsesmenStudentIdTable } from "@/features/assesmen-pemain/components/table/hasil-asesmen-student-id-table";
 import { getBiodataPemainByStudentIdQueryOptions } from "@/features/daftar-pemain/actions/get-biodata-pemain-by-student-id/query-options";
 import { SchoolBanner } from "@/features/school/components/school-banner";
 import { useSchoolInfo } from "@/features/school/hooks/use-school-info";
@@ -36,7 +35,6 @@ export function DashboardView({
   const { data: schoolMemberQuantity } = useQuery(
     getSchoolMemberQuantityQueryOptions(schoolInfo?.id ?? ""),
   );
-  console.log("userData", userData);
   const { data: biodataData, isLoading: isLoadingBiodata } = useQuery(
     getBiodataPemainByStudentIdQueryOptions(studentId ?? ""),
   );
@@ -161,7 +159,7 @@ export function DashboardView({
             ) : (
               <Card>
                 <h2 className="mb-4 text-xl font-semibold">Profil Pemain</h2>
-                <div className="flex items-start gap-8 rounded-md border-2 border-gray-200 p-4 shadow-lg">
+                <div className="flex items-start gap-8 rounded-md border-2 border-gray-200 p-4">
                   <Avatar
                     src={biodataData?.avatarUrl ?? undefined}
                     size={"20rem"}
@@ -206,11 +204,15 @@ export function DashboardView({
               {assessmentScoresQuery.isLoading ? (
                 <div>Loading assessment data...</div>
               ) : studentId ? (
-                <HasilAsesmenStudentIdTable studentId={studentId} />
+                // <HasilAsesmenStudentIdTable studentId={studentId} />
+                <div>No student ID available</div>
               ) : (
                 <div>No student ID available</div>
               )}
             </Card>
+          </div>
+          <div className="p-4">
+            <h2 className="mb-4 text-xl font-semibold">Rekomendasi Latihan</h2>
           </div>
         </>
       )}

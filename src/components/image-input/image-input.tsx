@@ -125,8 +125,10 @@ export function PosisiBertahanImageInput({
 
 export function FormasiAsliImageInput({
   defaultValue,
+  error,
 }: {
   defaultValue?: string;
+  error?: string;
 }) {
   const [gambar, setGambar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(defaultValue || "");
@@ -175,6 +177,7 @@ export function FormasiAsliImageInput({
         value={gambar}
         onChange={setGambar}
         name="gambarFormasiAsli"
+        error={error}
       />
     </div>
   );
@@ -182,8 +185,10 @@ export function FormasiAsliImageInput({
 
 export function TransisiMenyerangImageInput({
   defaultValue,
+  error,
 }: {
   defaultValue?: string;
+  error?: string;
 }) {
   const [gambar, setGambar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(defaultValue || "");
@@ -231,6 +236,7 @@ export function TransisiMenyerangImageInput({
         value={gambar}
         onChange={setGambar}
         name="gambarTransisiMenyerang"
+        error={error}
       />
     </div>
   );
@@ -238,8 +244,10 @@ export function TransisiMenyerangImageInput({
 
 export function TransisiBertahanImageInput({
   defaultValue,
+  error,
 }: {
   defaultValue?: string;
+  error?: string;
 }) {
   const [gambar, setGambar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(defaultValue || "");
@@ -287,6 +295,7 @@ export function TransisiBertahanImageInput({
         value={gambar}
         onChange={setGambar}
         name="gambarTransisiBertahan"
+        error={error}
       />
     </div>
   );
