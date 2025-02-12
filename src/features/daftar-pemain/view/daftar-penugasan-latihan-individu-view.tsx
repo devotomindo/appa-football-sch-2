@@ -11,10 +11,11 @@ import {
   type MRT_ColumnDef,
 } from "mantine-react-table";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { GetPenugasanLatihanIndividuByStudentIdResponse } from "../actions/get-penugasan-latihan-individu-by-student-id";
 import { getPenugasanLatihanIndividuByStudentIdQueryOptions } from "../actions/get-penugasan-latihan-individu-by-student-id/query-options";
 import { CreatePenugasanLatihanIndividuForm } from "../form/create-penugasan-latihan-individu-form";
+import { DeletePenugasanLatihanIndividuForm } from "../form/delete-penugasan-latihan-individu-form";
 
 export function DaftarPenugasanLatihanIndividuView({
   studentId,
@@ -22,6 +23,12 @@ export function DaftarPenugasanLatihanIndividuView({
   studentId: string;
 }) {
   const [isAddModalOpen, { open, close }] = useDisclosure();
+  const [
+    isDeleteModalOpen,
+    { open: openDeleteModal, close: closeDeleteModal },
+  ] = useDisclosure();
+  // const [selectedExerciseId, setSelectedExerciseId] = useState<string>();
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>();
   const queryClient = useQueryClient();
 
   const assignmentsQuery = useQuery(
@@ -43,15 +50,27 @@ export function DaftarPenugasanLatihanIndividuView({
       {
         header: "Aksi",
         Cell: ({ row }) => (
-          <Button
-            component={Link}
-            href={"/dashboard/latihan/" + row.original.id}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="light"
-          >
-            Lihat Latihan
-          </Button>
+          <div className="space-x-2">
+            <Button
+              component={Link}
+              href={"/dashboard/latihan/" + row.original.id}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="light"
+            >
+              Lihat Latihan
+            </Button>
+            <Button
+              variant="light"
+              color="red"
+              onClick={() => {
+                setSelectedAssignmentId(row.original.assignmentId);
+                openDeleteModal();
+              }}
+            >
+              Hapus Latihan
+            </Button>
+          </div>
         ),
       },
     ],
@@ -90,6 +109,27 @@ export function DaftarPenugasanLatihanIndividuView({
           studentId={studentId}
           onSuccess={() => {
             close();
+            queryClient.invalidateQueries(
+              getPenugasanLatihanIndividuByStudentIdQueryOptions(studentId),
+            );
+          }}
+        />
+      </Modal>
+      <Modal
+        opened={isDeleteModalOpen}
+        onClose={() => {
+          closeDeleteModal();
+          setSelectedAssignmentId(undefined);
+        }}
+        centered
+        title="Hapus Penugasan Latihan"
+      >
+        <DeletePenugasanLatihanIndividuForm
+          assignmentId={selectedAssignmentId!}
+          studentId={studentId}
+          onSuccess={() => {
+            closeDeleteModal();
+            setSelectedAssignmentId(undefined);
             queryClient.invalidateQueries(
               getPenugasanLatihanIndividuByStudentIdQueryOptions(studentId),
             );

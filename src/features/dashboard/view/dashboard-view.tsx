@@ -233,15 +233,12 @@ export function DashboardView({
                 className="w-64"
               />
             </div>
-            <div className="w-full">
+            <div className="flex w-full items-start gap-20 rounded-lg border-2 p-8 shadow-lg">
               {isLoadingTugasLatihan ? (
                 <div>Loading...</div>
               ) : filteredTugasLatihan.length > 0 ? (
                 filteredTugasLatihan.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-20 rounded-lg border-2 p-8 shadow-lg"
-                  >
+                  <div key={index} className="">
                     <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
                       {item.videoUrl ? (
                         <video

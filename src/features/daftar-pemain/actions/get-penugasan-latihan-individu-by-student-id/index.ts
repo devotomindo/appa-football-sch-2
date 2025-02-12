@@ -58,7 +58,7 @@ export const getPenugasanLatihanIndividuByStudentId = cache(async function (
       updatedAt: training.updatedAt,
       videoUrl: videoUrl.data.publicUrl,
       // // Additional assignment-specific fields
-      // assignmentId: training.assignmentId,
+      assignmentId: training.assignmentId,
       // assignmentCreatedAt: training.assignmentCreatedAt,
     };
   });
