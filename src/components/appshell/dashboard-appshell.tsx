@@ -70,6 +70,8 @@ export function DashboardAppshell({
 
   const member = schoolInfo?.isPremium;
 
+  console.log(userData);
+
   return (
     <>
       <AppShell
@@ -217,7 +219,9 @@ export function DashboardAppshell({
               pathname={pathname}
             />
             {!isUserAdminValue &&
-              userData.schools[0].role.toLowerCase() === "athlete" && (
+              userData?.schools?.[0]?.role
+                .toLowerCase()
+                .includes("athlete") && (
                 <>
                   <NavLinkComponent
                     label="Pendaftaran Atlet"
@@ -251,7 +255,7 @@ export function DashboardAppshell({
               )}
 
             {!isUserAdminValue &&
-              userData.schools[0].role.toLowerCase().includes("coach") && (
+              userData?.schools?.[0]?.role.toLowerCase().includes("coach") && (
                 <>
                   <NavLinkComponent
                     label="Pendaftaran Atlet"

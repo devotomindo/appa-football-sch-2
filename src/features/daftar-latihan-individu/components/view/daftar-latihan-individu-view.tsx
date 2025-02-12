@@ -2,7 +2,6 @@
 
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { getAllLatihanIndividuQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
-import { useSchoolStore } from "@/stores/school-store";
 import { Button } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -12,13 +11,10 @@ export function DaftarLatihanIndividuView({
 }: {
   isAdmin: boolean;
 }) {
-  const school = useSchoolStore();
-  const studentId = school.selectedSchool?.studentId;
-  const isCoach = school.selectedSchool?.role.toLowerCase().includes("coach");
+  // const school = useSchoolStore();
+  // const studentId = school.selectedSchool?.studentId;
 
-  const { data, isLoading } = useQuery(
-    getAllLatihanIndividuQueryOptions(isCoach ? undefined : studentId),
-  );
+  const { data, isLoading } = useQuery(getAllLatihanIndividuQueryOptions());
 
   return (
     <DashboardSectionContainer>

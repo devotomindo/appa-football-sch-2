@@ -3,7 +3,7 @@ import { BlackBackgroundContainer } from "@/components/container/black-backgorun
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { getAssessmentScoresWithStudentIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-with-student-id/query-options";
 import { HasilAsesmenStudentIdTable } from "@/features/assesmen-pemain/components/table/hasil-asesmen-student-id-table";
-import { getAllLatihanIndividuQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
+import { getAllLatihanIndividuByStudentIdQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
 import { getBiodataPemainByStudentIdQueryOptions } from "@/features/daftar-pemain/actions/get-biodata-pemain-by-student-id/query-options";
 import { SchoolBanner } from "@/features/school/components/school-banner";
 import { useSchoolInfo } from "@/features/school/hooks/use-school-info";
@@ -41,7 +41,7 @@ export function DashboardView({
     getBiodataPemainByStudentIdQueryOptions(studentId ?? ""),
   );
   const { data: tugasLatihanIndividuData, isLoading: isLoadingTugasLatihan } =
-    useQuery(getAllLatihanIndividuQueryOptions(studentId));
+    useQuery(getAllLatihanIndividuByStudentIdQueryOptions(studentId ?? ""));
 
   // Add this query
   const assessmentScoresQuery = useQuery(
@@ -108,7 +108,7 @@ export function DashboardView({
           </div>
         </div>
       ) : schoolInfo &&
-        userData.schools[0].role.toLowerCase().includes("coach") ? ( // For users that are assigned to a school
+        userData?.schools?.[0]?.role.toLowerCase().includes("coach") ? ( // For users that are assigned to a school
         <>
           <SchoolBanner
             schoolInfo={schoolInfo}
@@ -233,12 +233,15 @@ export function DashboardView({
                 className="w-64"
               />
             </div>
-            <div className="flex w-full items-start gap-20 rounded-lg border-2 p-8 shadow-lg">
+            <div className="w-full">
               {isLoadingTugasLatihan ? (
                 <div>Loading...</div>
               ) : filteredTugasLatihan.length > 0 ? (
                 filteredTugasLatihan.map((item, index) => (
-                  <div key={index} className="">
+                  <div
+                    key={index}
+                    className="flex items-start gap-20 rounded-lg border-2 p-8 shadow-lg"
+                  >
                     <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
                       {item.videoUrl ? (
                         <video
