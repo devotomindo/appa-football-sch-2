@@ -24,9 +24,14 @@ export default async function DetailLatihanPage({
   // END OF AUTH GUARD
 
   const isAdmin = isUserAdmin(userData);
+
   return (
     <DashboardSectionContainer>
-      <DetailLatihanView latihanId={id} isAdmin={isAdmin} />
+      <DetailLatihanView
+        latihanId={id}
+        isAdmin={isAdmin}
+        roles={userData.schools[0].role.toLowerCase()}
+      />
     </DashboardSectionContainer>
   );
 }

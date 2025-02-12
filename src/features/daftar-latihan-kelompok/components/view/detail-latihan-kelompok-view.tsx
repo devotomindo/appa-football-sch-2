@@ -10,9 +10,11 @@ import Link from "next/link";
 export function DetailLatihanView({
   latihanId,
   isAdmin = false,
+  roles,
 }: {
   latihanId: string;
   isAdmin: boolean;
+  roles?: string;
 }) {
   const { data, isLoading } = useQuery(getLatihanByIdQueryOptions(latihanId));
 
@@ -31,9 +33,13 @@ export function DetailLatihanView({
             ? isKelompok
               ? "/dashboard/admin/daftar-latihan-kelompok"
               : "/admin/daftar-latihan-individu"
-            : isKelompok
-              ? "/dashboard/metode-latihan-kelompok"
-              : "/dashboard/metode-latihan-individu"
+            : roles?.includes("athlete")
+              ? isKelompok
+                ? "/dashboard/metode-latihan-kelompok"
+                : "/dashboard"
+              : isKelompok
+                ? "/dashboard/metode-latihan-kelompok"
+                : "/dashboard/metode-latihan-individu"
         }
         className="flex w-32 flex-row items-center justify-center !bg-[#E92222] capitalize"
         leftSection={<IconArrowLeft size={18} />}

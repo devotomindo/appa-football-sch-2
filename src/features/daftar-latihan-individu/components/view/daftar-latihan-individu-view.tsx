@@ -14,9 +14,10 @@ export function DaftarLatihanIndividuView({
 }) {
   const school = useSchoolStore();
   const studentId = school.selectedSchool?.studentId;
+  const isCoach = school.selectedSchool?.role.toLowerCase().includes("coach");
 
   const { data, isLoading } = useQuery(
-    getAllLatihanIndividuQueryOptions(studentId),
+    getAllLatihanIndividuQueryOptions(isCoach ? undefined : studentId),
   );
 
   return (

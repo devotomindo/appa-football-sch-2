@@ -2,6 +2,8 @@
 import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { getAssessmentScoresWithStudentIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-with-student-id/query-options";
+import { HasilAsesmenStudentIdTable } from "@/features/assesmen-pemain/components/table/hasil-asesmen-student-id-table";
+import { getAllLatihanIndividuQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
 import { getBiodataPemainByStudentIdQueryOptions } from "@/features/daftar-pemain/actions/get-biodata-pemain-by-student-id/query-options";
 import { SchoolBanner } from "@/features/school/components/school-banner";
 import { useSchoolInfo } from "@/features/school/hooks/use-school-info";
@@ -10,11 +12,11 @@ import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import type { SchoolSession } from "@/lib/session";
 import { calculateAge } from "@/lib/utils/age";
 import { useSchoolStore } from "@/stores/school-store";
-import { Avatar, Button, Card } from "@mantine/core";
+import { Avatar, Button, Card, TextInput } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getSchoolMemberQuantityQueryOptions } from "../actions/get-school-member-quantity/query-options";
 
 export interface DashboardViewProps {
@@ -38,11 +40,22 @@ export function DashboardView({
   const { data: biodataData, isLoading: isLoadingBiodata } = useQuery(
     getBiodataPemainByStudentIdQueryOptions(studentId ?? ""),
   );
+  const { data: tugasLatihanIndividuData, isLoading: isLoadingTugasLatihan } =
+    useQuery(getAllLatihanIndividuQueryOptions(studentId));
 
   // Add this query
   const assessmentScoresQuery = useQuery(
     getAssessmentScoresWithStudentIdQueryOptions(studentId ?? ""),
   );
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredTugasLatihan = useMemo(() => {
+    if (!tugasLatihanIndividuData) return [];
+    return tugasLatihanIndividuData.filter((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [tugasLatihanIndividuData, searchTerm]);
 
   useEffect(() => {
     hydrate(initialSchoolSession);
@@ -154,11 +167,11 @@ export function DashboardView({
             />
           )}
           <div className="mt-4 grid grid-cols-2 items-start gap-4">
-            {isLoadingBiodata ? (
-              <p>Loading biodata...</p>
-            ) : (
-              <Card>
-                <h2 className="mb-4 text-xl font-semibold">Profil Pemain</h2>
+            <Card>
+              <h2 className="mb-4 text-xl font-semibold">Profil Pemain</h2>
+              {isLoadingBiodata ? (
+                <p>Loading biodata...</p>
+              ) : (
                 <div className="flex items-start gap-8 rounded-md border-2 border-gray-200 p-4">
                   <Avatar
                     src={biodataData?.avatarUrl ?? undefined}
@@ -196,23 +209,85 @@ export function DashboardView({
                     <p>Provinsi: {biodataData?.domisiliProvinsi}</p>
                   </div>
                 </div>
-              </Card>
-            )}
+              )}
+            </Card>
             {/* Add HasilAsesmenStudentIdTable component */}
             <Card>
               <h2 className="mb-4 text-xl font-semibold">Hasil Asesmen</h2>
               {assessmentScoresQuery.isLoading ? (
                 <div>Loading assessment data...</div>
               ) : studentId ? (
-                // <HasilAsesmenStudentIdTable studentId={studentId} />
-                <div>No student ID available</div>
+                <HasilAsesmenStudentIdTable studentId={studentId} />
               ) : (
                 <div>No student ID available</div>
               )}
             </Card>
           </div>
           <div className="p-4">
-            <h2 className="mb-4 text-xl font-semibold">Rekomendasi Latihan</h2>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Rekomendasi Latihan</h2>
+              <TextInput
+                placeholder="Cari latihan..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64"
+              />
+            </div>
+            <div className="w-full">
+              {isLoadingTugasLatihan ? (
+                <div>Loading...</div>
+              ) : filteredTugasLatihan.length > 0 ? (
+                filteredTugasLatihan.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start gap-20 rounded-lg border-2 p-8 shadow-lg"
+                  >
+                    <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
+                      {item.videoUrl ? (
+                        <video
+                          src={item.videoUrl}
+                          controls
+                          className="h-full w-full object-cover"
+                        >
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          No video available
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex w-2/3 flex-col gap-4">
+                      <p className="text-xl font-bold uppercase">{item.name}</p>
+                      <p className="text-justify font-extralight">
+                        {item.description.length > 200
+                          ? `${item.description.slice(0, 200)}...`
+                          : item.description}
+                      </p>
+                      <div className="flex gap-4">
+                        <Button
+                          component={Link}
+                          href={
+                            userIsAdmin
+                              ? `/dashboard/admin/daftar-latihan-individu/latihan/${item.id}`
+                              : `/dashboard/latihan/${item.id}`
+                          }
+                          className="rounded-lg bg-[#28B826] px-4 py-2 capitalize text-white shadow-xl"
+                        >
+                          Lihat latihan
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div>
+                  {searchTerm
+                    ? "Tidak ada latihan yang sesuai dengan pencarian"
+                    : "Tidak ada latihan yang direkomendasikan"}
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
