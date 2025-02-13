@@ -1,5 +1,6 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
 import { DaftarLatihanIndividuView } from "@/features/daftar-latihan-individu/components/view/daftar-latihan-individu-view";
+import { getAllLatihanIndividuQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
 import { authGuard } from "@/features/user/guards/auth-guard";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import {
@@ -21,6 +22,10 @@ export default async function DaftarLatihanIndividu() {
   const userData = authResponse.data;
 
   const isAdmin = isUserAdmin(userData);
+
+  await Promise.allSettled([
+    queryClient.prefetchQuery(getAllLatihanIndividuQueryOptions()),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

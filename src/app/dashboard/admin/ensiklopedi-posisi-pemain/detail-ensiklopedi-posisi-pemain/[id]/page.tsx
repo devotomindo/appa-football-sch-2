@@ -19,7 +19,9 @@ export default async function DetailEnsiklopediPosisiPemain({
 
   const queryClient = new QueryClient();
 
-  queryClient.prefetchQuery(getEnsiklopediByIdQueryOptions(id));
+  await Promise.allSettled([
+    queryClient.prefetchQuery(getEnsiklopediByIdQueryOptions(id)),
+  ]);
 
   const authResponse = await authGuard();
 

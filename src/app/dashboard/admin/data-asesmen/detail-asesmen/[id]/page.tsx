@@ -16,7 +16,9 @@ export default async function DetailAsesmen({
 
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(getAssessmentByIdQueryOptions(id));
+  await Promise.allSettled([
+    queryClient.prefetchQuery(getAssessmentByIdQueryOptions(id)),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

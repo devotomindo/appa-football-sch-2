@@ -1,5 +1,11 @@
 import { AsesmenPemainView } from "@/features/assesmen-pemain/components/view/assesmen-pemain-view";
+import { getAllAssessmentCategoriesQueryOptions } from "@/features/data-asesmen/actions/get-all-assessment-categories/query-options";
 import { getSchoolSession } from "@/lib/session";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 export default async function AsesmenPemain() {
   // AUTH GUARD
@@ -14,5 +20,15 @@ export default async function AsesmenPemain() {
 
   const schoolSession = await getSchoolSession();
 
-  return <AsesmenPemainView initialSchoolSession={schoolSession} />;
+  const queryClient = new QueryClient();
+
+  await Promise.allSettled([
+    queryClient.prefetchQuery(getAllAssessmentCategoriesQueryOptions()),
+  ]);
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AsesmenPemainView initialSchoolSession={schoolSession} />
+    </HydrationBoundary>
+  );
 }

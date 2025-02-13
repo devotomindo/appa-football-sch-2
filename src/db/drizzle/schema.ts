@@ -67,8 +67,6 @@ export const schools = pgTable("schools", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   address: text("address"),
   imagePath: text("image_path"),
-  isPremium: boolean("is_premium").notNull().default(false),
-  premiumExpiresAt: timestamp("premium_expires_at"),
   fieldLocation: text("field_location"),
   phone: text("phone"),
   domisiliKota: bigint("domisili_kota", { mode: "number" }).references(

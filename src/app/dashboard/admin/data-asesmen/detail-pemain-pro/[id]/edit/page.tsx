@@ -21,7 +21,7 @@ export default async function EditPemainPro({
 
   const queryClient = new QueryClient();
 
-  await Promise.all([
+  await Promise.allSettled([
     queryClient.prefetchQuery(getProPlayerByIdQueryOptions(id)),
     queryClient.prefetchQuery(GetAllPositionsQueryOptions()),
     queryClient.prefetchQuery(GetAllCountriesQueryOptions()),

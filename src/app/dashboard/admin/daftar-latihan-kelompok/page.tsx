@@ -13,7 +13,9 @@ import { redirect } from "next/navigation";
 export default async function DaftarLatihanKelompok() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(getAllLatihanKelompokQueryOptions());
+  await Promise.allSettled([
+    queryClient.prefetchQuery(getAllLatihanKelompokQueryOptions()),
+  ]);
 
   const authResponse = await authGuard();
 
