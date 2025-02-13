@@ -126,7 +126,7 @@ export function DashboardView({
             </BlackBackgroundContainer>
             <BlackBackgroundContainer>
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                {schoolMemberQuantity?.pemainKU8}
+                {schoolMemberQuantity?.pemainKU58}
               </p>
               <p className="relative z-10 font-bold capitalize">
                 pemain kelompok umur 5-8 tahun
@@ -134,7 +134,7 @@ export function DashboardView({
             </BlackBackgroundContainer>
             <BlackBackgroundContainer>
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                {schoolMemberQuantity?.pemainKU10}
+                {schoolMemberQuantity?.pemainKU912}
               </p>
               <p className="relative z-10 font-bold capitalize">
                 pemain kelompok umur 9-12 tahun
@@ -142,7 +142,7 @@ export function DashboardView({
             </BlackBackgroundContainer>
             <BlackBackgroundContainer>
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                {schoolMemberQuantity?.pemainKU13}
+                {schoolMemberQuantity?.pemainKU1315}
               </p>
               <p className="relative z-10 font-bold capitalize">
                 pemain kelompok umur 13-15 tahun
@@ -150,7 +150,7 @@ export function DashboardView({
             </BlackBackgroundContainer>
             <BlackBackgroundContainer>
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
-                {schoolMemberQuantity?.pemainKU15}
+                {schoolMemberQuantity?.pemainKU1618}
               </p>
               <p className="relative z-10 font-bold capitalize">
                 pemain kelompok umur 16-18 tahun

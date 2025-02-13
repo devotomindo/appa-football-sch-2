@@ -8,6 +8,7 @@ export const getAllLatihanIndividuByStudentIdQueryOptions = (
   return queryOptions({
     queryKey: ["latihan-individu", studentId],
     queryFn: () => getPenugasanLatihanIndividuByStudentId(studentId),
+    enabled: !!studentId,
   });
 };
 

@@ -30,7 +30,7 @@ export function PendaftaranAtletView({
     userData.domisiliProvinsi &&
     userData.bodyHeight &&
     userData.bodyWeight &&
-    userData.isMale &&
+    userData.isMale !== null &&
     userData.birthDate
       ? true
       : false;

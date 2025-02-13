@@ -36,7 +36,7 @@ export function DetailLatihanView({
             : roles?.includes("athlete")
               ? isKelompok
                 ? "/dashboard/metode-latihan-kelompok"
-                : "/dashboard"
+                : "/dashboard/metode-latihan-individu"
               : isKelompok
                 ? "/dashboard/metode-latihan-kelompok"
                 : "/dashboard/metode-latihan-individu"

@@ -70,8 +70,6 @@ export function DashboardAppshell({
 
   const member = schoolInfo?.isPremium;
 
-  console.log(userData);
-
   return (
     <>
       <AppShell
@@ -194,7 +192,7 @@ export function DashboardAppshell({
               {member && <p className="uppercase">premium</p>}
               {!member && (
                 <Link href="/daftar" className="uppercase">
-                  daftar disini
+                  beli paket
                 </Link>
               )}
             </div>
@@ -218,6 +216,15 @@ export function DashboardAppshell({
               }
               pathname={pathname}
             />
+            {!isUserAdminValue && !userData?.schools?.[0] && (
+              <NavLinkComponent
+                label="Pengaturan"
+                path="/pengaturan"
+                toggle={toggle}
+                leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                pathname={pathname}
+              />
+            )}
             {!isUserAdminValue &&
               userData?.schools?.[0]?.role
                 .toLowerCase()
@@ -233,6 +240,13 @@ export function DashboardAppshell({
                   <NavLinkComponent
                     label="Hasil Asesmen"
                     path="/hasil-asesmen"
+                    toggle={toggle}
+                    leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                    pathname={pathname}
+                  />
+                  <NavLinkComponent
+                    label="Metode Latihan Individu"
+                    path="/metode-latihan-individu"
                     toggle={toggle}
                     leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
                     pathname={pathname}
@@ -293,13 +307,6 @@ export function DashboardAppshell({
                     pathname={pathname}
                   />
                   <NavLinkComponent
-                    label="Hasil Asesmen"
-                    path="/hasil-asesmen"
-                    toggle={toggle}
-                    leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
-                    pathname={pathname}
-                  />
-                  <NavLinkComponent
                     label="Metode Latihan Kelompok"
                     path="/metode-latihan-kelompok"
                     toggle={toggle}
@@ -309,6 +316,13 @@ export function DashboardAppshell({
                   <NavLinkComponent
                     label="Metode Latihan Individu"
                     path="/metode-latihan-individu"
+                    toggle={toggle}
+                    leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                    pathname={pathname}
+                  />
+                  <NavLinkComponent
+                    label="Ensiklopedi Posisi Pemain"
+                    path="/ensiklopedi-posisi-pemain"
                     toggle={toggle}
                     leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
                     pathname={pathname}

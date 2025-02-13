@@ -150,25 +150,27 @@ export function DetailEnsiklopediPosisiPemainView({
         <h1 className="text-2xl font-bold uppercase">
           formasi {data?.namaFormasi}
         </h1>
-        <div className="space-x-4">
-          <Link
-            href={`/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${id}/edit`}
-          >
-            <Button
-              className="flex w-32 flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2"
-              rightSection={<IconEdit size={18} />}
+        {isAdmin && (
+          <div className="space-x-4">
+            <Link
+              href={`/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${id}/edit`}
             >
-              Edit
+              <Button
+                className="flex w-32 flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2"
+                rightSection={<IconEdit size={18} />}
+              >
+                Edit
+              </Button>
+            </Link>
+            <Button
+              className="flex w-32 flex-row items-center justify-center !bg-red-500 capitalize hover:!bg-red-600 focus-visible:outline-2"
+              rightSection={<IconTrash size={18} />}
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
+              Hapus
             </Button>
-          </Link>
-          <Button
-            className="flex w-32 flex-row items-center justify-center !bg-red-500 capitalize hover:!bg-red-600 focus-visible:outline-2"
-            rightSection={<IconTrash size={18} />}
-            onClick={() => setIsDeleteModalOpen(true)}
-          >
-            Hapus
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
       <div className="flex justify-start gap-4">
         <div className="w-1/5">

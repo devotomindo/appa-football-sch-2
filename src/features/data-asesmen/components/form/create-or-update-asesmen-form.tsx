@@ -267,29 +267,33 @@ export function CreateOrUpdateAsesmenForm({
         {steps.map((step, index) => (
           <div
             key={index}
-            className="flex flex-row-reverse justify-between gap-2"
+            className="flex flex-row-reverse items-center justify-between gap-2"
           >
-            <div className="flex items-end">
-              {index === 0 ? (
-                <ActionIcon
-                  onClick={handleAddStep}
-                  className="h-[36px] w-[36px] !bg-green-500 hover:!bg-green-600"
-                  variant="filled"
-                  radius="xl"
-                >
-                  <IconPlus size={16} className="text-white" />
-                </ActionIcon>
-              ) : (
-                <ActionIcon
-                  color="red"
-                  variant="filled"
-                  onClick={() => handleRemoveStep(index)}
-                  className="h-[36px] w-[36px]"
-                  radius="xl"
-                >
-                  <IconMinus size={16} />
-                </ActionIcon>
+            <div className="flex w-[90px] items-center justify-center gap-2">
+              {index === steps.length - 1 && (
+                <>
+                  <ActionIcon
+                    onClick={handleAddStep}
+                    className="h-[36px] w-[36px] !bg-green-500 hover:!bg-green-600"
+                    variant="filled"
+                    radius="xl"
+                  >
+                    <IconPlus size={16} className="text-white" />
+                  </ActionIcon>
+                  {steps.length > 1 && (
+                    <ActionIcon
+                      color="red"
+                      variant="filled"
+                      onClick={() => handleRemoveStep(index)}
+                      className="h-[36px] w-[36px]"
+                      radius="xl"
+                    >
+                      <IconMinus size={16} />
+                    </ActionIcon>
+                  )}
+                </>
               )}
+              {index !== steps.length - 1 && <div className="w-[90px]" />}
             </div>
             <Card withBorder shadow="sm" p="md" radius="md" className="flex-1">
               <div className="grid grid-cols-[2fr,1fr] gap-4">

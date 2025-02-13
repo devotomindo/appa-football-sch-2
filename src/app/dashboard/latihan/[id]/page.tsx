@@ -30,7 +30,7 @@ export default async function DetailLatihanPage({
       <DetailLatihanView
         latihanId={id}
         isAdmin={isAdmin}
-        roles={userData.schools[0].role.toLowerCase()}
+        roles={userData.schools[0]?.role.toLowerCase()}
       />
     </DashboardSectionContainer>
   );
