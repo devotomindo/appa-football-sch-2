@@ -8,7 +8,7 @@ import {
   gradeMetrics,
   schoolRoleMembers,
 } from "@/db/drizzle/schema";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { cache } from "react";
 
 export type getAssessmentScoresWithStudentIdResponse = Awaited<
@@ -58,6 +58,7 @@ export const getAssessmentScoresWithStudentId = cache(async function (
           records.map((r) => r.assessmentSessionId),
         ),
         eq(assessmentSessions.schoolId, student.schoolId),
+        isNotNull(assessmentSessions.completedAt),
       ),
     );
 

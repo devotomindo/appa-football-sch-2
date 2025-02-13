@@ -28,8 +28,6 @@ export async function SignUp(prevState: any, formData: FormData) {
     };
   }
 
-  console.log(validationResult.data);
-
   if (
     validationResult.data.password !== validationResult.data.confirmPassword
   ) {

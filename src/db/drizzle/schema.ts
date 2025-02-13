@@ -337,3 +337,28 @@ export const packages = pgTable("packages", {
   quotaAddition: smallint("quota_addition").notNull(),
   isDeleted: boolean("is_deleted").notNull().default(false),
 });
+
+export const referrals = pgTable("referrals", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  referrerId: uuid("referrer_id").references(() => authUsers.id),
+  isActive: boolean("is_active").notNull().default(true),
+  code: text("code").notNull(),
+  commission: bigint("commission", { mode: "number" }).notNull(),
+  discount: bigint("discount", {
+    mode: "number",
+  }).notNull(),
+});
+
+export const transactions = pgTable("transactions", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  userId: uuid("user_id").references(() => authUsers.id),
+  packageId: uuid("package_id").references(() => packages.id),
+  referralId: uuid("referral_id").references(() => referrals.id),
+  status: text("status").notNull(),
+  paymentMethod: text("payment_method").notNull(),
+  billedAmount: bigint("billed_amount", { mode: "number" }).notNull(),
+});

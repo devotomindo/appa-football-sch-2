@@ -3,7 +3,7 @@ import { getSchoolByCityId } from ".";
 
 export const getSchoolByCityIdQueryOptions = (cityId: number | null) =>
   queryOptions({
-    queryKey: ["citiesByProvinceId", { cityId }],
+    queryKey: ["schools-by-city-id", { cityId }],
     queryFn: () => getSchoolByCityId(cityId),
-    enabled: !!cityId, // ensure query is only executed when provinceId is provided
+    enabled: !!cityId, // ensure query is only executed when cityId is provided
   });

@@ -30,9 +30,6 @@ export async function deletePenugasanLatihanIndividuById(
     };
   }
 
-  console.log("validationResult", validationResult);
-  console.log("validationResult.data", validationResult.data);
-
   const db = createDrizzleConnection();
 
   try {

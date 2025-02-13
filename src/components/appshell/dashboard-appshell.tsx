@@ -384,7 +384,7 @@ export function DashboardAppshell({
                 />
                 <NavLinkComponent
                   label="Referral Code / Voucher"
-                  path="/admin/referral-code-voucher"
+                  path="/admin/referrals"
                   toggle={toggle}
                   leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
                   pathname={pathname}
