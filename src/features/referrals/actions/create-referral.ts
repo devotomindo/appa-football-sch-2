@@ -48,6 +48,7 @@ export async function createReferral(prevState: any, formData: FormData) {
 
     return { message: "Referral code created" };
   } catch (error) {
+    console.error(error);
     return {
       error: {
         general: "Failed to create referral code",

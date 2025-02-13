@@ -47,6 +47,7 @@ export async function updateReferral(prevState: any, formData: FormData) {
     });
     return { message: "Referral updated successfully" };
   } catch (error) {
+    console.error(error);
     return {
       error: {
         general: "Failed to update referral code",

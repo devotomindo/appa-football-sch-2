@@ -33,6 +33,7 @@ export async function disableReferral(prevState: any, formData: FormData) {
 
     return { message: "Referral berhasil dinonaktifkan" };
   } catch (error) {
+    console.error(error);
     return {
       error: {
         general: "Failed to disable referral code",
