@@ -359,4 +359,5 @@ export const transactions = pgTable("transactions", {
   status: text("status").notNull(),
   paymentMethod: text("payment_method").notNull(),
   billedAmount: bigint("billed_amount", { mode: "number" }).notNull(),
+  schoolId: uuid("school_id").references(() => schools.id),
 });

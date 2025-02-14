@@ -22,6 +22,7 @@ import {
   IconHome,
   IconHomeFilled,
   IconMoneybag,
+  IconReceipt,
   IconTool,
   IconUserCircle,
   IconUsersGroup,
@@ -191,7 +192,7 @@ export function DashboardAppshell({
             <div className="w-full bg-[#E92222] p-2 text-center text-white">
               {member && <p className="uppercase">premium</p>}
               {!member && (
-                <Link href="/daftar" className="uppercase">
+                <Link href="/dashboard/daftar-paket" className="uppercase">
                   beli paket
                 </Link>
               )}
@@ -379,7 +380,7 @@ export function DashboardAppshell({
                   label="Daftar Transaksi"
                   path="/admin/daftar-transaksi"
                   toggle={toggle}
-                  leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                  leftSection={<IconReceipt size="1.25rem" stroke={1.5} />}
                   pathname={pathname}
                 />
                 <NavLinkComponent
