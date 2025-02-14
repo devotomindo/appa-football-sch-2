@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   // sharp webpack configuration
   // ref: https://github.com/vercel/vercel/issues/11052#issuecomment-2263565471
   webpack: (config) => ({
