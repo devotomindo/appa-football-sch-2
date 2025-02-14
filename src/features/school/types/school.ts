@@ -6,7 +6,7 @@ export interface School {
   address: string | null;
   imagePath: string | null;
   isPremium: boolean;
-  premiumExpiresAt: Date | null;
+  // premiumExpiresAt: Date | null;
   fieldLocation: string | null;
   phone: string | null;
   domisiliKota: number | null;

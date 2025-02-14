@@ -72,6 +72,7 @@ export const schools = pgTable("schools", {
   domisiliKota: bigint("domisili_kota", { mode: "number" }).references(
     () => cities.id,
   ),
+  isPremium: boolean("is_premium").notNull().default(false),
 });
 
 export const schoolRoles = pgTable("school_roles", {
