@@ -12,9 +12,9 @@ import { isUserAdmin } from "@/features/user/utils/is-user-admin";
 import type { SchoolSession } from "@/lib/session";
 import { calculateAge } from "@/lib/utils/age";
 import { useSchoolStore } from "@/stores/school-store";
-import { Avatar, Button, Card, TextInput } from "@mantine/core";
+import { Avatar, Button, TextInput } from "@mantine/core";
+import { IconSearch, IconVideoOff } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getSchoolMemberQuantityQueryOptions } from "../actions/get-school-member-quantity/query-options";
@@ -166,127 +166,196 @@ export function DashboardView({
               userIsHeadCoach={userIsHeadCoach}
             />
           )}
-          <div className="mt-4 grid grid-cols-2 items-start gap-4">
-            <Card>
-              <h2 className="mb-4 text-xl font-semibold">Profil Pemain</h2>
-              {isLoadingBiodata ? (
-                <p>Loading biodata...</p>
-              ) : (
-                <div className="flex items-start gap-8 rounded-md border-2 border-gray-200 p-4">
-                  <Avatar
-                    src={biodataData?.avatarUrl ?? undefined}
-                    size={"20rem"}
-                    radius={"2%"}
-                    alt={`Avatar ${biodataData?.name}`}
-                    name={biodataData?.name ?? undefined}
-                    color="initials"
-                    className="shadow-xl"
-                  />
-                  <div className="flex h-full flex-col justify-between gap-4">
-                    <p className="text-2xl font-semibold capitalize">
-                      Nama: {biodataData?.name}
-                    </p>
-                    <p>
-                      Umur:{" "}
-                      {biodataData?.birthDate
-                        ? calculateAge(new Date(biodataData.birthDate))
-                        : "-"}{" "}
-                      Tahun
-                    </p>
-                    <p>
-                      Tanggal lahir:{" "}
-                      {biodataData?.birthDate
-                        ? dayjs(biodataData.birthDate).format("DD MMMM YYYY")
-                        : "-"}
-                    </p>
-                    <p>
-                      Jenis kelamin:{" "}
-                      {biodataData?.isMale ? "Laki-laki" : "Perempuan"}
-                    </p>
-                    <p>Tinggi Badan: {biodataData?.bodyHeight} cm</p>
-                    <p>Berat Badan: {biodataData?.bodyWeight} kg</p>
-                    <p>Kota: {biodataData?.domisiliKota}</p>
-                    <p>Provinsi: {biodataData?.domisiliProvinsi}</p>
-                  </div>
+
+          {/* Modern Player Dashboard */}
+          <div className="mt-8 space-y-8">
+            {/* Player Stats Overview Cards */}
+            <div className="grid grid-cols-2 gap-6">
+              {" "}
+              {/* Changed from grid-cols-3 to grid-cols-2 */}
+              <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 p-6 text-white shadow-lg">
+                <div className="text-sm font-medium opacity-80">
+                  Total Latihan
                 </div>
-              )}
-            </Card>
-            {/* Add HasilAsesmenStudentIdTable component */}
-            <Card>
-              <h2 className="mb-4 text-xl font-semibold">Hasil Asesmen</h2>
-              {assessmentScoresQuery.isLoading ? (
-                <div>Loading assessment data...</div>
-              ) : studentId ? (
-                <HasilAsesmenStudentIdTable studentId={studentId} />
-              ) : (
-                <div>No student ID available</div>
-              )}
-            </Card>
-          </div>
-          <div className="p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Rekomendasi Latihan</h2>
-              <TextInput
-                placeholder="Cari latihan..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64"
-              />
+                <div className="mt-2 text-3xl font-bold">
+                  {isLoadingTugasLatihan
+                    ? "..."
+                    : tugasLatihanIndividuData?.length || 0}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 p-6 text-white shadow-lg">
+                <div className="text-sm font-medium opacity-80">
+                  Kelompok Umur
+                </div>
+                <div className="mt-2 text-3xl font-bold">
+                  {isLoadingBiodata ? (
+                    "..."
+                  ) : biodataData?.birthDate ? (
+                    <>
+                      {calculateAge(new Date(biodataData.birthDate)) <= 8
+                        ? "KU 5-8"
+                        : calculateAge(new Date(biodataData.birthDate)) <= 12
+                          ? "KU 9-12"
+                          : calculateAge(new Date(biodataData.birthDate)) <= 15
+                            ? "KU 13-15"
+                            : "KU 16-18"}
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="w-full">
-              {isLoadingTugasLatihan ? (
-                <div>Loading...</div>
-              ) : filteredTugasLatihan.length > 0 ? (
-                filteredTugasLatihan.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-20 rounded-lg border-2 p-8 shadow-lg"
-                  >
-                    <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
-                      {item.videoUrl ? (
-                        <video
-                          src={item.videoUrl}
-                          controls
-                          className="h-full w-full object-cover"
-                        >
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          No video available
-                        </div>
-                      )}
+
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-12 gap-8">
+              {/* Player Profile Card */}
+              <div className="col-span-4 rounded-2xl bg-white p-6 shadow-xl">
+                {isLoadingBiodata ? (
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-gray-500">Loading profile data...</div>
+                  </div>
+                ) : (
+                  <div className="relative pt-16">
+                    {" "}
+                    {/* Added pt-16 for top padding */}
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 transform">
+                      {" "}
+                      {/* Changed from -top-12 to -top-4 */}
+                      <Avatar
+                        src={biodataData?.avatarUrl ?? undefined}
+                        size={120}
+                        radius={120}
+                        className="shadow-2xl ring-4 ring-white"
+                      />
                     </div>
-                    <div className="flex w-2/3 flex-col gap-4">
-                      <p className="text-xl font-bold uppercase">{item.name}</p>
-                      <p className="text-justify font-extralight">
-                        {item.description.length > 200
-                          ? `${item.description.slice(0, 200)}...`
-                          : item.description}
-                      </p>
-                      <div className="flex gap-4">
-                        <Button
-                          component={Link}
-                          href={
-                            userIsAdmin
-                              ? `/dashboard/admin/daftar-latihan-individu/latihan/${item.id}`
-                              : `/dashboard/latihan/${item.id}`
-                          }
-                          className="rounded-lg bg-[#28B826] px-4 py-2 capitalize text-white shadow-xl"
-                        >
-                          Lihat latihan
-                        </Button>
+                    <div className="mt-20 text-center">
+                      {" "}
+                      {/* Changed from mt-16 to mt-20 */}
+                      <h2 className="text-2xl font-bold capitalize">
+                        {biodataData?.name}
+                      </h2>
+                      <p className="text-gray-500">ID: {studentId}</p>
+                    </div>
+                    <div className="mt-8 space-y-4 divide-y">
+                      <div className="grid grid-cols-2 py-3">
+                        <span className="text-gray-500">Umur</span>
+                        <span className="font-medium">
+                          {biodataData?.birthDate
+                            ? `${calculateAge(new Date(biodataData.birthDate))} Tahun`
+                            : "-"}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 py-3">
+                        <span className="text-gray-500">Tinggi</span>
+                        <span className="font-medium">
+                          {biodataData?.bodyHeight} cm
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 py-3">
+                        <span className="text-gray-500">Berat</span>
+                        <span className="font-medium">
+                          {biodataData?.bodyWeight} kg
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 py-3">
+                        <span className="text-gray-500">Kota</span>
+                        <span className="font-medium">
+                          {biodataData?.domisiliKota}
+                        </span>
                       </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div>
-                  {searchTerm
-                    ? "Tidak ada latihan yang sesuai dengan pencarian"
-                    : "Tidak ada latihan yang direkomendasikan"}
+                )}
+              </div>
+
+              {/* Assessment Results */}
+              <div className="col-span-8 rounded-2xl bg-white p-6 shadow-xl">
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-xl font-bold">Hasil Asesmen</h2>
+                  <Button variant="light" radius="xl">
+                    Lihat Semua
+                  </Button>
                 </div>
-              )}
+                {assessmentScoresQuery.isLoading ? (
+                  <div className="flex h-48 items-center justify-center">
+                    <div className="text-gray-500">
+                      Loading assessment data...
+                    </div>
+                  </div>
+                ) : studentId ? (
+                  <HasilAsesmenStudentIdTable studentId={studentId} />
+                ) : null}
+              </div>
+            </div>
+
+            {/* Training Recommendations */}
+            <div className="rounded-2xl bg-white p-6 shadow-xl">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl font-bold">
+                  Rekomendasi Latihan Oleh Pelatih
+                </h2>
+                <TextInput
+                  placeholder="Cari latihan..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-72"
+                  radius="xl"
+                  rightSection={<IconSearch size={16} />}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                {isLoadingTugasLatihan ? (
+                  <div className="col-span-2 flex h-48 items-center justify-center">
+                    <div className="text-gray-500">Loading...</div>
+                  </div>
+                ) : filteredTugasLatihan.length > 0 ? (
+                  filteredTugasLatihan.map((item, index) => (
+                    <div
+                      key={index}
+                      className="group relative overflow-hidden rounded-xl border bg-white p-4 shadow-lg transition-all hover:shadow-xl"
+                    >
+                      <div className="aspect-video w-full overflow-hidden rounded-lg">
+                        {item.videoUrl ? (
+                          <video
+                            src={item.videoUrl}
+                            controls
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center bg-gray-100">
+                            <IconVideoOff className="text-gray-400" size={32} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <h3 className="text-lg font-bold capitalize">
+                          {item.name}
+                        </h3>
+                        <p className="line-clamp-2 text-sm text-gray-600">
+                          {item.description}
+                        </p>
+                        <Button
+                          component={Link}
+                          href={`/dashboard/latihan/${item.id}`}
+                          className="mt-4 w-full"
+                          variant="filled"
+                          radius="md"
+                        >
+                          Mulai Latihan
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-2 flex h-48 items-center justify-center text-gray-500">
+                    {searchTerm
+                      ? "Tidak ada latihan yang sesuai dengan pencarian"
+                      : "Tidak ada latihan yang direkomendasikan"}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </>

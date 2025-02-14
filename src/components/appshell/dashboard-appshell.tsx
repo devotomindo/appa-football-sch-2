@@ -175,7 +175,7 @@ export function DashboardAppshell({
               className="mx-auto border-4 border-[#333333]"
             />
             <div className="space-y-1 text-center">
-              <p className="font-bold">{userData.name}</p>
+              <p className="font-bold capitalize">{userData.name}</p>
               {isUserAdminValue && <p className="uppercase">Admin</p>}
 
               <div className="flex justify-center">
