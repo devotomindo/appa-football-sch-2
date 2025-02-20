@@ -8,12 +8,15 @@ import { useEffect, useState } from "react";
 export function PosisiMenyerangImageInput({
   posisi,
   defaultValue,
+  error,
 }: {
   posisi: number;
   defaultValue?: string;
+  error?: string;
 }) {
   const [gambar, setGambar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(defaultValue || "");
+  const [wasDeleted, setWasDeleted] = useState(false);
 
   useEffect(() => {
     if (gambar) {
@@ -26,6 +29,7 @@ export function PosisiMenyerangImageInput({
   const handleClear = () => {
     setGambar(null);
     setPreview("");
+    setWasDeleted(true);
   };
 
   return (
@@ -52,14 +56,22 @@ export function PosisiMenyerangImageInput({
       )}
       <FileInput
         label="Upload Gambar Ilustrasi"
-        placeholder="Pilih gambar"
+        placeholder="Upload gambar"
         accept="image/*"
         className="mt-4 shadow-lg"
         radius="md"
         value={gambar}
         onChange={setGambar}
         name={`gambarPosisiMenyerang[${posisi}]`}
+        error={error}
       />
+      {wasDeleted && (
+        <input
+          type="hidden"
+          name={`deletedPosisiMenyerangImage[${posisi}]`}
+          value="true"
+        />
+      )}
     </div>
   );
 }
@@ -67,12 +79,15 @@ export function PosisiMenyerangImageInput({
 export function PosisiBertahanImageInput({
   posisi,
   defaultValue,
+  error,
 }: {
   posisi: number;
   defaultValue?: string;
+  error?: string;
 }) {
   const [gambar, setGambar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(defaultValue || "");
+  const [wasDeleted, setWasDeleted] = useState(false);
 
   useEffect(() => {
     if (gambar) {
@@ -85,6 +100,7 @@ export function PosisiBertahanImageInput({
   const handleClear = () => {
     setGambar(null);
     setPreview("");
+    setWasDeleted(true);
   };
 
   return (
@@ -111,14 +127,22 @@ export function PosisiBertahanImageInput({
       )}
       <FileInput
         label="Upload Gambar Ilustrasi"
-        placeholder="Pilih gambar"
+        placeholder="Upload gambar"
         accept="image/*"
         className="mt-4 shadow-lg"
         radius="md"
         value={gambar}
         onChange={setGambar}
         name={`gambarPosisiBertahan[${posisi}]`}
+        error={error}
       />
+      {wasDeleted && (
+        <input
+          type="hidden"
+          name={`deletedPosisiBertahanImage[${posisi}]`}
+          value="true"
+        />
+      )}
     </div>
   );
 }
@@ -142,11 +166,6 @@ export function FormasiAsliImageInput({
     }
   }, [gambar]);
 
-  const handleClear = () => {
-    setGambar(null);
-    setPreview("");
-  };
-
   return (
     <div>
       {preview && (
@@ -158,15 +177,6 @@ export function FormasiAsliImageInput({
             width={500}
             height={500}
           />
-          <Button
-            leftSection={<IconTrash size={16} />}
-            variant="light"
-            color="red"
-            className="absolute right-2 top-2"
-            onClick={handleClear}
-          >
-            Hapus
-          </Button>
         </div>
       )}
       <FileInput
@@ -201,10 +211,10 @@ export function TransisiMenyerangImageInput({
     }
   }, [gambar]);
 
-  const handleClear = () => {
-    setGambar(null);
-    setPreview("");
-  };
+  // const handleClear = () => {
+  //   setGambar(null);
+  //   setPreview("");
+  // };
 
   return (
     <div className="">
@@ -217,7 +227,7 @@ export function TransisiMenyerangImageInput({
             width={500}
             height={500}
           />
-          <Button
+          {/* <Button
             leftSection={<IconTrash size={16} />}
             variant="light"
             color="red"
@@ -225,7 +235,7 @@ export function TransisiMenyerangImageInput({
             onClick={handleClear}
           >
             Hapus
-          </Button>
+          </Button> */}
         </div>
       )}
       <FileInput
@@ -260,10 +270,10 @@ export function TransisiBertahanImageInput({
     }
   }, [gambar]);
 
-  const handleClear = () => {
-    setGambar(null);
-    setPreview("");
-  };
+  // const handleClear = () => {
+  //   setGambar(null);
+  //   setPreview("");
+  // };
 
   return (
     <div className="">
@@ -276,7 +286,7 @@ export function TransisiBertahanImageInput({
             width={500}
             height={500}
           />
-          <Button
+          {/* <Button
             leftSection={<IconTrash size={16} />}
             variant="light"
             color="red"
@@ -284,7 +294,7 @@ export function TransisiBertahanImageInput({
             onClick={handleClear}
           >
             Hapus
-          </Button>
+          </Button> */}
         </div>
       )}
       <FileInput

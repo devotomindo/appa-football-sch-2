@@ -1,5 +1,6 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { GetAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
+import { getAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
+import { getAllEnsiklopediPemainQueryOptions } from "@/features/ensiklopedi-posisi-pemain/actions/get-all-ensiklopedi-pemain/query-options";
 import { EnsiklopediPosisiPemainForm } from "@/features/ensiklopedi-posisi-pemain/components/form/ensiklopedi-posisi-pemain-form";
 import { authGuard } from "@/features/user/guards/auth-guard";
 import { Button } from "@mantine/core";
@@ -21,7 +22,10 @@ export default async function TambahEnsiklopediPosisiPemain() {
 
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(GetAllPositionsQueryOptions());
+  await Promise.allSettled([
+    queryClient.prefetchQuery(getAllPositionsQueryOptions()),
+    queryClient.prefetchQuery(getAllEnsiklopediPemainQueryOptions()),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

@@ -103,7 +103,15 @@ export function DashboardAppshell({
                   />
 
                   <UnstyledButton hiddenFrom="lg" onClick={toggle}>
-                    Logo Mobile
+                    <div className="relative">
+                      <Image
+                        src={"/logo-with-text.png"}
+                        alt=""
+                        width={100}
+                        height={100}
+                        className=""
+                      />
+                    </div>
                   </UnstyledButton>
 
                   <Box visibleFrom="lg" className="h-[59px]">

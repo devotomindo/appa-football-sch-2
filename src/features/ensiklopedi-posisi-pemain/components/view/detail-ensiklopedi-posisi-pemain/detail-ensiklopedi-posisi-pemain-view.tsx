@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DeleteEnsiklopediForm } from "../../form/delete-ensiklopedi-form";
+import { daftarPosisi } from "../../form/ensiklopedi-posisi-pemain-form";
 
 export function DetailEnsiklopediPosisiPemainView({
   id,
@@ -148,7 +149,7 @@ export function DetailEnsiklopediPosisiPemainView({
       </Link>
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold uppercase">
-          formasi {data?.namaFormasi}
+          formasi {data?.namaFormasi.split("").join("-")}
         </h1>
         {isAdmin && (
           <div className="space-x-4">
@@ -176,44 +177,51 @@ export function DetailEnsiklopediPosisiPemainView({
         <div className="w-1/5">
           <p className="font-bold capitalize">formasi asli</p>
           <div className="relative">
-            <Image
-              src={data?.gambarFormasiDefault || ""}
-              alt="formasi-default"
-              width={500}
-              height={500}
-              className=""
-            />
+            {data?.gambarFormasiDefault && (
+              <Image
+                src={data?.gambarFormasiDefault}
+                alt="formasi-default"
+                width={500}
+                height={500}
+                className=""
+              />
+            )}
           </div>
         </div>
         <div className="w-1/5">
           <p className="font-bold capitalize">transisi menyerang</p>
           <div className="relative">
-            <Image
-              src={data?.gambarOffense || ""}
-              alt="formasi-offense"
-              width={500}
-              height={500}
-              className=""
-            />
+            {data?.gambarOffense && (
+              <Image
+                src={data?.gambarOffense}
+                alt="formasi-offense"
+                width={500}
+                height={500}
+                className=""
+              />
+            )}
           </div>
         </div>
         <div className="w-1/5">
           <p className="font-bold capitalize">transisi defense</p>
           <div className="relative">
-            <Image
-              src={data?.gambarDefense || ""}
-              alt="formasi-defense"
-              width={500}
-              height={500}
-              className=""
-            />
+            {data?.gambarDefense && (
+              <Image
+                src={data?.gambarDefense}
+                alt="formasi-defense"
+                width={500}
+                height={500}
+                className=""
+              />
+            )}
           </div>
         </div>
       </div>
       <p className="font-light">{data?.deskripsiFormasi}</p>
       <Accordion
         variant="separated"
-        defaultValue="Posisi #1"
+        multiple
+        defaultValue={daftarPosisi.map((item) => item.value)}
         radius={"md"}
         className="chevron"
         chevron={<IconTriangleInvertedFilled className={"icon"} />}

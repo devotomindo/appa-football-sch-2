@@ -1,9 +1,9 @@
 "use client";
 
-import { GetAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
+import { getAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
 import { createPemainPro } from "@/features/data-asesmen/actions/create-pemain-pro";
 import { editPemainPro } from "@/features/data-asesmen/actions/edit-pemain-pro";
-import { GetAllCountriesQueryOptions } from "@/features/data-asesmen/actions/get-all-countries/query-options";
+import { getAllCountriesQueryOptions } from "@/features/data-asesmen/actions/get-all-countries/query-options";
 import { getProPlayerByIdQueryOptions } from "@/features/data-asesmen/actions/get-pro-player-by-id/query-options";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
@@ -37,8 +37,8 @@ export function TambahPemainProForm({
     undefined,
   );
   // const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: allPositionsData } = useQuery(GetAllPositionsQueryOptions());
-  const { data: allCountriesData } = useQuery(GetAllCountriesQueryOptions());
+  const { data: allPositionsData } = useQuery(getAllPositionsQueryOptions());
+  const { data: allCountriesData } = useQuery(getAllCountriesQueryOptions());
   const router = useRouter();
   const { data: pemainProData } = useQuery({
     ...getProPlayerByIdQueryOptions(id ?? ""),

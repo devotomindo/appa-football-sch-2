@@ -1,6 +1,6 @@
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { GetAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
-import { GetAllCountriesQueryOptions } from "@/features/data-asesmen/actions/get-all-countries/query-options";
+import { getAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
+import { getAllCountriesQueryOptions } from "@/features/data-asesmen/actions/get-all-countries/query-options";
 import { getProPlayerByIdQueryOptions } from "@/features/data-asesmen/actions/get-pro-player-by-id/query-options";
 import { TambahPemainProForm } from "@/features/data-asesmen/components/form/tambah-pemain-pro-form/tambah-pemain-pro-form";
 import { Button } from "@mantine/core";
@@ -23,8 +23,8 @@ export default async function EditPemainPro({
 
   await Promise.allSettled([
     queryClient.prefetchQuery(getProPlayerByIdQueryOptions(id)),
-    queryClient.prefetchQuery(GetAllPositionsQueryOptions()),
-    queryClient.prefetchQuery(GetAllCountriesQueryOptions()),
+    queryClient.prefetchQuery(getAllPositionsQueryOptions()),
+    queryClient.prefetchQuery(getAllCountriesQueryOptions()),
   ]);
 
   return (

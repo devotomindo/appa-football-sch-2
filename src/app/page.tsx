@@ -141,7 +141,7 @@ export default function LandingPage() {
       {/* end of image slideshow */}
 
       {/* start of first big header */}
-      <section className="relative overflow-hidden bg-[#111111]">
+      <section id="Home" className="relative overflow-hidden bg-[#111111]">
         <div className="relative z-10 flex flex-row items-start gap-20 px-8 py-20 leading-loose max-lg:flex-col max-lg:px-14">
           <div className="flex h-full w-full flex-1 items-center justify-center lg:pt-8">
             <div className="">
@@ -192,7 +192,10 @@ export default function LandingPage() {
       {/* end of first big header */}
 
       {/* start of program latihan section */}
-      <section className="space-y-28 bg-[#bb000e] px-8 py-28 text-white md:px-20">
+      <section
+        id="Program"
+        className="space-y-28 bg-[#bb000e] px-8 py-28 text-white md:px-20"
+      >
         <h1 className="text-center text-4xl font-black uppercase">
           program latihan
         </h1>
@@ -246,7 +249,7 @@ export default function LandingPage() {
       {/* end of program latihan section */}
 
       {/* start of fasilitas section */}
-      <section className="space-y-28 px-8 py-28 md:px-20">
+      <section id="Fasilitas" className="space-y-28 px-8 py-28 md:px-20">
         <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
           fasilitas
         </h1>
@@ -338,7 +341,10 @@ export default function LandingPage() {
       {/* end of informasi & berita section */}
 
       {/* start of footer section */}
-      <footer className="grid grid-cols-1 gap-8 bg-[#000000] px-8 py-20 text-white md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:items-start">
+      <footer
+        id="Kontak"
+        className="grid grid-cols-1 gap-8 bg-[#000000] px-8 py-20 text-white md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:items-start"
+      >
         <div className="relative flex h-full w-full items-center justify-center md:justify-self-start">
           <div className="relative h-1/2 w-1/2">
             <Image

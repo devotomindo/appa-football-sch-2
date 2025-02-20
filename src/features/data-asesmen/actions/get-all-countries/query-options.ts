@@ -1,9 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
-import { GetAllCountries } from ".";
+import { getAllCountries } from ".";
 
-export function GetAllCountriesQueryOptions() {
+export function getAllCountriesQueryOptions() {
   return queryOptions({
     queryKey: ["countries", "all"],
-    queryFn: () => GetAllCountries(),
+    queryFn: () => getAllCountries(),
   });
 }

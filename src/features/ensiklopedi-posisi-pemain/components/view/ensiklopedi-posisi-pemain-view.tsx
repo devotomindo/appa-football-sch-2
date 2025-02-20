@@ -44,7 +44,7 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
               >
                 <div className="flex h-[400px] w-[300px] flex-col items-center gap-4 rounded-xl border-2 p-8 shadow-xl">
                   <p className="text-center text-xl font-bold uppercase">
-                    formasi {formasi.namaFormasi}
+                    formasi {formasi.namaFormasi?.split("").join("-")}
                   </p>
                   <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
                     <Image

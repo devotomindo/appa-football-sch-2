@@ -7,9 +7,40 @@ import {
   singleImageUploader,
 } from "@/lib/utils/image-uploader";
 import { revalidatePath } from "next/cache";
+import sharp from "sharp";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+
+// Helper function to validate portrait image using Sharp
+const validatePortraitImage = async (file: File) => {
+  const buffer = await file.arrayBuffer();
+  const metadata = await sharp(buffer).metadata();
+  return Boolean(
+    metadata.height && metadata.width && metadata.height > metadata.width,
+  );
+};
+
+const imageValidation = z
+  .instanceof(File)
+  .refine((val) => val.size < 1024 * 1024 * 5, {
+    message: "Ukuran file tidak boleh lebih dari 5MB",
+    path: ["size"], // Add path for better error handling
+  })
+  .refine((val) => val.type.includes("image"), {
+    message: "File harus berupa gambar",
+    path: ["type"], // Add path for better error handling
+  });
+
+const positionImageValidation = z
+  .instanceof(File)
+  .refine((val) => val.size < 1024 * 1024 * 5, {
+    message: "File foto maksimal 5MB",
+  })
+  .refine((val) => val.type.includes("image"), {
+    message: "File foto harus berupa gambar",
+  })
+  .optional();
 
 export async function createEnskilopediPemain(
   prevState: any,
@@ -37,14 +68,47 @@ export async function createEnskilopediPemain(
         z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
       gambarPosisiMenyerang: zfd.repeatable(
-        z.array(zfd.file(z.instanceof(File).optional())),
+        z.array(zfd.file(positionImageValidation)),
       ),
       gambarPosisiBertahan: zfd.repeatable(
-        z.array(zfd.file(z.instanceof(File).optional())),
+        z.array(zfd.file(positionImageValidation)),
       ),
-      gambarFormasiAsli: zfd.file(z.instanceof(File)),
-      gambarTransisiMenyerang: zfd.file(z.instanceof(File)),
-      gambarTransisiBertahan: zfd.file(z.instanceof(File)),
+      gambarFormasiAsli: zfd.file(
+        z
+          .instanceof(File)
+          .refine((val) => val.type.includes("image"), {
+            message: "File harus berupa gambar",
+            path: ["type"], // Add path for better error handling
+          })
+          .refine((val) => val.size < 1024 * 1024 * 5, {
+            message: "Ukuran file tidak boleh lebih dari 5MB",
+            path: ["size"], // Add path for better error handling
+          })
+          .refine(
+            async (file) => await validatePortraitImage(file),
+            "Gambar formasi asli harus berorientiasi portrait (tinggi > lebar)",
+          ),
+      ),
+      gambarTransisiMenyerang: zfd.file(
+        imageValidation
+          .refine((val) => val.size < 1024 * 1024 * 5, {
+            message: "Ukuran file tidak boleh lebih dari 5MB",
+          })
+          .refine(
+            async (file) => await validatePortraitImage(file),
+            "Gambar transisi menyerang harus berorientiasi portrait (tinggi > lebar)",
+          ),
+      ),
+      gambarTransisiBertahan: zfd.file(
+        imageValidation
+          .refine((val) => val.size < 1024 * 1024 * 5, {
+            message: "Ukuran file tidak boleh lebih dari 5MB",
+          })
+          .refine(
+            async (file) => await validatePortraitImage(file),
+            "Gambar transisi bertahan harus berorientiasi portrait (tinggi > lebar)",
+          ),
+      ),
     })
     .safeParseAsync(formData);
 
@@ -56,16 +120,43 @@ export async function createEnskilopediPemain(
         general: "Terjadi kesalahan saat menyimpan data. Mohon dicek kembali",
         nama: errorFormatted.nama?._errors,
         deskripsi: errorFormatted.deskripsi?._errors,
-        posisi: errorFormatted.posisi?._errors,
-        karakter: errorFormatted.karakter?._errors,
-        posisiMenyerang: errorFormatted.posisiMenyerang?._errors,
-        posisiBertahan: errorFormatted.posisiBertahan?._errors,
-        gambarPosisiMenyerang: errorFormatted.gambarPosisiMenyerang?._errors,
-        gambarPosisiBertahan: errorFormatted.gambarPosisiBertahan?._errors,
-        gambarFormasiAsli: errorFormatted.gambarFormasiAsli?._errors,
+        posisi: validationResult.error.errors
+          .filter((err) => err.path[0] === "posisi")
+          .reduce((acc: string[], err) => {
+            const index = err.path[1] as number;
+            if (!acc[index])
+              acc[index] =
+                `Posisi #${index + 1} tidak boleh kosong. Harap pilih 1`;
+            return acc;
+          }, []),
+        karakter: validationResult.error.errors
+          .filter((err) => err.path[0] === "karakter")
+          .reduce((acc: string[], err) => {
+            const index = err.path[1] as number;
+            if (!acc[index])
+              acc[index] =
+                `Karakter tidak boleh kosong pada Posisi #${index + 1}`;
+            return acc;
+          }, []),
+        gambarFormasiAsli: errorFormatted.gambarFormasiAsli?._errors[0],
         gambarTransisiMenyerang:
-          errorFormatted.gambarTransisiMenyerang?._errors,
-        gambarTransisiBertahan: errorFormatted.gambarTransisiBertahan?._errors,
+          errorFormatted.gambarTransisiMenyerang?._errors?.[0],
+        gambarTransisiBertahan:
+          errorFormatted.gambarTransisiBertahan?._errors?.[0],
+        gambarPosisiMenyerang: validationResult.error.errors
+          .filter((err) => err.path[0] === "gambarPosisiMenyerang")
+          .reduce((acc: string[], err) => {
+            const index = err.path[1] as number;
+            if (!acc[index]) acc[index] = err.message;
+            return acc;
+          }, []),
+        gambarPosisiBertahan: validationResult.error.errors
+          .filter((err) => err.path[0] === "gambarPosisiBertahan")
+          .reduce((acc: string[], err) => {
+            const index = err.path[1] as number;
+            if (!acc[index]) acc[index] = err.message;
+            return acc;
+          }, []),
       },
     };
   }
@@ -111,7 +202,7 @@ export async function createEnskilopediPemain(
       // Insert formation first
       await tx.insert(formations).values({
         id: idFormations,
-        name: validationResult.data.nama.split("").join("-"),
+        name: validationResult.data.nama,
         description: validationResult.data.deskripsi,
         defaultFormationImagePath: gambarFormasiAsliURL,
         offenseTransitionImagePath: gambarTransisiMenyerangURL,
