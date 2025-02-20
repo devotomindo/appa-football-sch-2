@@ -21,15 +21,6 @@ const validatePortraitImage = async (file: File) => {
   );
 };
 
-const imageValidation = z
-  .instanceof(File)
-  .refine((val) => val.size < 1024 * 1024 * 5, {
-    message: "File foto maksimal 5MB",
-  })
-  .refine((val) => val.type.includes("image"), {
-    message: "File foto harus berupa gambar",
-  });
-
 const positionImageValidation = z
   .instanceof(File)
   .refine((val) => val.size < 1024 * 1024 * 5, {
@@ -68,28 +59,52 @@ export async function editEnskilopediPemain(
         z.array(zfd.file(positionImageValidation)),
       ),
       gambarFormasiAsli: zfd.file(
-        imageValidation
+        z
+          .instanceof(File)
+          .refine((val) => val.type.includes("image"), {
+            message: "File harus berupa gambar",
+            path: ["type"], // Add path for better error handling
+          })
+          .refine((val) => val.size < 1024 * 1024 * 5, {
+            message: "Ukuran file tidak boleh lebih dari 5MB",
+            path: ["size"], // Add path for better error handling
+          })
           .refine(
             async (file) => await validatePortraitImage(file),
             "Gambar formasi asli harus berorientiasi portrait (tinggi > lebar)",
-          )
-          .optional(),
+          ),
       ),
       gambarTransisiMenyerang: zfd.file(
-        imageValidation
+        z
+          .instanceof(File)
+          .refine((val) => val.type.includes("image"), {
+            message: "File harus berupa gambar",
+            path: ["type"], // Add path for better error handling
+          })
+          .refine((val) => val.size < 1024 * 1024 * 5, {
+            message: "Ukuran file tidak boleh lebih dari 5MB",
+            path: ["size"], // Add path for better error handling
+          })
           .refine(
             async (file) => await validatePortraitImage(file),
             "Gambar transisi menyerang harus berorientiasi portrait (tinggi > lebar)",
-          )
-          .optional(),
+          ),
       ),
       gambarTransisiBertahan: zfd.file(
-        imageValidation
+        z
+          .instanceof(File)
+          .refine((val) => val.type.includes("image"), {
+            message: "File harus berupa gambar",
+            path: ["type"], // Add path for better error handling
+          })
+          .refine((val) => val.size < 1024 * 1024 * 5, {
+            message: "Ukuran file tidak boleh lebih dari 5MB",
+            path: ["size"], // Add path for better error handling
+          })
           .refine(
             async (file) => await validatePortraitImage(file),
             "Gambar transisi bertahan harus berorientiasi portrait (tinggi > lebar)",
-          )
-          .optional(),
+          ),
       ),
       idPosisiFormasi: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))),
@@ -145,10 +160,11 @@ export async function editEnskilopediPemain(
             if (!acc[index]) acc[index] = err.message;
             return acc;
           }, []),
-        gambarFormasiAsli: errorFormatted.gambarFormasiAsli?._errors,
+        gambarFormasiAsli: errorFormatted.gambarFormasiAsli?._errors[0],
         gambarTransisiMenyerang:
-          errorFormatted.gambarTransisiMenyerang?._errors,
-        gambarTransisiBertahan: errorFormatted.gambarTransisiBertahan?._errors,
+          errorFormatted.gambarTransisiMenyerang?._errors[0],
+        gambarTransisiBertahan:
+          errorFormatted.gambarTransisiBertahan?._errors[0],
         idFormasi: errorFormatted.idFormasi?._errors,
         idPosisiFormasi: errorFormatted.idPosisiFormasi?._errors,
       },

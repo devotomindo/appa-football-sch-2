@@ -104,6 +104,7 @@ export async function DeleteEnsiklopediPemain(
   }
 
   revalidatePath("/dashboard/admin/ensiklopedi-posisi-pemain");
+  revalidatePath("/dashboard/ensiklopedi-posisi-pemain");
 
   return {
     success: true,

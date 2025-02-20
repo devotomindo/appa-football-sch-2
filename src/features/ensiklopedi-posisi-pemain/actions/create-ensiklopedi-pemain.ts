@@ -21,17 +21,6 @@ const validatePortraitImage = async (file: File) => {
   );
 };
 
-const imageValidation = z
-  .instanceof(File)
-  .refine((val) => val.size < 1024 * 1024 * 5, {
-    message: "Ukuran file tidak boleh lebih dari 5MB",
-    path: ["size"], // Add path for better error handling
-  })
-  .refine((val) => val.type.includes("image"), {
-    message: "File harus berupa gambar",
-    path: ["type"], // Add path for better error handling
-  });
-
 const positionImageValidation = z
   .instanceof(File)
   .refine((val) => val.size < 1024 * 1024 * 5, {
@@ -90,9 +79,15 @@ export async function createEnskilopediPemain(
           ),
       ),
       gambarTransisiMenyerang: zfd.file(
-        imageValidation
+        z
+          .instanceof(File)
+          .refine((val) => val.type.includes("image"), {
+            message: "File harus berupa gambar",
+            path: ["type"], // Add path for better error handling
+          })
           .refine((val) => val.size < 1024 * 1024 * 5, {
             message: "Ukuran file tidak boleh lebih dari 5MB",
+            path: ["size"], // Add path for better error handling
           })
           .refine(
             async (file) => await validatePortraitImage(file),
@@ -100,9 +95,15 @@ export async function createEnskilopediPemain(
           ),
       ),
       gambarTransisiBertahan: zfd.file(
-        imageValidation
+        z
+          .instanceof(File)
+          .refine((val) => val.type.includes("image"), {
+            message: "File harus berupa gambar",
+            path: ["type"], // Add path for better error handling
+          })
           .refine((val) => val.size < 1024 * 1024 * 5, {
             message: "Ukuran file tidak boleh lebih dari 5MB",
+            path: ["size"], // Add path for better error handling
           })
           .refine(
             async (file) => await validatePortraitImage(file),
@@ -235,6 +236,7 @@ export async function createEnskilopediPemain(
   }
 
   revalidatePath("/dashboard/admin/ensiklopedi-posisi-pemain");
+  revalidatePath("/dashboard/ensiklopedi-posisi-pemain");
 
   return {
     success: true,
