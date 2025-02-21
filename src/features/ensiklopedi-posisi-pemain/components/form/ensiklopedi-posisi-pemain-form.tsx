@@ -42,36 +42,36 @@ export const daftarPosisi = [
   {
     value: "Posisi #1",
   },
-  // {
-  //   value: "Posisi #2",
-  // },
-  // {
-  //   value: "Posisi #3",
-  // },
-  // {
-  //   value: "Posisi #4",
-  // },
-  // {
-  //   value: "Posisi #5",
-  // },
-  // {
-  //   value: "Posisi #6",
-  // },
-  // {
-  //   value: "Posisi #7",
-  // },
-  // {
-  //   value: "Posisi #8",
-  // },
-  // {
-  //   value: "Posisi #9",
-  // },
-  // {
-  //   value: "Posisi #10",
-  // },
-  // {
-  //   value: "Posisi #11",
-  // },
+  {
+    value: "Posisi #2",
+  },
+  {
+    value: "Posisi #3",
+  },
+  {
+    value: "Posisi #4",
+  },
+  {
+    value: "Posisi #5",
+  },
+  {
+    value: "Posisi #6",
+  },
+  {
+    value: "Posisi #7",
+  },
+  {
+    value: "Posisi #8",
+  },
+  {
+    value: "Posisi #9",
+  },
+  {
+    value: "Posisi #10",
+  },
+  {
+    value: "Posisi #11",
+  },
 ];
 
 // Add this helper function at the top of the file
@@ -348,7 +348,7 @@ export function EnsiklopediPosisiPemainForm({
             searchable
             name={`posisi[${index}]`}
             error={actionState?.error?.posisi?.[index]} // Error akan menampilkan pesan dengan nomor posisi
-            // required
+            required
             withAsterisk={false} // Menandakan field wajib diisi
           />
           {selectedPositions[item.value] && (
@@ -415,7 +415,7 @@ export function EnsiklopediPosisiPemainForm({
       <TextInput
         label="Nama Formasi"
         placeholder="Masukkan nama formasi contoh: 442, 433, dan lain-lain"
-        // required
+        required
         withAsterisk={false}
         name="nama"
         className="shadow-lg"
@@ -427,7 +427,7 @@ export function EnsiklopediPosisiPemainForm({
       <Textarea
         label="Deskripsi Formasi"
         placeholder="Masukkan deskripsi formasi"
-        // required
+        required
         withAsterisk={false}
         name="deskripsi"
         className="shadow-lg"
@@ -451,7 +451,7 @@ export function EnsiklopediPosisiPemainForm({
         <p className="text-sm font-bold capitalize">
           upload gambar ilustrasi (Wajib Portrait)
         </p>
-        <div className="flex gap-8">
+        <div className="grid grid-cols-1 place-items-center gap-14 md:grid-cols-2 lg:grid-cols-3 lg:gap-2 xl:gap-14">
           <div className="w-[300px]">
             <div className="text-sm font-bold capitalize">formasi asli</div>
             <FormasiAsliImageInput

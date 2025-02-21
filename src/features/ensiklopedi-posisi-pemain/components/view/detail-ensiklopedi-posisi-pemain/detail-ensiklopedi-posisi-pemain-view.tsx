@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FormationImage } from "../../../../../components/container/formation-image";
 import { DeleteEnsiklopediForm } from "../../form/delete-ensiklopedi-form";
 import { daftarPosisi } from "../../form/ensiklopedi-posisi-pemain-form";
 
@@ -43,7 +44,7 @@ export function DetailEnsiklopediPosisiPemainView({
         {posisi.namaPosisi && (
           <Accordion.Panel>
             <div className="space-y-2">
-              <div className="flex w-1/4 justify-start rounded-xl border-2 p-4 shadow-lg">
+              <div className="flex justify-start rounded-xl border-2 p-4 shadow-lg">
                 <p>{posisi.namaPosisi}</p>
               </div>
               <div className="rounded-md bg-gray-600 p-2 text-sm text-white">
@@ -132,7 +133,7 @@ export function DetailEnsiklopediPosisiPemainView({
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4 sm:space-y-10 md:space-y-14 md:p-6">
       <Link
         href={
           isAdmin
@@ -141,30 +142,31 @@ export function DetailEnsiklopediPosisiPemainView({
         }
       >
         <Button
-          className="flex w-32 flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2"
+          className="flex w-full flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2 sm:w-32"
           leftSection={<IconArrowLeft size={18} />}
         >
-          back to daftar ensiklopedi posisi pemain
+          back
         </Button>
       </Link>
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-bold uppercase">
+      <div className="flex flex-col gap-4 sm:flex-row md:items-center md:justify-between">
+        <h1 className="flex-1 text-xl font-bold uppercase sm:text-2xl">
           formasi {data?.namaFormasi.split("").join("-")}
         </h1>
         {isAdmin && (
-          <div className="space-x-4">
+          <div className="flex w-full flex-1 flex-col gap-2 sm:flex-row sm:space-x-4 md:justify-end">
             <Link
+              className="w-full sm:w-32"
               href={`/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${id}/edit`}
             >
               <Button
-                className="flex w-32 flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2"
+                className="flex w-full flex-row items-center justify-center bg-indigo-500 capitalize hover:bg-indigo-600 focus-visible:outline-2 sm:w-32"
                 rightSection={<IconEdit size={18} />}
               >
                 Edit
               </Button>
             </Link>
             <Button
-              className="flex w-32 flex-row items-center justify-center !bg-red-500 capitalize hover:!bg-red-600 focus-visible:outline-2"
+              className="flex w-full flex-row items-center justify-center !bg-red-500 capitalize hover:!bg-red-600 focus-visible:outline-2 sm:w-32"
               rightSection={<IconTrash size={18} />}
               onClick={() => setIsDeleteModalOpen(true)}
             >
@@ -173,49 +175,22 @@ export function DetailEnsiklopediPosisiPemainView({
           </div>
         )}
       </div>
-      <div className="flex justify-start gap-4">
-        <div className="w-1/5">
-          <p className="font-bold capitalize">formasi asli</p>
-          <div className="relative">
-            {data?.gambarFormasiDefault && (
-              <Image
-                src={data?.gambarFormasiDefault}
-                alt="formasi-default"
-                width={500}
-                height={500}
-                className=""
-              />
-            )}
-          </div>
-        </div>
-        <div className="w-1/5">
-          <p className="font-bold capitalize">transisi menyerang</p>
-          <div className="relative">
-            {data?.gambarOffense && (
-              <Image
-                src={data?.gambarOffense}
-                alt="formasi-offense"
-                width={500}
-                height={500}
-                className=""
-              />
-            )}
-          </div>
-        </div>
-        <div className="w-1/5">
-          <p className="font-bold capitalize">transisi defense</p>
-          <div className="relative">
-            {data?.gambarDefense && (
-              <Image
-                src={data?.gambarDefense}
-                alt="formasi-defense"
-                width={500}
-                height={500}
-                className=""
-              />
-            )}
-          </div>
-        </div>
+      <div className="flex flex-col gap-6 md:flex-row md:justify-between">
+        <FormationImage
+          title="formasi asli"
+          imageSrc={data?.gambarFormasiDefault}
+          altText="formasi-default"
+        />
+        <FormationImage
+          title="transisi menyerang"
+          imageSrc={data?.gambarOffense}
+          altText="formasi-offense"
+        />
+        <FormationImage
+          title="transisi bertahan"
+          imageSrc={data?.gambarDefense}
+          altText="formasi-defense"
+        />
       </div>
       <p className="font-light">{data?.deskripsiFormasi}</p>
       <Accordion

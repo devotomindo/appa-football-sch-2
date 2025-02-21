@@ -1,38 +1,59 @@
 "use client";
 
-import { Button } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { getAllEnsiklopediPemainQueryOptions } from "../../actions/get-all-ensiklopedi-pemain/query-options";
 
 export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
+  const [searchQuery, setSearchQuery] = useState("");
   const { data, isLoading } = useQuery(getAllEnsiklopediPemainQueryOptions());
 
+  const filteredData = data?.filter((formasi) =>
+    formasi.namaFormasi?.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   return (
-    <div className="space-y-20">
-      <div className="flex flex-row items-center justify-between">
-        <p className="text-2xl font-bold uppercase">
-          ENSIKLOPEDI POSISI PEMAIN
-        </p>
-        {isAdmin && (
-          <Link
-            href={
-              "/dashboard/admin/ensiklopedi-posisi-pemain/tambah-ensiklopedi-posisi-pemain"
-            }
-          >
-            <Button className="!bg-green-500 capitalize hover:!bg-green-600 focus-visible:outline-2">
-              tambahkan formasi baru
-            </Button>
-          </Link>
-        )}
+    <div className="space-y-16 sm:space-y-10 xl:space-y-10">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-between sm:gap-20 xl:flex-row xl:items-center xl:justify-between">
+          {/* title */}
+          <p className="text-center text-2xl font-bold uppercase sm:text-xl md:text-lg lg:text-xl">
+            ENSIKLOPEDI POSISI PEMAIN
+          </p>
+          {/* button */}
+          {isAdmin && (
+            <Link
+              href={
+                "/dashboard/admin/ensiklopedi-posisi-pemain/tambah-ensiklopedi-posisi-pemain"
+              }
+              className="w-full sm:w-auto"
+            >
+              <Button className="h-full w-full !bg-green-500 capitalize hover:!bg-green-600 focus-visible:outline-2">
+                tambahkan formasi baru
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+      <div className="">
+        <TextInput
+          placeholder="Cari formasi..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          leftSection={<IconSearch size={16} />}
+          className="mx-auto xl:mx-0 xl:max-w-lg"
+        />
       </div>
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="grid lg:grid-cols-3 lg:gap-24">
-          {data &&
-            data.map((formasi, index) => (
+        <div className="grid sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-10">
+          {filteredData && filteredData.length > 0 ? (
+            filteredData.map((formasi, index) => (
               <Link
                 key={index}
                 href={
@@ -43,7 +64,7 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
                 className="flex justify-center"
               >
                 <div className="flex h-[400px] w-[300px] flex-col items-center gap-4 rounded-xl border-2 p-8 shadow-xl">
-                  <p className="text-center text-xl font-bold uppercase">
+                  <p className="text-md text-center font-bold uppercase xl:text-xl">
                     formasi {formasi.namaFormasi?.split("").join("-")}
                   </p>
                   <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
@@ -58,7 +79,14 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
                   </div>
                 </div>
               </Link>
-            ))}
+            ))
+          ) : (
+            <div className="col-span-3 flex justify-center">
+              <p className="text-lg text-gray-500">
+                Formasi {searchQuery ? `"${searchQuery}" ` : ""}tidak ditemukan
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
