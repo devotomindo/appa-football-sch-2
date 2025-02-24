@@ -199,7 +199,10 @@ export function CreateOrUpdateAsesmenForm({
   // End of Grading Metrics
 
   return (
-    <form className="space-y-8" onSubmit={handleSubmit}>
+    <form
+      className="space-y-4 sm:space-y-6 md:space-y-8"
+      onSubmit={handleSubmit}
+    >
       <TextInput
         label="Nama Asesmen"
         required
@@ -211,7 +214,7 @@ export function CreateOrUpdateAsesmenForm({
         error={actionState?.error?.nama}
       />
 
-      <div className="flex items-center gap-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6 md:gap-8">
         <Select
           label="Pilih Kategori"
           data={categoryOptions}
@@ -219,6 +222,7 @@ export function CreateOrUpdateAsesmenForm({
           required
           clearable={false}
           name="kategori"
+          className="flex-1"
           value={assessmentCategory}
           onChange={(value) => setAssessmentCategory(value)}
           error={actionState?.error?.kategori}
@@ -228,12 +232,14 @@ export function CreateOrUpdateAsesmenForm({
           data={gradingMetricsOptions}
           searchable
           name="satuan"
+          className="flex-1"
           value={gradingMetric}
           onChange={(value) => setGradingMetric(value)}
           error={actionState?.error?.satuan}
         />
         <Switch
           label="Nilai Semakin Tinggi Semakin Baik"
+          className="mt-4 sm:mt-0"
           checked={isHigherValueBetter}
           onChange={(event) =>
             setHigherValueBetter(event.currentTarget.checked)
@@ -263,13 +269,13 @@ export function CreateOrUpdateAsesmenForm({
         error={actionState?.error?.tujuan}
       />
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {steps.map((step, index) => (
           <div
             key={index}
-            className="flex flex-row-reverse items-center justify-between gap-2"
+            className="flex flex-col gap-2 sm:flex-row-reverse sm:items-start sm:justify-between"
           >
-            <div className="flex w-[90px] items-center justify-center gap-2">
+            <div className="flex items-center justify-end gap-2 sm:w-[90px]">
               {index === steps.length - 1 && (
                 <>
                   <ActionIcon
@@ -295,8 +301,9 @@ export function CreateOrUpdateAsesmenForm({
               )}
               {index !== steps.length - 1 && <div className="w-[90px]" />}
             </div>
+
             <Card withBorder shadow="sm" p="md" radius="md" className="flex-1">
-              <div className="grid grid-cols-[2fr,1fr] gap-4">
+              <div className="grid gap-4 md:grid-cols-[2fr,1fr]">
                 <div className="space-y-4">
                   <TextInput
                     label={`Langkah Asesmen ${index + 1}`}
@@ -319,9 +326,7 @@ export function CreateOrUpdateAsesmenForm({
                     label="Gambar Ilustrasi"
                     value={null}
                     placeholder={
-                      step.hasImage
-                        ? "Gambar sudah diupload"
-                        : "Upload Gambar Ilustrasi"
+                      step.hasImage ? "Gambar sudah diupload" : "Upload Gambar"
                     }
                     className="w-full"
                   />
@@ -343,14 +348,16 @@ export function CreateOrUpdateAsesmenForm({
         ))}
       </div>
 
-      <Button
-        type="submit"
-        className="ml-auto !bg-green-500 hover:!bg-green-600"
-        disabled={actionIsPending}
-        loading={actionIsPending}
-      >
-        {state === "create" ? "Simpan" : "Edit"}
-      </Button>
+      <div className="flex justify-end pt-4 sm:pt-6">
+        <Button
+          type="submit"
+          className="w-full !bg-green-500 hover:!bg-green-600 sm:w-auto"
+          disabled={actionIsPending}
+          loading={actionIsPending}
+        >
+          {state === "create" ? "Simpan" : "Edit"}
+        </Button>
+      </div>
     </form>
   );
 }
