@@ -384,7 +384,7 @@ export function CreateOrUpdateLatihanForm({
               <video
                 src={videoPreview}
                 controls
-                className="max-w-[400px] rounded-md"
+                className="rounded-md md:max-w-[400px]"
               />
             </div>
           </div>

@@ -13,9 +13,11 @@ export function DaftarLatihanKelompokView({
   const { data, isLoading } = useQuery(getAllLatihanKelompokQueryOptions());
 
   return (
-    <div className="mt-10 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Daftar Latihan Kelompok</h2>
+    <div className="space-y-10 xl:mt-10 xl:space-y-4">
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+        <h2 className="text-xl font-semibold lg:text-2xl">
+          Daftar Latihan Kelompok
+        </h2>
         {isAdmin && (
           <Link
             href={
@@ -34,9 +36,9 @@ export function DaftarLatihanKelompokView({
           data.map((item, index) => (
             <div
               key={index}
-              className="flex items-start gap-20 rounded-lg border-2 p-8 shadow-lg"
+              className="flex flex-col items-start gap-10 rounded-lg border-2 p-8 shadow-lg lg:gap-8 xl:flex-row xl:gap-20"
             >
-              <div className="aspect-video w-1/3 overflow-hidden rounded-xl border-2 shadow-lg">
+              <div className="aspect-video overflow-hidden rounded-xl border-2 shadow-lg lg:w-2/3 xl:w-1/3">
                 {item.videoUrl ? (
                   <video
                     src={item.videoUrl}
@@ -51,9 +53,11 @@ export function DaftarLatihanKelompokView({
                   </div>
                 )}
               </div>
-              <div className="flex w-2/3 flex-col gap-4">
-                <p className="text-xl font-bold uppercase">{item.name}</p>
-                <p className="text-justify font-extralight">
+              <div className="flex flex-col gap-4 xl:w-2/3">
+                <p className="font-bold uppercase lg:text-2xl xl:text-xl">
+                  {item.name}
+                </p>
+                <p className="text-justify font-extralight lg:text-xl xl:text-base">
                   {item.description.length > 200
                     ? `${item.description.slice(0, 200)}...`
                     : item.description}

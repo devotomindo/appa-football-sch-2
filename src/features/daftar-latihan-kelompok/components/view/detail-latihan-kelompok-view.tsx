@@ -32,7 +32,7 @@ export function DetailLatihanView({
           isAdmin
             ? isKelompok
               ? "/dashboard/admin/daftar-latihan-kelompok"
-              : "/admin/daftar-latihan-individu"
+              : "/dashboard/admin/daftar-latihan-individu"
             : roles?.includes("athlete")
               ? isKelompok
                 ? "/dashboard/metode-latihan-kelompok"
@@ -49,8 +49,8 @@ export function DetailLatihanView({
           : "back to daftar latihan individu"}
       </Button>
       <p className="text-2xl font-bold uppercase">{data?.name}</p>
-      <div className="flex items-start gap-10">
-        <div className="relative aspect-video w-1/2 rounded-lg">
+      <div className="flex flex-col items-start gap-10">
+        <div className="relative aspect-video rounded-lg md:w-2/3 xl:w-1/2">
           <video src={data?.videoUrl} controls className="w-full rounded-lg" />
         </div>
         <div className="w-1/2 space-y-4">
