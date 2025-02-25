@@ -14,7 +14,7 @@ export function SchoolBanner({
 }) {
   return (
     <div
-      className="flex items-center justify-between rounded-xl p-4 shadow-lg md:flex-row md:items-start md:gap-10 md:p-8"
+      className="flex flex-col items-center gap-6 rounded-xl p-4 shadow-lg sm:flex-row sm:items-start sm:justify-between md:gap-10 md:p-8"
       id="banner"
     >
       <div className="flex gap-6">
@@ -45,7 +45,10 @@ export function SchoolBanner({
       </div>
 
       {userIsHeadCoach && (
-        <Button component={Link} href={`dashboard/update-ssb/${schoolInfo.id}`}>
+        <Button
+          component={Link}
+          href={`/dashboard/update-ssb/${schoolInfo.id}`}
+        >
           Ubah Detail Sekolah
         </Button>
       )}
