@@ -25,16 +25,18 @@ export function AssessmentCoachView({
   return (
     <div>
       <p className="font-bold uppercase">asesmen</p>
-      <p className="text-5xl uppercase tracking-wider text-[#E92222]">
+      <p className="text-3xl uppercase tracking-wider text-[#E92222] md:text-4xl lg:text-5xl">
         {assessment.name}
       </p>
-      <div className="space-y-4 py-16">
-        <p className="text-xl font-bold uppercase">mekanisme asesmen</p>
-        <div className="grid grid-cols-3 gap-5">
+      <div className="space-y-4 py-8 md:py-12 lg:py-16">
+        <p className="text-lg font-bold uppercase md:text-xl">
+          mekanisme asesmen
+        </p>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
           {assessment.illustrations.map((item, index) => (
             <BlackBackgroundContainer key={index}>
-              <div className="relative z-10 grid h-full grid-cols-2 items-center gap-10">
-                <div className="h-full w-full">
+              <div className="relative z-10 flex h-full flex-col items-center gap-6 md:grid md:grid-cols-2 md:gap-10">
+                <div className="h-48 w-full sm:h-64 md:h-full">
                   <Image
                     src={item.imageUrl}
                     alt={item.procedure}
@@ -43,11 +45,11 @@ export function AssessmentCoachView({
                     className="h-full w-full rounded-xl object-cover"
                   />
                 </div>
-                <div className="flex h-full flex-col gap-4">
-                  <p className="text-lg font-bold capitalize">
+                <div className="flex h-full flex-col gap-3 py-4 md:gap-4 md:py-0">
+                  <p className="text-base font-bold capitalize md:text-lg">
                     Langkah {index + 1}
                   </p>
-                  <p className="text-lg font-light capitalize">
+                  <p className="text-base font-light capitalize md:text-lg">
                     {item.procedure}
                   </p>
                 </div>

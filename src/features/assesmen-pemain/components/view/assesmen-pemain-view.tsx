@@ -27,7 +27,7 @@ function TabsPanel({
   return (
     <Tabs.Panel
       value={value}
-      className="flex w-full items-center justify-between border-b-[1px] border-gray-200 px-4 pb-2"
+      className="flex w-full flex-col items-start gap-2 border-b-[1px] border-gray-200 px-4 pb-2 sm:flex-row sm:items-center sm:justify-between sm:gap-1"
     >
       <div className="flex items-center gap-2 uppercase">
         <IconClipboard />
@@ -35,7 +35,7 @@ function TabsPanel({
       </div>
       <Link
         href={`/dashboard/asesmen-pemain/asesmen/${id}`}
-        className="rounded-xl bg-green-600 px-8 py-2 uppercase text-white"
+        className="rounded-xl bg-green-600 px-8 py-2 uppercase text-white sm:min-w-fit"
       >
         lakukan asesmen
       </Link>
