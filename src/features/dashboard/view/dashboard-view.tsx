@@ -115,20 +115,21 @@ export function DashboardView({
             userIsHeadCoach={userIsHeadCoach}
           />
 
-          <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             <BlackBackgroundContainer>
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
                 {schoolMemberQuantity?.totalPelatih}
               </p>
-              <p className="relative z-10 font-bold capitalize">
+              <p className="relative z-10 h-10 font-bold capitalize">
                 total pelatih
+                {/* pemain kelompok umur 1 tahun */}
               </p>
             </BlackBackgroundContainer>
             <BlackBackgroundContainer>
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
                 {schoolMemberQuantity?.pemainKU58}
               </p>
-              <p className="relative z-10 font-bold capitalize">
+              <p className="relative z-10 h-10 font-bold capitalize">
                 pemain kelompok umur 5-8 tahun
               </p>
             </BlackBackgroundContainer>
@@ -136,7 +137,7 @@ export function DashboardView({
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
                 {schoolMemberQuantity?.pemainKU912}
               </p>
-              <p className="relative z-10 font-bold capitalize">
+              <p className="relative z-10 h-10 font-bold capitalize">
                 pemain kelompok umur 9-12 tahun
               </p>
             </BlackBackgroundContainer>
@@ -144,7 +145,7 @@ export function DashboardView({
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
                 {schoolMemberQuantity?.pemainKU1315}
               </p>
-              <p className="relative z-10 font-bold capitalize">
+              <p className="relative z-10 h-10 font-bold capitalize">
                 pemain kelompok umur 13-15 tahun
               </p>
             </BlackBackgroundContainer>
@@ -152,7 +153,7 @@ export function DashboardView({
               <p className="relative z-10 text-8xl font-bold max-sm:text-7xl">
                 {schoolMemberQuantity?.pemainKU1618}
               </p>
-              <p className="relative z-10 font-bold capitalize">
+              <p className="relative z-10 h-10 font-bold capitalize">
                 pemain kelompok umur 16-18 tahun
               </p>
             </BlackBackgroundContainer>
