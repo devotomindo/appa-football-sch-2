@@ -122,7 +122,6 @@ export function DashboardView({
               </p>
               <p className="relative z-10 h-10 font-bold capitalize">
                 total pelatih
-                {/* pemain kelompok umur 1 tahun */}
               </p>
             </BlackBackgroundContainer>
             <BlackBackgroundContainer>
@@ -171,9 +170,7 @@ export function DashboardView({
           {/* Modern Player Dashboard */}
           <div className="mt-8 space-y-8">
             {/* Player Stats Overview Cards */}
-            <div className="grid grid-cols-2 gap-6">
-              {" "}
-              {/* Changed from grid-cols-3 to grid-cols-2 */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 p-6 text-white shadow-lg">
                 <div className="text-sm font-medium opacity-80">
                   Total Latihan
@@ -209,20 +206,16 @@ export function DashboardView({
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
               {/* Player Profile Card */}
-              <div className="col-span-4 rounded-2xl bg-white p-6 shadow-xl">
+              <div className="col-span-full rounded-2xl bg-white p-6 shadow-xl lg:col-span-4">
                 {isLoadingBiodata ? (
                   <div className="flex h-full items-center justify-center">
                     <div className="text-gray-500">Loading profile data...</div>
                   </div>
                 ) : (
                   <div className="relative pt-16">
-                    {" "}
-                    {/* Added pt-16 for top padding */}
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 transform">
-                      {" "}
-                      {/* Changed from -top-12 to -top-4 */}
                       <Avatar
                         src={biodataData?.avatarUrl ?? undefined}
                         size={120}
@@ -231,14 +224,14 @@ export function DashboardView({
                       />
                     </div>
                     <div className="mt-20 text-center">
-                      {" "}
-                      {/* Changed from mt-16 to mt-20 */}
-                      <h2 className="text-2xl font-bold capitalize">
+                      <h2 className="text-xl font-bold capitalize sm:text-2xl">
                         {biodataData?.name}
                       </h2>
-                      <p className="text-gray-500">ID: {studentId}</p>
+                      <p className="text-sm text-gray-500 sm:text-base">
+                        ID: {studentId}
+                      </p>
                     </div>
-                    <div className="mt-8 space-y-4 divide-y">
+                    <div className="mt-6 space-y-4 divide-y sm:mt-8">
                       <div className="grid grid-cols-2 py-3">
                         <span className="text-gray-500">Umur</span>
                         <span className="font-medium">
@@ -271,8 +264,8 @@ export function DashboardView({
               </div>
 
               {/* Assessment Results */}
-              <div className="col-span-8 rounded-2xl bg-white p-6 shadow-xl">
-                <div className="mb-6 flex items-center justify-between">
+              <div className="col-span-full rounded-2xl bg-white p-6 shadow-xl lg:col-span-8">
+                <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
                   <h2 className="text-xl font-bold">Hasil Asesmen</h2>
                   <Button variant="light" radius="xl">
                     Lihat Semua
@@ -292,7 +285,7 @@ export function DashboardView({
 
             {/* Training Recommendations */}
             <div className="rounded-2xl bg-white p-6 shadow-xl">
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
                 <h2 className="text-xl font-bold">
                   Rekomendasi Latihan Oleh Pelatih
                 </h2>
@@ -300,15 +293,15 @@ export function DashboardView({
                   placeholder="Cari latihan..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-72"
+                  className="w-full sm:w-72"
                   radius="xl"
                   rightSection={<IconSearch size={16} />}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 {isLoadingTugasLatihan ? (
-                  <div className="col-span-2 flex h-48 items-center justify-center">
+                  <div className="col-span-full flex h-48 items-center justify-center">
                     <div className="text-gray-500">Loading...</div>
                   </div>
                 ) : filteredTugasLatihan.length > 0 ? (
@@ -350,7 +343,7 @@ export function DashboardView({
                     </div>
                   ))
                 ) : (
-                  <div className="col-span-2 flex h-48 items-center justify-center text-gray-500">
+                  <div className="col-span-full flex h-48 items-center justify-center text-gray-500">
                     {searchTerm
                       ? "Tidak ada latihan yang sesuai dengan pencarian"
                       : "Tidak ada latihan yang direkomendasikan"}
