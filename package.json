@@ -28,6 +28,7 @@
     "embla-carousel-autoplay": "^7.1.0",
     "embla-carousel-react": "7.1.0",
     "mantine-react-table": "2.0.0-beta.7",
+    "midtrans-client": "^1.4.2",
     "next": "15.1.3",
     "nextjs-toploader": "^3.7.15",
     "postgres": "^3.4.5",

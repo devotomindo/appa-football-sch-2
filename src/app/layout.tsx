@@ -34,7 +34,8 @@ export const metadata: Metadata = {
     template: "%s - Website Title",
     default: "APPA FOOTBALL SCHOOL",
   },
-  description: "APPA Football School merupakan sekolah sepak bola yang menggabungkan pelatihan sepakbola tradisional dengan teknologi canggih untuk meningkatkan keterampilan dan performa pemain.",
+  description:
+    "APPA Football School merupakan sekolah sepak bola yang menggabungkan pelatihan sepakbola tradisional dengan teknologi canggih untuk meningkatkan keterampilan dan performa pemain.",
 };
 
 const mantineTheme = createTheme({

@@ -10,5 +10,9 @@ export type GetAllPackagesResponse = Awaited<ReturnType<typeof getAllPackages>>;
 export const getAllPackages = cache(async function () {
   const db = createDrizzleConnection();
 
-  return await db.select().from(packages).where(eq(packages.isDeleted, false));
+  return await db
+    .select()
+    .from(packages)
+    .where(eq(packages.isDeleted, false))
+    .orderBy(packages.price);
 });

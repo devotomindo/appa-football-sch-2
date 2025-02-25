@@ -45,11 +45,14 @@ export function DaftarTransaksiView() {
         Cell: ({ row }) => (
           <Badge
             color={
-              row.original.status === "PAID"
+              row.original.status === "success" ||
+              row.original.status === "settlement"
                 ? "green"
-                : row.original.status === "PENDING"
+                : row.original.status === "pending"
                   ? "yellow"
-                  : "red"
+                  : row.original.status === "initiated"
+                    ? "blue"
+                    : "red"
             }
           >
             {row.original.status}

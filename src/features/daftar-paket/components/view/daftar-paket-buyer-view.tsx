@@ -1,11 +1,17 @@
 "use client";
 
+import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
+import { OrderConfirmationModalContent } from "@/features/transactions/components/modal/order-confirmation-modal";
+import { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
+import { SchoolSession } from "@/lib/session";
+import { useSchoolStore } from "@/stores/school-store";
 import {
   Badge,
   Button,
   Card,
   Container,
   Group,
+  Modal,
   SimpleGrid,
   Skeleton,
   Stack,
@@ -15,10 +21,37 @@ import {
 } from "@mantine/core";
 import { IconCheck, IconUsers } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { GetAllPackagesResponse } from "../../actions/get-all-daftar-paket";
 import { getAllPackagesQueryOptions } from "../../actions/get-all-daftar-paket/query-options";
 
-export function DaftarPaketBuyerView() {
+export function DaftarPaketBuyerView({
+  userData,
+  initialSchoolSession,
+}: {
+  userData: GetUserByIdResponse;
+  initialSchoolSession: SchoolSession | null;
+}) {
   const packagesQuery = useQuery(getAllPackagesQueryOptions());
+  const { selectedSchool, hydrate, isHydrating } = useSchoolStore();
+  const [selectedPackage, setSelectedPackage] = useState<
+    GetAllPackagesResponse[number] | null
+  >(null);
+
+  // Consider it loading during hydration or when waiting for school info
+  const isLoading = isHydrating || !selectedSchool;
+
+  useEffect(() => {
+    hydrate(initialSchoolSession);
+  }, [hydrate, initialSchoolSession]);
+
+  if (isLoading) {
+    return (
+      <DashboardSectionContainer>
+        <div>Loading...</div>
+      </DashboardSectionContainer>
+    );
+  }
 
   if (packagesQuery.isLoading) {
     return (
@@ -40,14 +73,14 @@ export function DaftarPaketBuyerView() {
           className="mb-4"
           color="red"
         >
-          Paket Kuota Pengguna
+          Paket Kuota Pemain
         </Badge>
         <Title order={1} className="mb-4 text-4xl font-bold">
           Tingkatkan Kapasitas Sekolah Anda
         </Title>
         <Text c="dimmed" className="mx-auto max-w-2xl justify-self-center">
-          Pilih paket yang sesuai untuk menambah kuota pendaftaran pengguna dan
-          akomodasi lebih banyak siswa
+          Pilih paket yang sesuai untuk menambahkan kuota pemain dan akomodasi
+          lebih banyak siswa
         </Text>
       </div>
 
@@ -68,7 +101,7 @@ export function DaftarPaketBuyerView() {
 
               <div className="text-center">
                 <Text size="xl" fw={700} className="text-red-600">
-                  +{pkg.quotaAddition} Pengguna
+                  +{pkg.quotaAddition} Pemain
                 </Text>
                 <Text size="sm" c="dimmed">
                   Tambahan Kapasitas
@@ -76,7 +109,9 @@ export function DaftarPaketBuyerView() {
               </div>
 
               <Group justify="center" mt="md">
-                <Title order={3}>{pkg.name}</Title>
+                <Title className="text-center" order={3}>
+                  {pkg.name}
+                </Title>
               </Group>
 
               <Badge
@@ -129,6 +164,9 @@ export function DaftarPaketBuyerView() {
                 variant="gradient"
                 gradient={{ from: "red", to: "dark" }}
                 className="hover:opacity-90"
+                onClick={() => {
+                  setSelectedPackage(pkg);
+                }}
               >
                 Pilih Paket
               </Button>
@@ -136,6 +174,21 @@ export function DaftarPaketBuyerView() {
           </Card>
         ))}
       </SimpleGrid>
+
+      {selectedPackage && (
+        <Modal
+          opened={selectedPackage !== null}
+          onClose={() => setSelectedPackage(null)}
+          title={<p className="text-2xl font-bold">Konfirmasi Pesanan</p>}
+          centered
+        >
+          <OrderConfirmationModalContent
+            userData={userData}
+            schoolSession={selectedSchool}
+            packageData={selectedPackage}
+          />
+        </Modal>
+      )}
     </Container>
   );
 }

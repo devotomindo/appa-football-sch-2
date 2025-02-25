@@ -22,6 +22,7 @@ export const getUserById = cache(async function (id: string) {
     .select({
       username: sql<string>`SPLIT_PART(${authUsers.email}, '@', 1)`,
       ...getTableColumns(userProfiles),
+      email: authUsers.email,
       userRole: sql<
         { id: number; name: string }[]
       >`COALESCE(${userRolesCTE.roles}, '{}')`,

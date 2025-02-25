@@ -354,11 +354,28 @@ export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  userId: uuid("user_id").references(() => authUsers.id),
-  packageId: uuid("package_id").references(() => packages.id),
+  userId: uuid("user_id")
+    .references(() => authUsers.id)
+    .notNull(),
+  packageId: uuid("package_id")
+    .references(() => packages.id)
+    .notNull(),
   referralId: uuid("referral_id").references(() => referrals.id),
   status: text("status").notNull(),
-  paymentMethod: text("payment_method").notNull(),
+  paymentMethod: text("payment_method"),
   billedAmount: bigint("billed_amount", { mode: "number" }).notNull(),
   schoolId: uuid("school_id").references(() => schools.id),
+  midtransToken: text("midtrans_token").notNull(),
 });
+
+export const studentPremiumAssignments = pgTable(
+  "student_premium_assignments",
+  {
+    id: uuid("id").primaryKey(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    studentId: uuid("student_id").references(() => schoolRoleMembers.id),
+    transactionId: uuid("transaction_id").references(() => transactions.id),
+    deactivatedAt: timestamp("deactivated_at"),
+  },
+);
+// End of Transactions

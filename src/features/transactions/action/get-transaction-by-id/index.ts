@@ -2,22 +2,25 @@
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import {
-  authUsers,
   packages,
   referrals,
   schools,
   transactions,
+  userProfiles,
 } from "@/db/drizzle/schema";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { cache } from "react";
 import { getTransactionStatus } from "../get-transaction-status";
 
-export type GetAllTransactionsResponse = Awaited<
-  ReturnType<typeof getAllTransactions>
+export type GetTransactionByIdResponse = Awaited<
+  ReturnType<typeof getTransactionById>
 >;
 
-export const getAllTransactions = cache(async function () {
+export const getTransactionById = cache(async function (transactionId: string) {
   const db = createDrizzleConnection();
+
+  // Initially check Transaction to Midtrans API
+  await getTransactionStatus(transactionId); // Also pushes status changes to DB
 
   const result = await db
     .select({
@@ -27,32 +30,22 @@ export const getAllTransactions = cache(async function () {
       status: transactions.status,
       paymentMethod: transactions.paymentMethod,
       billedAmount: transactions.billedAmount,
+      midtransToken: transactions.midtransToken,
       packageName: packages.name,
-      userName: authUsers.email,
+      packageQuotaAdded: packages.quotaAddition,
+      packageDuration: packages.monthDuration,
+      buyerName: userProfiles.name,
       referralCode: referrals.code,
       schoolName: schools.name,
     })
     .from(transactions)
+    .where(eq(transactions.id, transactionId))
     .leftJoin(packages, eq(packages.id, transactions.packageId))
-    .leftJoin(authUsers, eq(authUsers.id, transactions.userId))
+    .leftJoin(userProfiles, eq(userProfiles.id, transactions.userId))
     .leftJoin(referrals, eq(referrals.id, transactions.referralId))
     .leftJoin(schools, eq(schools.id, transactions.schoolId))
-    .orderBy(desc(transactions.createdAt));
-
-  const finalStates = ["success", "failure"];
-
-  // Check status for all non-final transactions
-  await Promise.all(
-    result
-      .filter((transaction) => !finalStates.includes(transaction.status))
-      .map(async (transaction) => {
-        const statusCheck = await getTransactionStatus(transaction.id);
-        if (statusCheck.success && statusCheck.data) {
-          transaction.status = statusCheck.data.status;
-          transaction.paymentMethod = statusCheck.data.paymentType;
-        }
-      }),
-  );
+    .limit(1)
+    .then((res) => res[0]);
 
   return result;
 });
