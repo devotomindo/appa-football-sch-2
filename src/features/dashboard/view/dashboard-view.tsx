@@ -267,7 +267,12 @@ export function DashboardView({
               <div className="col-span-full rounded-2xl bg-white p-6 shadow-xl lg:col-span-8">
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
                   <h2 className="text-xl font-bold">Hasil Asesmen</h2>
-                  <Button variant="light" radius="xl">
+                  <Button
+                    variant="light"
+                    radius="xl"
+                    component={Link}
+                    href={"/dashboard/hasil-asesmen"}
+                  >
                     Lihat Semua
                   </Button>
                 </div>
