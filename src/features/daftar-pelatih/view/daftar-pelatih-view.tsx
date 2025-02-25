@@ -83,8 +83,8 @@ export function DaftarPelatihView({
           />
 
           <div className="mt-8">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="mb-4 flex flex-col items-center gap-5 sm:mb-1 sm:flex-row sm:justify-between sm:gap-1">
+              <div className="sm:max-w-72 md:max-w-full">
                 <h1 className="mb-2 text-2xl font-semibold">Daftar Coach</h1>
                 <p>Daftar coach yang terdaftar di SSB</p>
               </div>
