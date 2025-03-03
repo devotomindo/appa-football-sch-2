@@ -337,6 +337,13 @@ export function DashboardAppshell({
                     pathname={pathname}
                   />
                   <NavLinkComponent
+                    label="Riwayat Transaksi"
+                    path="/riwayat-transaksi"
+                    toggle={toggle}
+                    leftSection={<IconUsersGroup size="1.25rem" stroke={1.5} />}
+                    pathname={pathname}
+                  />
+                  <NavLinkComponent
                     label="Pengaturan"
                     path="/pengaturan"
                     toggle={toggle}

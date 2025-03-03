@@ -1,11 +1,17 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { schoolRoleMembers, userProfiles } from "@/db/drizzle/schema";
+import {
+  packages,
+  schoolRoleMembers,
+  studentPremiumAssignments,
+  transactions,
+  userProfiles,
+} from "@/db/drizzle/schema";
 import { createServerClient } from "@/db/supabase/server";
 import { calculateAge, getAgeGroup } from "@/lib/utils/age";
 import { getStorageBucketAndPath } from "@/lib/utils/supabase";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { cache } from "react";
 
 export type GetAllStudentsBySchoolIdResponse = Awaited<
@@ -17,8 +23,10 @@ export const getAllStudentsBySchoolId = cache(async function (
 ) {
   const db = createDrizzleConnection();
   const supabase = await createServerClient();
+  const currentDate = new Date();
 
-  const results = await db
+  // Get all approved students
+  const studentsData = await db
     .select({
       id: schoolRoleMembers.id,
       createdAt: schoolRoleMembers.createdAt,
@@ -38,28 +46,74 @@ export const getAllStudentsBySchoolId = cache(async function (
       ),
     );
 
+  // Get all premium assignments with their transaction details
+  const premiumAssignments = await db
+    .select({
+      studentId: studentPremiumAssignments.studentId,
+      transactionId: studentPremiumAssignments.transactionId,
+      transactionUpdatedAt: transactions.updatedAt,
+      transactionStatus: transactions.status,
+      packageMonthDuration: packages.monthDuration,
+    })
+    .from(studentPremiumAssignments)
+    .leftJoin(
+      transactions,
+      eq(studentPremiumAssignments.transactionId, transactions.id),
+    )
+    .leftJoin(packages, eq(transactions.packageId, packages.id))
+    .where(
+      and(
+        isNull(studentPremiumAssignments.deactivatedAt),
+        eq(transactions.status, "success"),
+      ),
+    );
+
+  // Create a set of active premium student IDs
+  const activePremiumStudentIds = new Set();
+
+  for (const assignment of premiumAssignments) {
+    // Skip if transaction date is missing
+    if (!assignment.transactionUpdatedAt) continue;
+
+    // Calculate expiration date (transaction date + months duration)
+    const transactionDate = new Date(assignment.transactionUpdatedAt);
+    const expiryDate = new Date(transactionDate);
+    expiryDate.setMonth(
+      expiryDate.getMonth() + Number(assignment.packageMonthDuration || 0),
+    );
+
+    // Only consider as premium if transaction is still valid (not expired)
+    if (expiryDate > currentDate) {
+      activePremiumStudentIds.add(assignment.studentId);
+    }
+  }
+
   return Promise.all(
-    results.map(async (result) => {
-      const age = result.userBirthDate
-        ? calculateAge(new Date(result.userBirthDate))
+    studentsData.map(async (student) => {
+      const age = student.userBirthDate
+        ? calculateAge(new Date(student.userBirthDate))
         : null;
       const ageGroup = age ? getAgeGroup(age) : null;
 
-      if (!result.userAvatarPath) {
-        return { ...result, userImageUrl: null, age, ageGroup };
+      // Check if this student has an active premium status
+      const isPremium = activePremiumStudentIds.has(student.id);
+
+      if (!student.userAvatarPath) {
+        return { ...student, userImageUrl: null, age, ageGroup, isPremium };
       }
 
-      const { bucket, path } = getStorageBucketAndPath(result.userAvatarPath);
+      const { bucket, path } = getStorageBucketAndPath(student.userAvatarPath);
       const { data } = supabase.storage.from(bucket).getPublicUrl(path);
       const userImageUrl =
         data.publicUrl +
-        (result.userUpdatedAt ? `?t=${new Date(result.userUpdatedAt)}` : "");
+        (student.userUpdatedAt ? `?t=${new Date(student.userUpdatedAt)}` : "");
 
       return {
-        ...result,
+        ...student,
         userImageUrl,
         age,
         ageGroup,
+        isPremium,
       };
     }),
   );

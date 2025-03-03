@@ -24,7 +24,7 @@ export const getAllReferrals = cache(async function () {
       transactions,
       and(
         eq(transactions.referralId, referrals.id),
-        eq(transactions.status, "settlement"),
+        eq(transactions.status, "success"),
       ),
     )
     .orderBy(desc(referrals.createdAt))

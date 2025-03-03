@@ -7,9 +7,12 @@ import { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 
 import { SchoolSession } from "@/lib/session";
 import { useSchoolStore } from "@/stores/school-store";
-import { Button } from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import Link from "next/link";
 import { useEffect } from "react";
+import { ActiveSubscriptionsDisplay } from "../components/active-subscriptions-display";
+import { PremiumQuotaBreakdown } from "../components/premium-quota-breakdown";
+import { PremiumQuotaDisplay } from "../components/premium-quota-display";
 import { DaftarPemainTable } from "../table/daftar-pemain-table";
 
 interface DashboardViewProps {
@@ -23,6 +26,7 @@ export function DaftarPemainView({
 }: DashboardViewProps) {
   const { selectedSchool, hydrate, isHydrating } = useSchoolStore();
   const { data: schoolInfo } = useSchoolInfo(selectedSchool?.id ?? "");
+
   // Consider it loading during hydration or when waiting for school info
   const isLoading = isHydrating || (selectedSchool && !schoolInfo);
 
@@ -96,7 +100,13 @@ export function DaftarPemainView({
               Lihat Daftar Registrasi
             </Button>
           </div>
-          <DaftarPemainTable schoolId={schoolInfo?.id} />
+
+          <Stack>
+            <PremiumQuotaDisplay schoolId={schoolInfo?.id} />
+            <ActiveSubscriptionsDisplay schoolId={schoolInfo?.id} />
+            <PremiumQuotaBreakdown schoolId={schoolInfo?.id} />
+            <DaftarPemainTable schoolId={schoolInfo?.id} />
+          </Stack>
         </div>
       </DashboardSectionContainer>
     )
