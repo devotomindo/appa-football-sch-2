@@ -35,16 +35,132 @@ export async function editEnskilopediPemain(
   prevState: any,
   formData: FormData,
 ) {
+  // First, check if we have existing images by getting the formation data
+  const db = createDrizzleConnection();
+  const formationId = formData.get("idFormasi") as string;
+  const existingFormation = await db
+    .select({
+      defaultFormation: formations.defaultFormationImagePath,
+      offenseTransition: formations.offenseTransitionImagePath,
+      defenseTransition: formations.defenseTransitionImagePath,
+    })
+    .from(formations)
+    .where(eq(formations.id, formationId))
+    .then((res) => res[0]);
+
+  const hasExistingDefaultImage = Boolean(existingFormation?.defaultFormation);
+  const hasExistingOffenseImage = Boolean(existingFormation?.offenseTransition);
+  const hasExistingDefenseImage = Boolean(existingFormation?.defenseTransition);
+
+  // Create validation schemas based on whether we have existing images
+  const defaultImageValidation = hasExistingDefaultImage
+    ? z
+        .instanceof(File)
+        .refine((val) => val.size === 0 || val.type.includes("image"), {
+          message: "File harus berupa gambar",
+          path: ["type"],
+        })
+        .refine((val) => val.size === 0 || val.size < 1024 * 1024 * 5, {
+          message: "Ukuran file tidak boleh lebih dari 5MB",
+          path: ["size"],
+        })
+        .refine(
+          async (file) =>
+            file.size === 0 || (await validatePortraitImage(file)),
+          "Gambar formasi asli harus berorientiasi portrait (tinggi > lebar)",
+        )
+        .optional()
+    : z
+        .instanceof(File)
+        .refine((val) => val.type.includes("image"), {
+          message: "File harus berupa gambar",
+          path: ["type"],
+        })
+        .refine((val) => val.size < 1024 * 1024 * 5, {
+          message: "Ukuran file tidak boleh lebih dari 5MB",
+          path: ["size"],
+        })
+        .refine(
+          async (file) => await validatePortraitImage(file),
+          "Gambar formasi asli harus berorientiasi portrait (tinggi > lebar)",
+        );
+
+  const offenseImageValidation = hasExistingOffenseImage
+    ? z
+        .instanceof(File)
+        .refine((val) => val.size === 0 || val.type.includes("image"), {
+          message: "File harus berupa gambar",
+          path: ["type"],
+        })
+        .refine((val) => val.size === 0 || val.size < 1024 * 1024 * 5, {
+          message: "Ukuran file tidak boleh lebih dari 5MB",
+          path: ["size"],
+        })
+        .refine(
+          async (file) =>
+            file.size === 0 || (await validatePortraitImage(file)),
+          "Gambar transisi menyerang harus berorientiasi portrait (tinggi > lebar)",
+        )
+        .optional()
+    : z
+        .instanceof(File)
+        .refine((val) => val.type.includes("image"), {
+          message: "File harus berupa gambar",
+          path: ["type"],
+        })
+        .refine((val) => val.size < 1024 * 1024 * 5, {
+          message: "Ukuran file tidak boleh lebih dari 5MB",
+          path: ["size"],
+        })
+        .refine(
+          async (file) => await validatePortraitImage(file),
+          "Gambar transisi menyerang harus berorientiasi portrait (tinggi > lebar)",
+        )
+        .optional();
+
+  const defenseImageValidation = hasExistingDefenseImage
+    ? z
+        .instanceof(File)
+        .refine((val) => val.size === 0 || val.type.includes("image"), {
+          message: "File harus berupa gambar",
+          path: ["type"],
+        })
+        .refine((val) => val.size === 0 || val.size < 1024 * 1024 * 5, {
+          message: "Ukuran file tidak boleh lebih dari 5MB",
+          path: ["size"],
+        })
+        .refine(
+          async (file) =>
+            file.size === 0 || (await validatePortraitImage(file)),
+          "Gambar transisi bertahan harus berorientiasi portrait (tinggi > lebar)",
+        )
+        .optional()
+    : z
+        .instanceof(File)
+        .refine((val) => val.type.includes("image"), {
+          message: "File harus berupa gambar",
+          path: ["type"],
+        })
+        .refine((val) => val.size < 1024 * 1024 * 5, {
+          message: "Ukuran file tidak boleh lebih dari 5MB",
+          path: ["size"],
+        })
+        .refine(
+          async (file) => await validatePortraitImage(file),
+          "Gambar transisi bertahan harus berorientiasi portrait (tinggi > lebar)",
+        )
+        .optional();
+
   const validationResult = await zfd
     .formData({
       idFormasi: zfd.text(z.string()),
-      nama: zfd.text(z.string().min(3, "Nama formasi minimal 3 karakter")),
+      nama: zfd.text(z.string().min(1, "Nama formasi minimal 3 karakter")),
       deskripsi: zfd.text(z.string().min(1)),
       posisi: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string().nonempty()))),
       ),
       karakter: zfd.repeatable(
-        z.array(zfd.repeatable(z.array(z.string().min(1)))),
+        z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
       posisiMenyerang: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))).optional(),
@@ -58,54 +174,9 @@ export async function editEnskilopediPemain(
       gambarPosisiBertahan: zfd.repeatable(
         z.array(zfd.file(positionImageValidation)),
       ),
-      gambarFormasiAsli: zfd.file(
-        z
-          .instanceof(File)
-          .refine((val) => val.type.includes("image"), {
-            message: "File harus berupa gambar",
-            path: ["type"], // Add path for better error handling
-          })
-          .refine((val) => val.size < 1024 * 1024 * 5, {
-            message: "Ukuran file tidak boleh lebih dari 5MB",
-            path: ["size"], // Add path for better error handling
-          })
-          .refine(
-            async (file) => await validatePortraitImage(file),
-            "Gambar formasi asli harus berorientiasi portrait (tinggi > lebar)",
-          ),
-      ),
-      gambarTransisiMenyerang: zfd.file(
-        z
-          .instanceof(File)
-          .refine((val) => val.type.includes("image"), {
-            message: "File harus berupa gambar",
-            path: ["type"], // Add path for better error handling
-          })
-          .refine((val) => val.size < 1024 * 1024 * 5, {
-            message: "Ukuran file tidak boleh lebih dari 5MB",
-            path: ["size"], // Add path for better error handling
-          })
-          .refine(
-            async (file) => await validatePortraitImage(file),
-            "Gambar transisi menyerang harus berorientiasi portrait (tinggi > lebar)",
-          ),
-      ),
-      gambarTransisiBertahan: zfd.file(
-        z
-          .instanceof(File)
-          .refine((val) => val.type.includes("image"), {
-            message: "File harus berupa gambar",
-            path: ["type"], // Add path for better error handling
-          })
-          .refine((val) => val.size < 1024 * 1024 * 5, {
-            message: "Ukuran file tidak boleh lebih dari 5MB",
-            path: ["size"], // Add path for better error handling
-          })
-          .refine(
-            async (file) => await validatePortraitImage(file),
-            "Gambar transisi bertahan harus berorientiasi portrait (tinggi > lebar)",
-          ),
-      ),
+      gambarFormasiAsli: zfd.file(defaultImageValidation),
+      gambarTransisiMenyerang: zfd.file(offenseImageValidation),
+      gambarTransisiBertahan: zfd.file(defenseImageValidation),
       idPosisiFormasi: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))),
       ),
@@ -115,8 +186,14 @@ export async function editEnskilopediPemain(
       deletedPosisiBertahanImage: zfd.repeatable(
         z.array(zfd.text(z.string().optional())),
       ),
+      deletedTransisiMenyerangImage: zfd.text(z.string().optional()),
+      deletedTransisiBertahanImage: zfd.text(z.string().optional()),
     })
     .safeParseAsync(formData);
+
+  console.log("validationResult");
+  console.log(validationResult.data);
+  console.log(validationResult.error);
 
   if (!validationResult.success) {
     const errorFormatted = validationResult.error.format() as any;
@@ -135,15 +212,16 @@ export async function editEnskilopediPemain(
                 `Posisi #${index + 1} tidak boleh kosong. Harap pilih 1`;
             return acc;
           }, []),
-        karakter: validationResult.error.errors
-          .filter((err) => err.path[0] === "karakter")
-          .reduce((acc: string[], err) => {
-            const index = err.path[1] as number;
-            if (!acc[index])
-              acc[index] =
-                `Karakter tidak boleh kosong pada Posisi #${index + 1}`;
-            return acc;
-          }, []),
+        // karakter: validationResult.error.errors
+        //   .filter((err) => err.path[0] === "karakter")
+        //   .reduce((acc: string[], err) => {
+        //     const index = err.path[1] as number;
+        //     if (!acc[index])
+        //       acc[index] =
+        //         `Karakter tidak boleh kosong pada Posisi #${index + 1}`;
+        //     return acc;
+        //   }, []),
+        karakter: errorFormatted.karakter?._errors[0],
         posisiMenyerang: errorFormatted.posisiMenyerang?._errors,
         posisiBertahan: errorFormatted.posisiBertahan?._errors,
         gambarPosisiMenyerang: validationResult.error.errors
@@ -292,11 +370,30 @@ export async function editEnskilopediPemain(
       }));
 
     try {
+      // Check if transition images were deleted and remove them from storage
+      if (
+        validationResult.data.deletedTransisiMenyerangImage === "true" &&
+        newMandatoryImageId.offenseTransition
+      ) {
+        await supabase.storage
+          .from("offense_transition_image")
+          .remove([newMandatoryImageId.offenseTransition]);
+      }
+
+      if (
+        validationResult.data.deletedTransisiBertahanImage === "true" &&
+        newMandatoryImageId.defenseTransition
+      ) {
+        await supabase.storage
+          .from("defense_transition_image")
+          .remove([newMandatoryImageId.defenseTransition]);
+      }
+
       // Upload gambarFormasiAsli
       let gambarFormasiAsliURL: string | undefined;
       if (
         validationResult.data.gambarFormasiAsli instanceof File &&
-        newMandatoryImageId.defaultFormation
+        validationResult.data.gambarFormasiAsli.size > 0
       ) {
         gambarFormasiAsliURL = await singleImageUploader(
           validationResult.data.gambarFormasiAsli,
@@ -305,24 +402,12 @@ export async function editEnskilopediPemain(
         );
       }
 
-      // Upload gambarFormasiBertahan
-      let gambarTransisiBertahanURL: string | undefined;
-      if (
-        validationResult.data.gambarTransisiBertahan instanceof File &&
-        newMandatoryImageId.defenseTransition
-      ) {
-        gambarTransisiBertahanURL = await singleImageUploader(
-          validationResult.data.gambarTransisiBertahan,
-          "defense_transition_image",
-          newMandatoryImageId.defenseTransition,
-        );
-      }
-
-      // Upload gambarFormasiMenyerang
+      // Upload gambarTransisiMenyerang - Check deletion flag before uploading
       let gambarTransisiMenyerangURL: string | undefined;
       if (
+        validationResult.data.deletedTransisiMenyerangImage !== "true" &&
         validationResult.data.gambarTransisiMenyerang instanceof File &&
-        newMandatoryImageId.offenseTransition
+        validationResult.data.gambarTransisiMenyerang.size > 0
       ) {
         gambarTransisiMenyerangURL = await singleImageUploader(
           validationResult.data.gambarTransisiMenyerang,
@@ -331,17 +416,48 @@ export async function editEnskilopediPemain(
         );
       }
 
+      // Upload gambarTransisiBertahan - Check deletion flag before uploading
+      let gambarTransisiBertahanURL: string | undefined;
+      if (
+        validationResult.data.deletedTransisiBertahanImage !== "true" &&
+        validationResult.data.gambarTransisiBertahan instanceof File &&
+        validationResult.data.gambarTransisiBertahan.size > 0
+      ) {
+        gambarTransisiBertahanURL = await singleImageUploader(
+          validationResult.data.gambarTransisiBertahan,
+          "defense_transition_image",
+          newMandatoryImageId.defenseTransition,
+        );
+      }
+
       await db.transaction(async (tx) => {
+        // Create the update object with conditional fields
+        const updateValues: any = {
+          name: validationResult.data.nama,
+          description: validationResult.data.deskripsi,
+          updatedAt: new Date(),
+        };
+
+        // Only update the image paths if they're defined or explicitly deleted
+        if (gambarFormasiAsliURL) {
+          updateValues.defaultFormationImagePath = gambarFormasiAsliURL;
+        }
+
+        if (validationResult.data.deletedTransisiMenyerangImage === "true") {
+          updateValues.offenseTransitionImagePath = null;
+        } else if (gambarTransisiMenyerangURL) {
+          updateValues.offenseTransitionImagePath = gambarTransisiMenyerangURL;
+        }
+
+        if (validationResult.data.deletedTransisiBertahanImage === "true") {
+          updateValues.defenseTransitionImagePath = null;
+        } else if (gambarTransisiBertahanURL) {
+          updateValues.defenseTransitionImagePath = gambarTransisiBertahanURL;
+        }
+
         await tx
           .update(formations)
-          .set({
-            name: validationResult.data.nama,
-            description: validationResult.data.deskripsi,
-            defaultFormationImagePath: gambarFormasiAsliURL,
-            offenseTransitionImagePath: gambarTransisiMenyerangURL,
-            defenseTransitionImagePath: gambarTransisiBertahanURL,
-            updatedAt: new Date(),
-          })
+          .set(updateValues)
           .where(eq(formations.id, validationResult.data.idFormasi));
 
         // Update formation-position relationships by maintaining position order
@@ -359,7 +475,7 @@ export async function editEnskilopediPemain(
           await tx
             .update(formationPositioning)
             .set({
-              characteristics: validationResult.data.karakter[i],
+              characteristics: validationResult.data.karakter?.[i],
               offenseDescription:
                 validationResult.data.posisiMenyerang?.[i] ?? [],
               offenseIllustrationPath: wasOffenseDeleted

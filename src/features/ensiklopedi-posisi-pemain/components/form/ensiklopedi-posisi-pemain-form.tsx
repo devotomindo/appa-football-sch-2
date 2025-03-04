@@ -12,17 +12,11 @@ import {
   PosisiBertahanInput,
   PosisiMenyerangInput,
 } from "@/components/text-input/text-input-with-add-btn";
+import Tiptap from "@/components/tiptap/Tiptap";
 import { getAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
-import {
-  Accordion,
-  Alert,
-  Button,
-  Select,
-  Textarea,
-  TextInput,
-} from "@mantine/core";
+import { Accordion, Alert, Button, Select, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -97,6 +91,13 @@ const isImageFile = (file: File): boolean => {
   return acceptedImageTypes.includes(file.type);
 };
 
+// Add file size check function
+const isValidFileSize = (file: File): boolean => {
+  const MAX_SIZE_MB = 5;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  return file.size <= MAX_SIZE_BYTES;
+};
+
 export function EnsiklopediPosisiPemainForm({
   isEdit,
   initialData,
@@ -114,6 +115,8 @@ export function EnsiklopediPosisiPemainForm({
     isEdit ? editEnskilopediPemain : createEnskilopediPemain,
     null,
   );
+
+  console.log(initialData);
 
   useEffect(() => {
     if (actionState?.success) {
@@ -153,36 +156,129 @@ export function EnsiklopediPosisiPemainForm({
         });
         return;
       }
-
-      if (!transisiMenyerangImage?.size) {
-        notifications.show({
-          title: "Error",
-          message: "Gambar transisi menyerang tidak boleh kosong",
-          color: "red",
-          icon: <IconInfoCircle />,
-          autoClose: 3000,
-        });
-        return;
-      }
-
-      if (!transisiBertahanImage?.size) {
-        notifications.show({
-          title: "Error",
-          message: "Gambar transisi bertahan tidak boleh kosong",
-          color: "red",
-          icon: <IconInfoCircle />,
-          autoClose: 3000,
-        });
-        return;
-      }
     }
 
-    // In edit mode, check if we have either the initial image or a new upload
+    // In edit mode, we only need to validate new uploads
     if (isEdit) {
-      if (!initialData?.gambarFormasiDefault && !formasiAsliImage?.size) {
+      // Check formasi asli if a new one is being uploaded
+      if (formasiAsliImage?.size) {
+        if (!isImageFile(formasiAsliImage)) {
+          notifications.show({
+            title: "Error",
+            message:
+              "File formasi asli harus berupa gambar (JPG, PNG, GIF, atau WEBP)",
+            color: "red",
+            icon: <IconInfoCircle />,
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        const isPortrait = await checkIfImageIsPortrait(formasiAsliImage);
+        if (!isPortrait) {
+          notifications.show({
+            title: "Error",
+            message:
+              "Gambar formasi asli harus dalam orientasi portrait (tinggi > lebar)",
+            color: "red",
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        if (!isValidFileSize(formasiAsliImage)) {
+          notifications.show({
+            title: "Error",
+            message: "Ukuran file formasi asli tidak boleh lebih dari 5MB",
+            color: "red",
+            icon: <IconInfoCircle />,
+            autoClose: 3000,
+          });
+          return;
+        }
+      }
+
+      // Check transisi menyerang if a new one is being uploaded
+      if (transisiMenyerangImage?.size) {
+        if (!isImageFile(transisiMenyerangImage)) {
+          notifications.show({
+            title: "Error",
+            message:
+              "File transisi menyerang harus berupa gambar (JPG, PNG, GIF, atau WEBP)",
+            color: "red",
+            icon: <IconInfoCircle />,
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        const isPortrait = await checkIfImageIsPortrait(transisiMenyerangImage);
+        if (!isPortrait) {
+          notifications.show({
+            title: "Error",
+            message:
+              "Gambar transisi menyerang harus dalam orientasi portrait (tinggi > lebar)",
+            color: "red",
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        if (!isValidFileSize(transisiMenyerangImage)) {
+          notifications.show({
+            title: "Error",
+            message:
+              "Ukuran file transisi menyerang tidak boleh lebih dari 5MB",
+            color: "red",
+            icon: <IconInfoCircle />,
+            autoClose: 3000,
+          });
+          return;
+        }
+      }
+
+      // Check transisi bertahan if a new one is being uploaded
+      if (transisiBertahanImage?.size) {
+        if (!isImageFile(transisiBertahanImage)) {
+          notifications.show({
+            title: "Error",
+            message:
+              "File transisi bertahan harus berupa gambar (JPG, PNG, GIF, atau WEBP)",
+            color: "red",
+            icon: <IconInfoCircle />,
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        const isPortrait = await checkIfImageIsPortrait(transisiBertahanImage);
+        if (!isPortrait) {
+          notifications.show({
+            title: "Error",
+            message:
+              "Gambar transisi bertahan harus dalam orientasi portrait (tinggi > lebar)",
+            color: "red",
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        if (!isValidFileSize(transisiBertahanImage)) {
+          notifications.show({
+            title: "Error",
+            message: "Ukuran file transisi bertahan tidak boleh lebih dari 5MB",
+            color: "red",
+            icon: <IconInfoCircle />,
+            autoClose: 3000,
+          });
+          return;
+        }
+      }
+    } else {
+      if (formasiAsliImage?.size && !isValidFileSize(formasiAsliImage)) {
         notifications.show({
           title: "Error",
-          message: "Gambar formasi asli tidak boleh kosong",
+          message: "Ukuran file formasi asli tidak boleh lebih dari 5MB",
           color: "red",
           icon: <IconInfoCircle />,
           autoClose: 3000,
@@ -190,10 +286,13 @@ export function EnsiklopediPosisiPemainForm({
         return;
       }
 
-      if (!initialData?.gambarOffense && !transisiMenyerangImage?.size) {
+      if (
+        transisiMenyerangImage?.size &&
+        !isValidFileSize(transisiMenyerangImage)
+      ) {
         notifications.show({
           title: "Error",
-          message: "Gambar transisi menyerang tidak boleh kosong",
+          message: "Ukuran file transisi menyerang tidak boleh lebih dari 5MB",
           color: "red",
           icon: <IconInfoCircle />,
           autoClose: 3000,
@@ -201,10 +300,13 @@ export function EnsiklopediPosisiPemainForm({
         return;
       }
 
-      if (!initialData?.gambarDefense && !transisiBertahanImage?.size) {
+      if (
+        transisiBertahanImage?.size &&
+        !isValidFileSize(transisiBertahanImage)
+      ) {
         notifications.show({
           title: "Error",
-          message: "Gambar transisi bertahan tidak boleh kosong",
+          message: "Ukuran file transisi bertahan tidak boleh lebih dari 5MB",
           color: "red",
           icon: <IconInfoCircle />,
           autoClose: 3000,
@@ -213,51 +315,26 @@ export function EnsiklopediPosisiPemainForm({
       }
     }
 
-    // Check file formats for new uploads
+    // Since we've added individual validation for each image above,
+    // we can simplify this section to just collect images
     const imagesToValidate: { file: File; name: string }[] = [];
 
     if (formasiAsliImage?.size) {
       imagesToValidate.push({ file: formasiAsliImage, name: "Formasi asli" });
     }
+
     if (transisiMenyerangImage?.size) {
       imagesToValidate.push({
         file: transisiMenyerangImage,
         name: "Transisi menyerang",
       });
     }
+
     if (transisiBertahanImage?.size) {
       imagesToValidate.push({
         file: transisiBertahanImage,
         name: "Transisi bertahan",
       });
-    }
-
-    // Check format of all uploaded images
-    for (const image of imagesToValidate) {
-      if (!isImageFile(image.file)) {
-        notifications.show({
-          title: "Error",
-          message: `File ${image.name} harus berupa gambar (JPG, PNG, GIF, atau WEBP)`,
-          color: "red",
-          icon: <IconInfoCircle />,
-          autoClose: 3000,
-        });
-        return;
-      }
-    }
-
-    // Validate image orientation for new uploads
-    for (const image of imagesToValidate) {
-      const isPortrait = await checkIfImageIsPortrait(image.file);
-      if (!isPortrait) {
-        notifications.show({
-          title: "Error",
-          message: `Gambar ${image.name} harus dalam orientasi portrait (tinggi > lebar)`,
-          color: "red",
-          autoClose: 3000,
-        });
-        return;
-      }
     }
 
     startTransition(() => {
@@ -414,7 +491,7 @@ export function EnsiklopediPosisiPemainForm({
       ) : null}
       <TextInput
         label="Nama Formasi"
-        placeholder="Masukkan nama formasi contoh: 442, 433, dan lain-lain"
+        placeholder="Masukkan nama formasi"
         required
         withAsterisk={false}
         name="nama"
@@ -424,16 +501,12 @@ export function EnsiklopediPosisiPemainForm({
         defaultValue={initialData?.namaFormasi}
       />
 
-      <Textarea
-        label="Deskripsi Formasi"
-        placeholder="Masukkan deskripsi formasi"
-        required
-        withAsterisk={false}
+      {/* Replace Textarea with Tiptap */}
+      <Tiptap
         name="deskripsi"
-        className="shadow-lg"
-        radius={"md"}
+        label="Deskripsi Formasi"
+        defaultContent={initialData?.deskripsiFormasi || ""}
         error={actionState?.error?.deskripsi}
-        defaultValue={initialData?.deskripsiFormasi}
       />
 
       <Accordion
@@ -467,6 +540,11 @@ export function EnsiklopediPosisiPemainForm({
               defaultValue={initialData?.gambarOffense}
               error={actionState?.error?.gambarTransisiMenyerang}
             />
+            {actionState?.error?.gambarTransisiMenyerang && (
+              <div className="mt-1 text-sm text-red-500">
+                {actionState.error.gambarTransisiMenyerang}
+              </div>
+            )}
           </div>
           <div className="w-[300px]">
             <div className="text-sm font-bold capitalize">
@@ -476,6 +554,11 @@ export function EnsiklopediPosisiPemainForm({
               defaultValue={initialData?.gambarDefense}
               error={actionState?.error?.gambarTransisiBertahan}
             />
+            {actionState?.error?.gambarTransisiBertahan && (
+              <div className="mt-1 text-sm text-red-500">
+                {actionState.error.gambarTransisiBertahan}
+              </div>
+            )}
           </div>
         </div>
       </div>

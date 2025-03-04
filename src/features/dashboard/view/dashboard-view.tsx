@@ -169,11 +169,11 @@ export function DashboardView({
 
           {/* Modern Player Dashboard */}
           <div className="mt-8 space-y-8">
-            {/* Player Stats Overview Cards */}
+            {/* Player Stats Overview Cards - Updated colors to match sidebar */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 p-6 text-white shadow-lg">
+              <div className="rounded-2xl bg-gradient-to-br from-black to-gray-800 p-6 text-white shadow-lg">
                 <div className="text-sm font-medium opacity-80">
-                  Total Latihan
+                  Total Latihan Yang Diberikan Oleh Pelatih
                 </div>
                 <div className="mt-2 text-3xl font-bold">
                   {isLoadingTugasLatihan
@@ -181,7 +181,7 @@ export function DashboardView({
                     : tugasLatihanIndividuData?.length || 0}
                 </div>
               </div>
-              <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 p-6 text-white shadow-lg">
+              <div className="rounded-2xl bg-gradient-to-br from-[#E92222] to-red-700 p-6 text-white shadow-lg">
                 <div className="text-sm font-medium opacity-80">
                   Kelompok Umur
                 </div>
@@ -205,10 +205,10 @@ export function DashboardView({
               </div>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+            {/* Main Content - Changed to stack vertically */}
+            <div className="grid grid-cols-1 gap-8">
               {/* Player Profile Card */}
-              <div className="col-span-full rounded-2xl bg-white p-6 shadow-xl lg:col-span-4">
+              <div className="rounded-2xl bg-white p-6 shadow-xl">
                 {isLoadingBiodata ? (
                   <div className="flex h-full items-center justify-center">
                     <div className="text-gray-500">Loading profile data...</div>
@@ -263,8 +263,8 @@ export function DashboardView({
                 )}
               </div>
 
-              {/* Assessment Results */}
-              <div className="col-span-full rounded-2xl bg-white p-6 shadow-xl lg:col-span-8">
+              {/* Assessment Results - Now positioned below profile */}
+              <div className="rounded-2xl bg-white p-6 shadow-xl">
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
                   <h2 className="text-xl font-bold">Hasil Asesmen</h2>
                   <Button

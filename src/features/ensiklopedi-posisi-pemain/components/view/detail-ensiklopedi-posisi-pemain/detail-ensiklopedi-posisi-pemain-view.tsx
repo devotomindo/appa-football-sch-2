@@ -150,7 +150,7 @@ export function DetailEnsiklopediPosisiPemainView({
       </Link>
       <div className="flex flex-col gap-4 sm:flex-row md:items-center md:justify-between">
         <h1 className="flex-1 text-xl font-bold uppercase sm:text-2xl">
-          formasi {data?.namaFormasi.split("").join("-")}
+          formasi {data?.namaFormasi}
         </h1>
         {isAdmin && (
           <div className="flex w-full flex-1 flex-col gap-2 sm:flex-row sm:space-x-4 md:justify-end">
@@ -192,7 +192,14 @@ export function DetailEnsiklopediPosisiPemainView({
           altText="formasi-defense"
         />
       </div>
-      <p className="font-light">{data?.deskripsiFormasi}</p>
+
+      {data?.deskripsiFormasi && (
+        <div
+          className="prose prose-sm prose-ul:pl-5 prose-ol:pl-5 max-w-none"
+          dangerouslySetInnerHTML={{ __html: data.deskripsiFormasi }}
+        />
+      )}
+
       <Accordion
         variant="separated"
         multiple

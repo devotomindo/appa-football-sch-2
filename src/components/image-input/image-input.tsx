@@ -3,7 +3,7 @@
 import { Button, FileInput } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function PosisiMenyerangImageInput({
   posisi,
@@ -202,19 +202,29 @@ export function TransisiMenyerangImageInput({
 }) {
   const [gambar, setGambar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(defaultValue || "");
+  const [wasDeleted, setWasDeleted] = useState(false);
+
+  const fileInputRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (gambar) {
       const objectUrl = URL.createObjectURL(gambar);
       setPreview(objectUrl);
+      setWasDeleted(false); // Reset deletion state when new image is added
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
 
-  // const handleClear = () => {
-  //   setGambar(null);
-  //   setPreview("");
-  // };
+  const handleClear = () => {
+    setGambar(null);
+    setPreview("");
+    setWasDeleted(true);
+
+    // Make sure to reset the file input value too
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="">
@@ -227,7 +237,7 @@ export function TransisiMenyerangImageInput({
             width={500}
             height={500}
           />
-          {/* <Button
+          <Button
             leftSection={<IconTrash size={16} />}
             variant="light"
             color="red"
@@ -235,19 +245,27 @@ export function TransisiMenyerangImageInput({
             onClick={handleClear}
           >
             Hapus
-          </Button> */}
+          </Button>
         </div>
       )}
       <FileInput
+        ref={fileInputRef}
         placeholder="Pilih File"
         accept="image/*"
         className="mt-4 shadow-lg"
         radius="md"
         value={gambar}
         onChange={setGambar}
-        name="gambarTransisiMenyerang"
-        error={error}
+        name={wasDeleted ? undefined : "gambarTransisiMenyerang"} // Don't include in form data if deleted
+        error={error} // This will display the error message from the form component
       />
+      {wasDeleted && (
+        <input
+          type="hidden"
+          name="deletedTransisiMenyerangImage"
+          value="true"
+        />
+      )}
     </div>
   );
 }
@@ -261,19 +279,29 @@ export function TransisiBertahanImageInput({
 }) {
   const [gambar, setGambar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(defaultValue || "");
+  const [wasDeleted, setWasDeleted] = useState(false);
+
+  const fileInputRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (gambar) {
       const objectUrl = URL.createObjectURL(gambar);
       setPreview(objectUrl);
+      setWasDeleted(false); // Reset deletion state when new image is added
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [gambar]);
 
-  // const handleClear = () => {
-  //   setGambar(null);
-  //   setPreview("");
-  // };
+  const handleClear = () => {
+    setGambar(null);
+    setPreview("");
+    setWasDeleted(true);
+
+    // Make sure to reset the file input value too
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="">
@@ -286,7 +314,7 @@ export function TransisiBertahanImageInput({
             width={500}
             height={500}
           />
-          {/* <Button
+          <Button
             leftSection={<IconTrash size={16} />}
             variant="light"
             color="red"
@@ -294,19 +322,23 @@ export function TransisiBertahanImageInput({
             onClick={handleClear}
           >
             Hapus
-          </Button> */}
+          </Button>
         </div>
       )}
       <FileInput
+        ref={fileInputRef}
         placeholder="Pilih File"
         accept="image/*"
         className="mt-4 shadow-lg"
         radius="md"
         value={gambar}
         onChange={setGambar}
-        name="gambarTransisiBertahan"
-        error={error}
+        name={wasDeleted ? undefined : "gambarTransisiBertahan"} // Don't include in form data if deleted
+        error={error} // This will display the error message from the form component
       />
+      {wasDeleted && (
+        <input type="hidden" name="deletedTransisiBertahanImage" value="true" />
+      )}
     </div>
   );
 }

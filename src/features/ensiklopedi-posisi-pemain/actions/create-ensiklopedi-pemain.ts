@@ -37,18 +37,13 @@ export async function createEnskilopediPemain(
 ) {
   const validationResult = await zfd
     .formData({
-      nama: zfd.text(
-        z
-          .string()
-          .min(3, "Nama formasi minimal 3 karakter")
-          .max(3, "Nama formasi maksimal 3 karakter"),
-      ),
+      nama: zfd.text(z.string().min(1, "Nama formasi minimal 3 karakter")),
       deskripsi: zfd.text(z.string().min(1)),
       posisi: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string().nonempty()))),
       ),
       karakter: zfd.repeatable(
-        z.array(zfd.repeatable(z.array(z.string().min(1)))),
+        z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
       posisiMenyerang: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))).optional(),
@@ -92,7 +87,8 @@ export async function createEnskilopediPemain(
           .refine(
             async (file) => await validatePortraitImage(file),
             "Gambar transisi menyerang harus berorientiasi portrait (tinggi > lebar)",
-          ),
+          )
+          .optional(),
       ),
       gambarTransisiBertahan: zfd.file(
         z
@@ -108,7 +104,8 @@ export async function createEnskilopediPemain(
           .refine(
             async (file) => await validatePortraitImage(file),
             "Gambar transisi bertahan harus berorientiasi portrait (tinggi > lebar)",
-          ),
+          )
+          .optional(),
       ),
     })
     .safeParseAsync(formData);
@@ -130,15 +127,16 @@ export async function createEnskilopediPemain(
                 `Posisi #${index + 1} tidak boleh kosong. Harap pilih 1`;
             return acc;
           }, []),
-        karakter: validationResult.error.errors
-          .filter((err) => err.path[0] === "karakter")
-          .reduce((acc: string[], err) => {
-            const index = err.path[1] as number;
-            if (!acc[index])
-              acc[index] =
-                `Karakter tidak boleh kosong pada Posisi #${index + 1}`;
-            return acc;
-          }, []),
+        // karakter: validationResult.error.errors
+        //   .filter((err) => err.path[0] === "karakter")
+        //   .reduce((acc: string[], err) => {
+        //     const index = err.path[1] as number;
+        //     if (!acc[index])
+        //       acc[index] =
+        //         `Karakter tidak boleh kosong pada Posisi #${index + 1}`;
+        //     return acc;
+        //   }, []),
+        karakter: errorFormatted.karakter?._errors[0],
         gambarFormasiAsli: errorFormatted.gambarFormasiAsli?._errors[0],
         gambarTransisiMenyerang:
           errorFormatted.gambarTransisiMenyerang?._errors?.[0],
@@ -186,16 +184,26 @@ export async function createEnskilopediPemain(
     );
 
     // Upload gambarFormasiBertahan
-    const gambarTransisiBertahanURL = await singleImageUploader(
-      validationResult.data.gambarTransisiBertahan,
-      "defense_transition_image",
-    );
+    // const gambarTransisiBertahanURL = await singleImageUploader(
+    //   validationResult.data.gambarTransisiBertahan,
+    //   "defense_transition_image",
+    // );
+    let gambarTransisiBertahanURL: string | undefined;
+    if (validationResult.data.gambarTransisiBertahan) {
+      gambarTransisiBertahanURL = await singleImageUploader(
+        validationResult.data.gambarTransisiBertahan,
+        "defense_transition_image",
+      );
+    }
 
     // Upload gambarFormasiMenyerang
-    const gambarTransisiMenyerangURL = await singleImageUploader(
-      validationResult.data.gambarTransisiMenyerang,
-      "offense_transition_image",
-    );
+    let gambarTransisiMenyerangURL: string | undefined;
+    if (validationResult.data.gambarTransisiMenyerang) {
+      gambarTransisiMenyerangURL = await singleImageUploader(
+        validationResult.data.gambarTransisiMenyerang,
+        "offense_transition_image",
+      );
+    }
 
     const idFormations = uuidv7();
 
@@ -216,7 +224,7 @@ export async function createEnskilopediPemain(
           id: uuidv7(),
           formationId: idFormations,
           positionId: validationResult.data.posisi[i][0],
-          characteristics: validationResult.data.karakter[i],
+          characteristics: validationResult.data.karakter?.[i] ?? [],
           offenseDescription: validationResult.data.posisiMenyerang?.[i] ?? [],
           offenseIllustrationPath: gambarPosisiMenyerangURLs[i]?.fullPath,
           defenseDescription: validationResult.data.posisiBertahan?.[i] ?? [],

@@ -1,0 +1,209 @@
+/* Basic editor styles */
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  /* List styles */
+  ul,
+  ol {
+    padding: 0 1rem;
+    margin: 1.25rem 1rem 1.25rem 0.4rem;
+
+    li p {
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
+    }
+  }
+
+  /* Heading styles */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.1;
+    margin-top: 2.5rem;
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2 {
+    margin-top: 3.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-size: 1rem;
+  }
+
+  /* Code and preformatted text styles */
+  code {
+    background-color: #f0e7fe; /* Replaced var(--purple-light) */
+    border-radius: 0.4rem;
+    color: #000000; /* Replaced var(--black) */
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+  }
+
+  pre {
+    background: #000000; /* Replaced var(--black) */
+    border-radius: 0.5rem;
+    color: #ffffff; /* Replaced var(--white) */
+    font-family: "JetBrainsMono", monospace;
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
+
+    code {
+      background: none;
+      color: inherit;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+  }
+
+  blockquote {
+    border-left: 3px solid #d1d5db; /* Replaced var(--gray-3) */
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e5e7eb; /* Replaced var(--gray-2) */
+    margin: 2rem 0;
+  }
+}
+
+/* Basic editor styles */
+
+/* Fix for lists in the editor */
+.tiptap-editor ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin-left: 1rem !important;
+}
+
+.tiptap-editor ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin-left: 1rem !important;
+}
+
+.tiptap-editor ul li {
+  list-style-type: disc !important;
+}
+
+.tiptap-editor ol li {
+  list-style-type: decimal !important;
+}
+
+/* Fix for lists in the rendered HTML */
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+}
+
+.prose ul li {
+  list-style-type: disc !important;
+}
+
+.prose ol li {
+  list-style-type: decimal !important;
+}
+
+/* Improved heading styles with clearer differentiation */
+.tiptap-editor h1,
+.prose h1 {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 1rem !important;
+  color: #111827 !important;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.3rem;
+}
+
+.tiptap-editor h2,
+.prose h2 {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  margin-top: 1.4rem !important;
+  margin-bottom: 0.9rem !important;
+  color: #1f2937 !important;
+}
+
+.tiptap-editor h3,
+.prose h3 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin-top: 1.3rem !important;
+  margin-bottom: 0.8rem !important;
+  color: #374151 !important;
+}
+
+.tiptap-editor h4,
+.prose h4 {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  margin-top: 1.2rem !important;
+  margin-bottom: 0.7rem !important;
+  color: #4b5563 !important;
+}
+
+.tiptap-editor h5,
+.prose h5 {
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  margin-top: 1.1rem !important;
+  margin-bottom: 0.6rem !important;
+  color: #6b7280 !important;
+}
+
+.tiptap-editor h6,
+.prose h6 {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #6b7280 !important;
+  font-style: italic;
+}
+
+/* Improve styling for blockquote */
+.tiptap-editor blockquote,
+.prose blockquote {
+  background-color: #f9fafb !important;
+  border-left: 4px solid #4b5563 !important;
+  padding: 0.5rem 1rem !important;
+  margin: 1rem 0 !important;
+  font-style: italic;
+}
+
+/* Improve styling for horizontal rule */
+.tiptap-editor hr,
+.prose hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 1.5rem 0;
+}

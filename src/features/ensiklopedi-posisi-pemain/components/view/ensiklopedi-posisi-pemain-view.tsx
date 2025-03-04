@@ -51,7 +51,7 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="grid sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-10">
+        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 md:gap-5 lg:gap-8 xl:grid-cols-4 xl:gap-8">
           {filteredData && filteredData.length > 0 ? (
             filteredData.map((formasi, index) => (
               <Link
@@ -63,9 +63,9 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
                 }
                 className="flex justify-center"
               >
-                <div className="flex h-[400px] w-[300px] flex-col items-center gap-4 rounded-xl border-2 p-8 shadow-xl">
-                  <p className="text-md text-center font-bold uppercase xl:text-xl">
-                    formasi {formasi.namaFormasi?.split("").join("-")}
+                <div className="flex flex-col items-center gap-4 rounded-xl border-2 p-8 shadow-xl">
+                  <p className="min-h-10 text-center font-bold uppercase md:text-sm lg:text-base xl:min-h-16 xl:text-lg 2xl:min-h-10">
+                    formasi {formasi.namaFormasi}
                   </p>
                   <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
                     <Image
