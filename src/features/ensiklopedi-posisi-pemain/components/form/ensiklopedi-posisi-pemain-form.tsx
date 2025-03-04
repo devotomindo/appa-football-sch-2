@@ -405,12 +405,7 @@ export function EnsiklopediPosisiPemainForm({
           <Select
             label="Pilih Posisi"
             data={posisiData
-              ?.filter(
-                (position) =>
-                  !Object.values(selectedPositions).includes(position.id) ||
-                  selectedPositions[item.value] === position.id,
-              )
-              .map((position) => ({
+              ?.map((position) => ({
                 label: position.name,
                 value: position.id,
               }))
@@ -424,9 +419,9 @@ export function EnsiklopediPosisiPemainForm({
             }}
             searchable
             name={`posisi[${index}]`}
-            error={actionState?.error?.posisi?.[index]} // Error akan menampilkan pesan dengan nomor posisi
+            error={actionState?.error?.posisi?.[index]}
             required
-            withAsterisk={false} // Menandakan field wajib diisi
+            withAsterisk={false}
           />
           {selectedPositions[item.value] && (
             <div className="mt-2 rounded-md bg-gray-600 p-2 text-sm text-white">
