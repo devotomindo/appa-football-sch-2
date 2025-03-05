@@ -32,9 +32,11 @@ export function DetailEnsiklopediPosisiPemainView({
     return <div>Loading...</div>;
   }
 
+  console.log(data);
+
   const items = data?.daftarPosisi.map((posisi, index) => {
     return (
-      <Accordion.Item key={posisi.idPosisi} value={`Posisi #${index + 1}`}>
+      <Accordion.Item key={index + 1} value={`Posisi #${index + 1}`}>
         <Accordion.Control
           className=""
           classNames={{
@@ -53,25 +55,33 @@ export function DetailEnsiklopediPosisiPemainView({
             </div>
           </Accordion.Panel>
         )}
-        {posisi.karakteristik && posisi.karakteristik.length > 0 && (
-          <Accordion.Panel>
-            <div className="space-y-2">
-              <p className="text-lg font-bold capitalize">
-                karakter yang harus dimiliki
-              </p>
-              {posisi.karakteristik.map((karakter, index) => (
-                <div
-                  key={index}
-                  className="w flex justify-start rounded-xl border-2 p-4 shadow-lg"
-                >
-                  <p className="">{karakter}</p>
-                </div>
-              ))}
-            </div>
-          </Accordion.Panel>
-        )}
+        {posisi.karakteristik &&
+          posisi.karakteristik.length > 0 &&
+          posisi.karakteristik.some((k) => {
+            return k.trim() !== "";
+          }) && (
+            <Accordion.Panel>
+              <div className="space-y-2">
+                <p className="text-lg font-bold capitalize">
+                  karakter yang harus dimiliki
+                </p>
+                {posisi.karakteristik
+                  .filter((karakter) => karakter.trim() !== "")
+                  .map((karakter, index) => (
+                    <div
+                      key={index}
+                      className="w flex justify-start rounded-xl border-2 p-4 shadow-lg"
+                    >
+                      <p className="">{karakter}</p>
+                    </div>
+                  ))}
+              </div>
+            </Accordion.Panel>
+          )}
         {(posisi.gambarOffense ||
-          (posisi.deskripsiOffense && posisi.deskripsiOffense.length > 0)) && (
+          (posisi.deskripsiOffense &&
+            posisi.deskripsiOffense.length > 0 &&
+            posisi.deskripsiOffense.some((d) => d.trim() !== ""))) && (
           <Accordion.Panel>
             <div className="space-y-2">
               <p className="text-lg font-bold capitalize">
@@ -88,19 +98,23 @@ export function DetailEnsiklopediPosisiPemainView({
                   />
                 </div>
               )}
-              {posisi.deskripsiOffense?.map((deskripsi, index) => (
-                <div
-                  key={index}
-                  className="w flex justify-start rounded-xl border-2 p-4 shadow-lg"
-                >
-                  <p>{deskripsi}</p>
-                </div>
-              ))}
+              {posisi.deskripsiOffense
+                ?.filter((deskripsi) => deskripsi.trim() !== "")
+                .map((deskripsi, index) => (
+                  <div
+                    key={index}
+                    className="w flex justify-start rounded-xl border-2 p-4 shadow-lg"
+                  >
+                    <p>{deskripsi}</p>
+                  </div>
+                ))}
             </div>
           </Accordion.Panel>
         )}
         {(posisi.gambarDefense ||
-          (posisi.deskripsiDefense && posisi.deskripsiDefense.length > 0)) && (
+          (posisi.deskripsiDefense &&
+            posisi.deskripsiDefense.length > 0 &&
+            posisi.deskripsiDefense.some((d) => d.trim() !== ""))) && (
           <Accordion.Panel>
             <div className="space-y-2">
               <p className="text-lg font-bold capitalize">
@@ -117,14 +131,16 @@ export function DetailEnsiklopediPosisiPemainView({
                   />
                 </div>
               )}
-              {posisi.deskripsiDefense?.map((deskripsi, index) => (
-                <div
-                  key={index}
-                  className="w flex justify-start rounded-xl border-2 p-4 shadow-lg"
-                >
-                  <p>{deskripsi}</p>
-                </div>
-              ))}
+              {posisi.deskripsiDefense
+                ?.filter((deskripsi) => deskripsi.trim() !== "")
+                .map((deskripsi, index) => (
+                  <div
+                    key={index}
+                    className="w flex justify-start rounded-xl border-2 p-4 shadow-lg"
+                  >
+                    <p>{deskripsi}</p>
+                  </div>
+                ))}
             </div>
           </Accordion.Panel>
         )}
@@ -175,27 +191,34 @@ export function DetailEnsiklopediPosisiPemainView({
           </div>
         )}
       </div>
+
       <div className="flex flex-col gap-6 md:flex-row md:justify-between">
-        <FormationImage
-          title="formasi asli"
-          imageSrc={data?.gambarFormasiDefault}
-          altText="formasi-default"
-        />
-        <FormationImage
-          title="transisi menyerang"
-          imageSrc={data?.gambarOffense}
-          altText="formasi-offense"
-        />
-        <FormationImage
-          title="transisi bertahan"
-          imageSrc={data?.gambarDefense}
-          altText="formasi-defense"
-        />
+        {data?.gambarFormasiDefault && (
+          <FormationImage
+            title="formasi asli"
+            imageSrc={data.gambarFormasiDefault}
+            altText="formasi-default"
+          />
+        )}
+        {data?.gambarOffense && (
+          <FormationImage
+            title="transisi menyerang"
+            imageSrc={data.gambarOffense}
+            altText="formasi-offense"
+          />
+        )}
+        {data?.gambarDefense && (
+          <FormationImage
+            title="transisi bertahan"
+            imageSrc={data.gambarDefense}
+            altText="formasi-defense"
+          />
+        )}
       </div>
 
       {data?.deskripsiFormasi && (
         <div
-          className="prose prose-sm prose-ul:pl-5 prose-ol:pl-5 max-w-none"
+          className="prose prose-sm prose-headings:font-bold prose-ul:pl-5 prose-ol:pl-5 max-w-none"
           dangerouslySetInnerHTML={{ __html: data.deskripsiFormasi }}
         />
       )}

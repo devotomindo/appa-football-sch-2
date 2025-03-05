@@ -13,6 +13,115 @@
   }
 }
 
+/* TipTap List Styles */
+.mantine-RichTextEditor-content ul,
+.mantine-RichTextEditor-content ol,
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.mantine-RichTextEditor-content ul,
+.prose ul {
+  list-style-type: disc;
+}
+
+.mantine-RichTextEditor-content ul ul,
+.prose ul ul {
+  list-style-type: circle;
+}
+
+.mantine-RichTextEditor-content ul ul ul,
+.prose ul ul ul {
+  list-style-type: square;
+}
+
+.mantine-RichTextEditor-content ol,
+.prose ol {
+  list-style-type: decimal;
+}
+
+.mantine-RichTextEditor-content ol ol,
+.prose ol ol {
+  list-style-type: lower-alpha;
+}
+
+.mantine-RichTextEditor-content ol ol ol,
+.prose ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.mantine-RichTextEditor-content li,
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.mantine-RichTextEditor-content li p,
+.prose li p {
+  margin: 0;
+}
+
+/* General HTML tags styling for rendered content */
+.prose h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+}
+
+.prose a {
+  color: #3182ce;
+  text-decoration: underline;
+}
+
+.prose blockquote {
+  border-left: 4px solid #e2e8f0;
+  padding-left: 1rem;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.prose hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.prose code {
+  background-color: #f7fafc;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  font-family: monospace;
+}
+
 @layer components {
   .wrapper {
     @apply grid gap-x-8 md:grid-cols-[1fr_min(42.875rem,_calc(100%-64px))_1fr] md:[&>*]:col-start-2;

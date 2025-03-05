@@ -51,7 +51,7 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 md:gap-5 lg:gap-8 xl:grid-cols-4 xl:gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 md:gap-5 lg:gap-8 xl:grid-cols-4 xl:gap-8">
           {filteredData && filteredData.length > 0 ? (
             filteredData.map((formasi, index) => (
               <Link
