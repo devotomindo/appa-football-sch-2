@@ -17,7 +17,7 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
   );
 
   return (
-    <div className="space-y-16 sm:space-y-10 xl:space-y-10">
+    <div className="space-y-8 sm:space-y-10 xl:space-y-10">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-between sm:gap-20 xl:flex-row xl:items-center xl:justify-between">
           {/* title */}
@@ -61,13 +61,13 @@ export function EnsiklopediPosisiPemainView({ isAdmin }: { isAdmin: boolean }) {
                     ? `/dashboard/admin/ensiklopedi-posisi-pemain/detail-ensiklopedi-posisi-pemain/${formasi.id}`
                     : `/dashboard/ensiklopedi-posisi-pemain/${formasi.id}`
                 }
-                className="flex justify-center"
+                className="w-full"
               >
-                <div className="flex flex-col items-center gap-4 rounded-xl border-2 p-8 shadow-xl">
+                <div className="flex h-full w-full flex-col items-center gap-4 rounded-xl border-2 p-8 shadow-xl">
                   <p className="min-h-10 text-center font-bold uppercase md:text-sm lg:text-base xl:min-h-16 xl:text-lg 2xl:min-h-10">
                     formasi {formasi.namaFormasi}
                   </p>
-                  <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
+                  <div className="relative h-full w-full overflow-hidden">
                     <Image
                       src={formasi.gambarFormasiDefault || "/formasi.png"}
                       alt="formasi default"

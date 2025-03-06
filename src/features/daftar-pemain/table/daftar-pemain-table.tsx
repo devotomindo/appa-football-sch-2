@@ -3,7 +3,8 @@
 import { GetAllStudentsBySchoolIdResponse } from "@/features/school/action/get-all-students-by-school-id";
 import { getAllStudentsBySchoolIdQueryOptions } from "@/features/school/action/get-all-students-by-school-id/query-options";
 import { getDefautTableOptions } from "@/lib/utils/mantine-react-table";
-import { Avatar, Badge, Button, Flex } from "@mantine/core";
+import { Avatar, Badge, Button, Flex, Modal } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconCrown } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import "dayjs/locale/id";
@@ -13,7 +14,9 @@ import {
   useMantineReactTable,
 } from "mantine-react-table";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { ActivatePremiumForStudentForm } from "../form/activate-premium-for-student-form";
+import { DeactivatePremiumForStudentForm } from "../form/deactivate-premium-for-student-form";
 
 export function DaftarPemainTable({ schoolId }: { schoolId: string }) {
   // QUERY DATA
@@ -21,6 +24,22 @@ export function DaftarPemainTable({ schoolId }: { schoolId: string }) {
     getAllStudentsBySchoolIdQueryOptions(schoolId),
   );
   // END OF QUERY DATA
+
+  // State to store selected student for premium activation / deactivation
+  const [selectedStudent, setSelectedStudent] = useState<
+    GetAllStudentsBySchoolIdResponse[number] | null
+  >(null);
+
+  // State to store modals visibility
+  const [
+    isActivatePremiumModalOpened,
+    { open: openActivatePremiumModal, close: closeActivatePremiumModal },
+  ] = useDisclosure();
+
+  const [
+    isDeactivatePremiumModalOpened,
+    { open: openDeactivatePremiumModal, close: closeDeactivatePremiumModal },
+  ] = useDisclosure();
 
   // COLUMNS DEFINITION
   const columns = useMemo<
@@ -126,14 +145,35 @@ export function DaftarPemainTable({ schoolId }: { schoolId: string }) {
         header: "Aksi",
         Cell: ({ row }) => {
           return (
-            <>
+            <div className="flex flex-col gap-2">
+              {row.original.isPremium ? (
+                <Button
+                  color="red"
+                  onClick={() => {
+                    setSelectedStudent(row.original);
+                    openDeactivatePremiumModal();
+                  }}
+                >
+                  Nonaktifkan Premium
+                </Button>
+              ) : (
+                <Button
+                  color="green"
+                  onClick={() => {
+                    setSelectedStudent(row.original);
+                    openActivatePremiumModal();
+                  }}
+                >
+                  Aktifkan Premium
+                </Button>
+              )}
               <Button
                 component={Link}
                 href={`/dashboard/daftar-pemain/${row.original.id}`}
               >
                 Lihat
               </Button>
-            </>
+            </div>
           );
         },
       },
@@ -156,5 +196,62 @@ export function DaftarPemainTable({ schoolId }: { schoolId: string }) {
     // },
   });
 
-  return <MantineReactTable table={table} />;
+  return (
+    <>
+      <MantineReactTable table={table} />
+
+      {/* Activate Premium Modal */}
+      <Modal
+        opened={isActivatePremiumModalOpened}
+        onClose={() => {
+          closeActivatePremiumModal();
+          setSelectedStudent(null);
+        }}
+        title="Aktifkan Premium"
+        centered
+      >
+        <div>
+          Apakah Anda yakin ingin mengaktifkan status premium untuk{" "}
+          <span className="font-semibold">{selectedStudent?.userFullName}</span>
+          ?
+        </div>
+
+        <ActivatePremiumForStudentForm
+          studentId={selectedStudent?.id ?? ""}
+          schoolId={schoolId}
+          onSuccess={() => {
+            closeActivatePremiumModal();
+            setSelectedStudent(null);
+          }}
+        />
+      </Modal>
+
+      {/* Deactivate Premium Modal */}
+      <Modal
+        opened={isDeactivatePremiumModalOpened}
+        onClose={() => {
+          closeDeactivatePremiumModal();
+          setSelectedStudent(null);
+        }}
+        title="Nonaktifkan Premium"
+        centered
+      >
+        <div>
+          Apakah Anda yakin ingin menonaktifkan status premium untuk{" "}
+          <span className="font-semibold">{selectedStudent?.userFullName}</span>
+          ? Jika Anda ingin mengaktifkan kembali status premium{" "}
+          {selectedStudent?.userFullName}, Anda harus memiliki transaksi paket
+          premium baru.
+        </div>
+        <DeactivatePremiumForStudentForm
+          premiumId={selectedStudent?.premiumAssignmentId}
+          schoolId={schoolId}
+          onSuccess={() => {
+            closeDeactivatePremiumModal();
+            setSelectedStudent(null);
+          }}
+        />
+      </Modal>
+    </>
+  );
 }

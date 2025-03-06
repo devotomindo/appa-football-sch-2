@@ -49,6 +49,7 @@ export const getAllStudentsBySchoolId = cache(async function (
   // Get all premium assignments with their transaction details
   const premiumAssignments = await db
     .select({
+      id: studentPremiumAssignments.id,
       studentId: studentPremiumAssignments.studentId,
       transactionId: studentPremiumAssignments.transactionId,
       transactionUpdatedAt: transactions.updatedAt,
@@ -68,8 +69,8 @@ export const getAllStudentsBySchoolId = cache(async function (
       ),
     );
 
-  // Create a set of active premium student IDs
-  const activePremiumStudentIds = new Set();
+  // Create a map of student IDs to active premium assignment details
+  const activePremiumAssignments = new Map();
 
   for (const assignment of premiumAssignments) {
     // Skip if transaction date is missing
@@ -84,7 +85,10 @@ export const getAllStudentsBySchoolId = cache(async function (
 
     // Only consider as premium if transaction is still valid (not expired)
     if (expiryDate > currentDate) {
-      activePremiumStudentIds.add(assignment.studentId);
+      activePremiumAssignments.set(assignment.studentId, {
+        premiumAssignmentId: assignment.id,
+        expiresAt: expiryDate,
+      });
     }
   }
 
@@ -95,11 +99,22 @@ export const getAllStudentsBySchoolId = cache(async function (
         : null;
       const ageGroup = age ? getAgeGroup(age) : null;
 
-      // Check if this student has an active premium status
-      const isPremium = activePremiumStudentIds.has(student.id);
+      // Check if this student has an active premium assignment
+      const premiumDetails = activePremiumAssignments.get(student.id);
+      const isPremium = !!premiumDetails;
+      const premiumAssignmentId = premiumDetails?.premiumAssignmentId || null;
+      const premiumExpiresAt = premiumDetails?.expiresAt || null;
 
       if (!student.userAvatarPath) {
-        return { ...student, userImageUrl: null, age, ageGroup, isPremium };
+        return { 
+          ...student, 
+          userImageUrl: null, 
+          age, 
+          ageGroup, 
+          isPremium, 
+          premiumAssignmentId,
+          premiumExpiresAt 
+        };
       }
 
       const { bucket, path } = getStorageBucketAndPath(student.userAvatarPath);
@@ -114,6 +129,8 @@ export const getAllStudentsBySchoolId = cache(async function (
         age,
         ageGroup,
         isPremium,
+        premiumAssignmentId,
+        premiumExpiresAt
       };
     }),
   );
