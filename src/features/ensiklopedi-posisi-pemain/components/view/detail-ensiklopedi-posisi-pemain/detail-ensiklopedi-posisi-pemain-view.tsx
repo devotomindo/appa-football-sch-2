@@ -78,6 +78,29 @@ export function DetailEnsiklopediPosisiPemainView({
               </div>
             </Accordion.Panel>
           )}
+        {posisi.prinsip &&
+          posisi.prinsip.length > 0 &&
+          posisi.prinsip.some((k) => {
+            return k.trim() !== "";
+          }) && (
+            <Accordion.Panel>
+              <div className="space-y-2">
+                <p className="text-lg font-bold capitalize">
+                  prinsip yang harus dikuasai
+                </p>
+                {posisi.prinsip
+                  .filter((prinsip) => prinsip.trim() !== "")
+                  .map((prinsip, index) => (
+                    <div
+                      key={index}
+                      className="w flex justify-start rounded-xl border-2 p-4 shadow-lg"
+                    >
+                      <p className="">{prinsip}</p>
+                    </div>
+                  ))}
+              </div>
+            </Accordion.Panel>
+          )}
         {(posisi.gambarOffense ||
           (posisi.deskripsiOffense &&
             posisi.deskripsiOffense.length > 0 &&

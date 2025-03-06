@@ -45,6 +45,9 @@ export async function createEnskilopediPemain(
       karakter: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
+      prinsip: zfd.repeatable(
+        z.array(zfd.repeatable(z.array(z.string()))).optional(),
+      ),
       posisiMenyerang: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
@@ -127,16 +130,8 @@ export async function createEnskilopediPemain(
                 `Posisi #${index + 1} tidak boleh kosong. Harap pilih 1`;
             return acc;
           }, []),
-        // karakter: validationResult.error.errors
-        //   .filter((err) => err.path[0] === "karakter")
-        //   .reduce((acc: string[], err) => {
-        //     const index = err.path[1] as number;
-        //     if (!acc[index])
-        //       acc[index] =
-        //         `Karakter tidak boleh kosong pada Posisi #${index + 1}`;
-        //     return acc;
-        //   }, []),
         karakter: errorFormatted.karakter?._errors[0],
+        prinsip: errorFormatted.prinsip?._errors[0],
         gambarFormasiAsli: errorFormatted.gambarFormasiAsli?._errors[0],
         gambarTransisiMenyerang:
           errorFormatted.gambarTransisiMenyerang?._errors?.[0],
@@ -184,10 +179,6 @@ export async function createEnskilopediPemain(
     );
 
     // Upload gambarFormasiBertahan
-    // const gambarTransisiBertahanURL = await singleImageUploader(
-    //   validationResult.data.gambarTransisiBertahan,
-    //   "defense_transition_image",
-    // );
     let gambarTransisiBertahanURL: string | undefined;
     if (validationResult.data.gambarTransisiBertahan) {
       gambarTransisiBertahanURL = await singleImageUploader(
@@ -225,6 +216,7 @@ export async function createEnskilopediPemain(
           formationId: idFormations,
           positionId: validationResult.data.posisi[i][0],
           characteristics: validationResult.data.karakter?.[i] ?? [],
+          principles: validationResult.data.prinsip?.[i] ?? [],
           offenseDescription: validationResult.data.posisiMenyerang?.[i] ?? [],
           offenseIllustrationPath: gambarPosisiMenyerangURLs[i]?.fullPath,
           defenseDescription: validationResult.data.posisiBertahan?.[i] ?? [],

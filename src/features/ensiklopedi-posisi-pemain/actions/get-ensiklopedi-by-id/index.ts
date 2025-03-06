@@ -44,6 +44,7 @@ export const getEnsiklopediById = cache(async function (id: string) {
           namaPosisi: item.positions?.name ?? "",
           deskripsiPosisi: item.positions?.description,
           karakteristik: item.formation_positioning.characteristics,
+          prinsip: item.formation_positioning.principles,
           deskripsiOffense: item.formation_positioning.offenseDescription,
           gambarOffense: item.formation_positioning.offenseIllustrationPath
             ? await getImageURL(

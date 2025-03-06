@@ -11,6 +11,7 @@ import {
   KarakterInput,
   PosisiBertahanInput,
   PosisiMenyerangInput,
+  PrinsipInput,
 } from "@/components/text-input/text-input-with-add-btn";
 import Tiptap from "@/components/tiptap/Tiptap";
 import { getAllPositionsQueryOptions } from "@/features-data/positions/actions/get-all-positions/query-options";
@@ -115,8 +116,6 @@ export function EnsiklopediPosisiPemainForm({
     isEdit ? editEnskilopediPemain : createEnskilopediPemain,
     null,
   );
-
-  console.log(initialData);
 
   useEffect(() => {
     if (actionState?.success) {
@@ -440,7 +439,15 @@ export function EnsiklopediPosisiPemainForm({
             defaultValue={
               initialData?.daftarPosisi[index]?.karakteristik ?? undefined
             }
-            // withAsterisk // Menandakan field wajib diisi
+          />
+        </Accordion.Panel>
+        <Accordion.Panel>
+          <PrinsipInput
+            posisi={index}
+            error={actionState?.error?.karakter?.[index]} // Mengakses error untuk karakter spesifik
+            defaultValue={
+              initialData?.daftarPosisi[index]?.prinsip ?? undefined
+            }
           />
         </Accordion.Panel>
         <Accordion.Panel>

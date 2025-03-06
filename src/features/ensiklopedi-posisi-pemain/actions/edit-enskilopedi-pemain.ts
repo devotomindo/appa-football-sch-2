@@ -162,6 +162,9 @@ export async function editEnskilopediPemain(
       karakter: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
+      prinsip: zfd.repeatable(
+        z.array(zfd.repeatable(z.array(z.string()))).optional(),
+      ),
       posisiMenyerang: zfd.repeatable(
         z.array(zfd.repeatable(z.array(z.string()))).optional(),
       ),
@@ -191,10 +194,6 @@ export async function editEnskilopediPemain(
     })
     .safeParseAsync(formData);
 
-  console.log("validationResult");
-  console.log(validationResult.data);
-  console.log(validationResult.error);
-
   if (!validationResult.success) {
     const errorFormatted = validationResult.error.format() as any;
 
@@ -212,16 +211,8 @@ export async function editEnskilopediPemain(
                 `Posisi #${index + 1} tidak boleh kosong. Harap pilih 1`;
             return acc;
           }, []),
-        // karakter: validationResult.error.errors
-        //   .filter((err) => err.path[0] === "karakter")
-        //   .reduce((acc: string[], err) => {
-        //     const index = err.path[1] as number;
-        //     if (!acc[index])
-        //       acc[index] =
-        //         `Karakter tidak boleh kosong pada Posisi #${index + 1}`;
-        //     return acc;
-        //   }, []),
         karakter: errorFormatted.karakter?._errors[0],
+        prinsip: errorFormatted.prinsip?._errors[0],
         posisiMenyerang: errorFormatted.posisiMenyerang?._errors,
         posisiBertahan: errorFormatted.posisiBertahan?._errors,
         gambarPosisiMenyerang: validationResult.error.errors
@@ -476,6 +467,7 @@ export async function editEnskilopediPemain(
             .update(formationPositioning)
             .set({
               characteristics: validationResult.data.karakter?.[i],
+              principles: validationResult.data.prinsip?.[i],
               offenseDescription:
                 validationResult.data.posisiMenyerang?.[i] ?? [],
               offenseIllustrationPath: wasOffenseDeleted

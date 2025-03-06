@@ -95,6 +95,28 @@ export function KarakterInput({
   );
 }
 
+export function PrinsipInput({
+  posisi,
+  error,
+  defaultValue = [""],
+}: {
+  posisi: number;
+  error?: string;
+  defaultValue?: string[];
+}) {
+  const [prinsip, setPrinsip] = useState<string[]>(defaultValue);
+
+  return (
+    <TextInputWithAddBtn
+      name={`prinsip[${posisi}]`}
+      title="prinsip yang harus dikuasai"
+      value={prinsip}
+      setValue={setPrinsip}
+      error={error}
+    />
+  );
+}
+
 export function PosisiMenyerangInput({
   posisi,
   defaultValue = [""],
