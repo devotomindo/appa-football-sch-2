@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack } from "@mantine/core";
+import { Loader, Stack } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { getTransactionByIdQueryOptions } from "../../action/get-transaction-by-id/query-options";
 import { useSnapPayment } from "../../hooks/use-snap-payment";
@@ -11,7 +11,7 @@ export function PaymentView({ transactionId }: { transactionId: string }) {
   );
 
   const transactionData = transactionQuery.data;
-  const snapContainerRef = useSnapPayment(
+  const { snapContainerRef, isSnapReady } = useSnapPayment(
     transactionId,
     transactionData?.midtransToken,
   );
@@ -49,7 +49,16 @@ export function PaymentView({ transactionId }: { transactionId: string }) {
             <div>{transactionData?.packageDuration} Bulan</div>
           </div>
         </Stack>
-        <div ref={snapContainerRef} className="min-w-[300px]" />
+        <div className="min-w-[300px]">
+          {!isSnapReady ? (
+            <div className="flex h-full items-center justify-center">
+              <Loader size="md" />
+              <span className="ml-2">Loading payment...</span>
+            </div>
+          ) : (
+            <div ref={snapContainerRef} className="h-full w-full" />
+          )}
+        </div>
       </div>
     </div>
   );

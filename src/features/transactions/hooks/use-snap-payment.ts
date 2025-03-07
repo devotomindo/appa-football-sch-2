@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getTransactionStatus } from "../action/get-transaction-status";
 
 declare global {
@@ -25,9 +25,34 @@ export function useSnapPayment(orderId: string, snapToken: string | undefined) {
   const router = useRouter();
   const snapContainerRef = useRef<HTMLDivElement>(null);
   const snapInstanceRef = useRef<any>(null);
+  const [isSnapReady, setIsSnapReady] = useState(false);
+
+  // Check if Snap is available
+  useEffect(() => {
+    const checkSnapAvailability = () => {
+      if (window.snap) {
+        setIsSnapReady(true);
+        return true;
+      }
+      return false;
+    };
+
+    // Check immediately if already loaded
+    if (checkSnapAvailability()) return;
+
+    // If not available yet, set up an interval to check
+    const intervalId = setInterval(() => {
+      if (checkSnapAvailability()) {
+        clearInterval(intervalId);
+      }
+    }, 200);
+
+    // Clean up interval
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
-    if (snapToken && snapContainerRef.current) {
+    if (snapToken && snapContainerRef.current && isSnapReady) {
       const containerId = "snap-container";
       snapContainerRef.current.id = containerId;
 
@@ -65,12 +90,12 @@ export function useSnapPayment(orderId: string, snapToken: string | undefined) {
 
       return () => {
         clearTimeout(timer);
-        if (snapInstanceRef.current) {
+        if (snapInstanceRef.current && window.snap) {
           window.snap.hide();
         }
       };
     }
-  }, [snapToken, orderId, router]);
+  }, [snapToken, orderId, router, isSnapReady]);
 
-  return snapContainerRef;
+  return { snapContainerRef, isSnapReady };
 }

@@ -56,6 +56,7 @@ export async function getTransactionStatus(orderId: string) {
     } catch (midtransError) {
       // Check if transaction is initiated and old
       if (
+        midtransError &&
         localTransaction.status === "initiated" &&
         dayjs().diff(dayjs(localTransaction.createdAt), "minute") > 15
       ) {
@@ -70,9 +71,6 @@ export async function getTransactionStatus(orderId: string) {
         };
       }
 
-      // If Midtrans API returns 404, transaction might not be created yet
-      // Just return the local status (Expected during initialization)
-      console.warn("Midtrans status check failed:", midtransError);
       return {
         success: true,
         data: {
