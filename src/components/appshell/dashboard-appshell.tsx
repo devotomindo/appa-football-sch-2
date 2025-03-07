@@ -1,6 +1,6 @@
 "use client";
 
-import { useSchoolInfo } from "@/features/school/hooks/use-school-info";
+import { isCurrentStudentPremiumQueryOptions } from "@/features/school/action/is-current-student-premium/query-options";
 import type { GetUserByIdResponse } from "@/features/user/actions/get-user-by-id";
 import { logout } from "@/features/user/actions/logout";
 import { isUserAdmin } from "@/features/user/utils/is-user-admin";
@@ -27,6 +27,7 @@ import {
   IconUserCircle,
   IconUsersGroup,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,10 +67,19 @@ export function DashboardAppshell({
 
   const isUserAdminValue = isUserAdmin(userData);
 
-  // Fetch school info
-  const { data: schoolInfo } = useSchoolInfo(selectedSchool?.id ?? "");
+  // Only query for premium status when we have a valid studentId
+  const studentId = selectedSchool?.studentId || "";
+  const hasValidStudentId = Boolean(studentId && studentId.trim() !== "");
 
-  const member = schoolInfo?.isPremium;
+  const premiumStatusQuery = useQuery({
+    ...isCurrentStudentPremiumQueryOptions(studentId),
+    enabled: hasValidStudentId,
+  });
+
+  // Use premium status safely, defaulting to false when no valid data
+  const isPremium = hasValidStudentId
+    ? premiumStatusQuery.data?.isPremium || false
+    : false;
 
   return (
     <>
@@ -192,14 +202,14 @@ export function DashboardAppshell({
                 )}
               </div>
             </div>
-            {!member && (
+            {!isPremium && (
               <div className="text-center capitalize">
                 <p>paket gratis</p>
               </div>
             )}
             <div className="w-full bg-[#E92222] p-2 text-center text-white">
-              {member && <p className="uppercase">premium</p>}
-              {!member && (
+              {isPremium && <p className="uppercase">premium</p>}
+              {!isPremium && (
                 <Link href="/dashboard/daftar-paket" className="uppercase">
                   beli paket
                 </Link>
