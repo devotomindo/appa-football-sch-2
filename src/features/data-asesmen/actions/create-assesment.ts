@@ -1,7 +1,11 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { assessmentIllustrations, assessments } from "@/db/drizzle/schema";
+import {
+  assessmentIllustrations,
+  assessments,
+  assessmentTools,
+} from "@/db/drizzle/schema";
 import { multipleImageUploader } from "@/lib/utils/image-uploader";
 import { revalidatePath } from "next/cache";
 import { v7 as uuidv7 } from "uuid";
@@ -22,8 +26,53 @@ const StepSchema = z.object({
     }),
 });
 
+const toolSchema = z.object({
+  id: z.string().min(1, "Pilih alat latihan"),
+  quantity: z
+    .number()
+    .min(1, "Jumlah alat minimal 1")
+    .max(100, "Jumlah alat maksimal 100"),
+});
+
 export async function createAssesment(prevState: any, formData: FormData) {
   const db = createDrizzleConnection();
+  const noToolsNeeded = formData.get("no_tools_needed") === "true";
+  const toolsJson = formData.get("tools");
+
+  // Manual extraction of steps data
+  const stepsData = [];
+  let index = 0;
+  while (formData.has(`steps[${index}][procedure]`)) {
+    const procedure =
+      formData.get(`steps[${index}][procedure]`)?.toString() || "";
+    const image = formData.get(`steps[${index}][image]`) as File | null;
+
+    if (procedure && image && image.size > 0) {
+      stepsData.push({ procedure, image });
+    }
+    index++;
+  }
+
+  // Parse tools JSON before validation
+  let tools = [];
+  if (!noToolsNeeded && toolsJson) {
+    try {
+      tools = JSON.parse(toolsJson.toString());
+    } catch (error) {
+      return {
+        error: {
+          tools: ["Invalid tools data"],
+        },
+      };
+    }
+  }
+
+  // Create an object with all the form data for validation
+  const formDataObj = {
+    ...Object.fromEntries(formData.entries()),
+    tools,
+    steps: stepsData,
+  };
 
   const validationResult = await zfd
     .formData({
@@ -32,17 +81,30 @@ export async function createAssesment(prevState: any, formData: FormData) {
       satuan: zfd.text(z.string().min(1)),
       deskripsi: zfd.text(z.string().min(1)),
       tujuan: zfd.text(z.string().min(1)),
-      steps: zfd.repeatable(z.array(StepSchema)),
+      // Don't use zfd.repeatable here as we're parsing steps manually
+      steps: z
+        .array(StepSchema)
+        .min(1, "Minimal satu langkah asesmen diperlukan"),
       isHigherGradeBetter: zfd.text(z.enum(["true", "false"])),
+      tools: noToolsNeeded
+        ? z.array(toolSchema).optional()
+        : z
+            .array(toolSchema)
+            .min(
+              1,
+              "Jika tidak membutuhkan alat, klik tombol di sebelah kanan",
+            ),
     })
-    .safeParseAsync(formData);
+    .safeParseAsync(formDataObj);
 
   if (!validationResult.success) {
     const errorFormatted = validationResult.error.format() as any;
 
     return {
       error: {
-        general: errorFormatted.steps?.[0].image?._errors,
+        general:
+          errorFormatted.steps?._errors ||
+          errorFormatted.steps?.[0]?.image?._errors,
         nama: errorFormatted.nama?._errors,
         kategori: errorFormatted.kategori?._errors,
         satuan: errorFormatted.satuan?._errors,
@@ -50,6 +112,7 @@ export async function createAssesment(prevState: any, formData: FormData) {
         tujuan: errorFormatted.tujuan?._errors,
         langkahAsesmen: errorFormatted.steps?._errors,
         isHigherGradeBetter: errorFormatted.isHigherGradeBetter?._errors,
+        tools: errorFormatted.tools?._errors,
       },
     };
   }
@@ -92,6 +155,24 @@ export async function createAssesment(prevState: any, formData: FormData) {
           }),
         ),
       );
+
+      // Insert tools if they exist
+      if (
+        !noToolsNeeded &&
+        validationResult.data.tools &&
+        validationResult.data.tools.length > 0
+      ) {
+        await Promise.all(
+          validationResult.data.tools.map((tool) =>
+            tx.insert(assessmentTools).values({
+              id: uuidv7(),
+              assessmentId,
+              toolId: tool.id,
+              minCount: tool.quantity,
+            }),
+          ),
+        );
+      }
     });
 
     revalidatePath("/dashboard/admin/data-asesmen");

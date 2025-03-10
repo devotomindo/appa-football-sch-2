@@ -1,8 +1,8 @@
 "use client";
 
 import { getAssessmentByIdQueryOptions } from "@/features/data-asesmen/actions/get-assesment-by-id/query-options";
-import { Button } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { Badge, Button, Divider } from "@mantine/core";
+import { IconArrowLeft, IconTool } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,12 +31,41 @@ export function DetailAsesmenView({ id }: { id: string }) {
       <p className="mt-3 font-light text-[#333333]">
         {assessmentData?.description}
       </p>
+
       <h2 className="mt-5 text-lg font-bold capitalize sm:text-xl">
         tujuan asesmen
       </h2>
       <p className="font-extralight">{assessmentData?.mainGoal}</p>
 
-      <div className="mt-5 space-y-6">
+      {/* Display tools if they exist */}
+      {assessmentData?.tools && assessmentData.tools.length > 0 && (
+        <>
+          <Divider className="my-4" />
+          <h2 className="mb-3 text-lg font-bold capitalize sm:text-xl">
+            <IconTool className="mr-2 inline-block" size={20} />
+            Peralatan yang Dibutuhkan
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {assessmentData.tools.map((tool, i) => (
+              <Badge
+                key={i}
+                size="lg"
+                color="blue"
+                variant="filled"
+                className="px-3 py-1"
+              >
+                {tool.name} ({tool.minCount})
+              </Badge>
+            ))}
+          </div>
+        </>
+      )}
+
+      <Divider className="my-4" />
+      <h2 className="mb-3 text-lg font-bold capitalize sm:text-xl">
+        Langkah-langkah Asesmen
+      </h2>
+      <div className="mt-3 space-y-6">
         {assessmentData?.illustrations?.map((illustration, i) => (
           <div className="rounded-xl border-2 shadow-xl" key={i}>
             <div className="flex flex-col items-start gap-4 p-4 sm:p-6 md:flex-row md:gap-10">

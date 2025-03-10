@@ -300,6 +300,15 @@ export const assessmentRecords = pgTable("assessment_records", {
   score: doublePrecision("score"),
 });
 
+export const assessmentTools = pgTable("assessment_tools", {
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  assessmentId: uuid("assessment_id").references(() => assessments.id),
+  toolId: uuid("tool_id").references(() => tools.id),
+  minCount: smallint("min_count").notNull(),
+});
+
 export const proPlayers = pgTable("pro_players", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
