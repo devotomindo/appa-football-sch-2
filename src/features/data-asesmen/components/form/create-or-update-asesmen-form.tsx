@@ -179,7 +179,7 @@ export function CreateOrUpdateAsesmenForm({
 
       // Add steps data to formData
       let validStepCount = 0;
-      steps.forEach((step, index) => {
+      steps.forEach((step) => {
         if (step.procedure && (step.file || step.hasImage)) {
           formData.append(
             `steps[${validStepCount}][procedure]`,

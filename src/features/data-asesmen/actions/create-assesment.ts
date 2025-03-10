@@ -59,6 +59,7 @@ export async function createAssesment(prevState: any, formData: FormData) {
     try {
       tools = JSON.parse(toolsJson.toString());
     } catch (error) {
+      console.error("Invalid tools data", error);
       return {
         error: {
           tools: ["Invalid tools data"],
