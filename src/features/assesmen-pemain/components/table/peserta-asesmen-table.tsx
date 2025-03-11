@@ -83,10 +83,16 @@ export function PesertaAsesmenTable({
   const table = useMantineReactTable({
     columns,
     data: groupedStudents[activeTab] ?? [],
-    enableRowSelection: true,
     state: { rowSelection },
     onRowSelectionChange: setRowSelection,
     getRowId: (row) => row.userId,
+    enableRowSelection: (row) => row.original.isPremium,
+    renderRowActionMenuItems: undefined,
+    mantineTableBodyRowProps: ({ row }) => ({
+      ...(!row.original.isPremium && {
+        style: { cursor: "not-allowed", opacity: 0.7 },
+      }),
+    }),
   });
 
   return (
@@ -128,7 +134,10 @@ export function PesertaAsesmenTable({
         />
       </div>
 
-      <MantineReactTable table={table} />
+      <div className="relative">
+        <MantineReactTable table={table} />
+        {/* Add tooltips individually to non-premium rows via mantineTableBodyRowProps instead */}
+      </div>
     </div>
   );
 }

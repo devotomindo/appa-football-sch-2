@@ -64,6 +64,7 @@ export const getAllStudentsBySchoolId = cache(async function (
     .leftJoin(packages, eq(transactions.packageId, packages.id))
     .where(
       and(
+        eq(transactions.schoolId, schoolId),
         isNull(studentPremiumAssignments.deactivatedAt),
         eq(transactions.status, "success"),
       ),
@@ -106,14 +107,14 @@ export const getAllStudentsBySchoolId = cache(async function (
       const premiumExpiresAt = premiumDetails?.expiresAt || null;
 
       if (!student.userAvatarPath) {
-        return { 
-          ...student, 
-          userImageUrl: null, 
-          age, 
-          ageGroup, 
-          isPremium, 
+        return {
+          ...student,
+          userImageUrl: null,
+          age,
+          ageGroup,
+          isPremium,
           premiumAssignmentId,
-          premiumExpiresAt 
+          premiumExpiresAt,
         };
       }
 
@@ -130,7 +131,7 @@ export const getAllStudentsBySchoolId = cache(async function (
         ageGroup,
         isPremium,
         premiumAssignmentId,
-        premiumExpiresAt
+        premiumExpiresAt,
       };
     }),
   );
