@@ -8,6 +8,7 @@ import {
   gradeMetrics,
   schoolRoleMembers,
 } from "@/db/drizzle/schema";
+import { isCurrentStudentPremium } from "@/features/school/action/is-current-student-premium";
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { cache } from "react";
 
@@ -30,6 +31,10 @@ export const getAssessmentScoresWithStudentId = cache(async function (
     .where(eq(schoolRoleMembers.id, studentId))
     .limit(1)
     .then((result) => result[0]);
+
+  // 1.1 Check if student is premium
+  const isStudentPremium = await isCurrentStudentPremium(studentId);
+  if (!isStudentPremium.isPremium) return [];
 
   // 2. Get base assessment records
   const records = await db

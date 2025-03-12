@@ -1,4 +1,4 @@
-import { getAssessmentScoresOfCurrentAthleteWithSchoolIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-of-current-athlete-with-school-id/query-options";
+import { getAssessmentScoresWithStudentIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-with-student-id/query-options";
 import { HasilAsesmenPemainView } from "@/features/assesmen-pemain/components/view/hasil-asesmen-pemain-view";
 import { getSchoolSession } from "@/lib/session";
 import { getQueryClient } from "@/lib/tanstack-query/get-query-client";
@@ -16,9 +16,7 @@ export default async function HasilAsesmen() {
 
   await Promise.allSettled([
     queryClient.prefetchQuery(
-      getAssessmentScoresOfCurrentAthleteWithSchoolIdQueryOptions(
-        schoolSession.id,
-      ),
+      getAssessmentScoresWithStudentIdQueryOptions(schoolSession.studentId),
     ),
   ]);
 

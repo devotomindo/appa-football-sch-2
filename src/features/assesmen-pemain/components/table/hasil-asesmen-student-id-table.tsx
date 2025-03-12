@@ -11,7 +11,7 @@ import {
   useMantineReactTable,
 } from "mantine-react-table";
 import { useMemo } from "react";
-import { getAssessmentScoresOfCurrentAthleteWithSchoolIdResponse } from "../actions/get-assessment-scores-of-current-athlete-with-school-id";
+import { getAssessmentScoresWithStudentIdResponse } from "../actions/get-assessment-scores-with-student-id";
 import { getAssessmentScoresWithStudentIdQueryOptions } from "../actions/get-assessment-scores-with-student-id/query-options";
 
 dayjs.locale("id");
@@ -27,9 +27,7 @@ export function HasilAsesmenStudentIdTable({
   );
 
   const columns = useMemo<
-    MRT_ColumnDef<
-      getAssessmentScoresOfCurrentAthleteWithSchoolIdResponse[number]
-    >[]
+    MRT_ColumnDef<getAssessmentScoresWithStudentIdResponse[number]>[]
   >(
     () => [
       {

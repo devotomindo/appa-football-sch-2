@@ -1,7 +1,6 @@
 "use client";
 
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
-import { getAssessmentScoresOfCurrentAthleteWithSchoolIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-of-current-athlete-with-school-id/query-options";
 import { useSchoolStore } from "@/stores/school-store";
 import { Alert, Button } from "@mantine/core";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
@@ -15,27 +14,24 @@ import {
 } from "mantine-react-table";
 import Link from "next/link";
 import { useMemo } from "react";
-import { getAssessmentScoresOfCurrentAthleteWithSchoolIdResponse } from "../actions/get-assessment-scores-of-current-athlete-with-school-id";
+import { getAssessmentScoresWithStudentIdResponse } from "../actions/get-assessment-scores-with-student-id";
+import { getAssessmentScoresWithStudentIdQueryOptions } from "../actions/get-assessment-scores-with-student-id/query-options";
 
 dayjs.locale("id");
 
 export function HasilAsesmenPemainTable() {
   // Get current school
   const selectedSchool = useSchoolStore((state) => state);
-  const schoolId = selectedSchool.selectedSchool?.id;
+  const studentId = selectedSchool.selectedSchool?.studentId;
 
   // Get Assessment scores with proper error handling
   const assessmentScoresQuery = useQuery({
-    ...getAssessmentScoresOfCurrentAthleteWithSchoolIdQueryOptions(
-      schoolId ?? "",
-    ),
-    enabled: !!schoolId,
+    ...getAssessmentScoresWithStudentIdQueryOptions(studentId ?? ""),
+    enabled: !!studentId,
   });
 
   const columns = useMemo<
-    MRT_ColumnDef<
-      getAssessmentScoresOfCurrentAthleteWithSchoolIdResponse[number]
-    >[]
+    MRT_ColumnDef<getAssessmentScoresWithStudentIdResponse[number]>[]
   >(
     () => [
       {
@@ -161,7 +157,7 @@ export function HasilAsesmenPemainTable() {
     renderEmptyRowsFallback: () => <Alert>Data asesmen tidak ditemukan</Alert>,
   });
 
-  if (!selectedSchool.isHydrating && !schoolId) {
+  if (!selectedSchool.isHydrating && !studentId) {
     return (
       <DashboardSectionContainer>
         <div>

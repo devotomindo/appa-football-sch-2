@@ -14,6 +14,7 @@ import {
   Button,
   Group,
   Menu,
+  Modal,
   ScrollArea,
   UnstyledButton,
 } from "@mantine/core";
@@ -30,7 +31,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { NavLinkComponent } from "../navlink-component/navlink-component";
 import { SchoolSwitcher } from "../school-switcher";
@@ -40,6 +41,14 @@ type DashboardAppshellProps = {
   userData: GetUserByIdResponse & { avatarUrl?: string };
   initialSchool: SchoolSession | null;
 };
+
+// Path pages defined here will only be accessible to premium users
+// If user is not premium, they will be redirected to /dashboard
+// See Modal within AppShell.Main for more details
+const PremiumPaths = [
+  "/dashboard/hasil-asesmen",
+  "/dashboard/metode-latihan-individu",
+];
 
 export function DashboardAppshell({
   children,
@@ -80,6 +89,8 @@ export function DashboardAppshell({
   const isPremium = hasValidStudentId
     ? premiumStatusQuery.data?.isPremium || false
     : false;
+
+  const isRestrictedPage = isPremium ? false : PremiumPaths.includes(pathname);
 
   return (
     <>
@@ -452,6 +463,27 @@ export function DashboardAppshell({
         </AppShell.Navbar>
         <AppShell.Main className="bg-gray-100 dark:bg-inherit">
           {children}
+
+          {/* Render Modal if user is accessing a premium page but isn't premium */}
+          <Modal
+            opened={isRestrictedPage}
+            onClose={() => {
+              // Redirect to daftar paket
+              redirect("/dashboard");
+            }}
+            centered
+            title="Akses Terbatas"
+          >
+            <p>
+              Halaman ini hanya bisa diakses jika Anda memiliki akses Premium.
+              Silahkan hubungi pihak SSB untuk mendapatkan akses Premium
+            </p>
+            <div className="mt-2 flex justify-center">
+              <Button component={Link} href={"/dashboard"}>
+                Kembali ke Halaman Utama
+              </Button>
+            </div>
+          </Modal>
         </AppShell.Main>
       </AppShell>
     </>
