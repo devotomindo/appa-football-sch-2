@@ -164,12 +164,13 @@ export async function activatePremium(prevState: any, formData: FormData) {
         return;
       }
 
-      // Find the first transaction with available quota
-      const validTransaction = transactionUsage
+      // Find all transactions with available quota, sorted by oldest first
+      const validTransactions = transactionUsage
         .filter(Boolean) // Remove null entries
-        .find((t) => t && t.availableQuota > 0);
+        .filter((t) => t && t.availableQuota > 0)
+        .sort((a, b) => a!.expiryDate.getTime() - b!.expiryDate.getTime());
 
-      if (!validTransaction) {
+      if (validTransactions.length === 0) {
         result = {
           error: {
             general:
@@ -179,29 +180,36 @@ export async function activatePremium(prevState: any, formData: FormData) {
         return;
       }
 
-      // Check if current student had previously used the quota
-      // (forcing schools to buy another package to reactivate the student's premium status)
-      const isDeactivated = await tx
-        .select({
-          id: studentPremiumAssignments.id,
-        })
-        .from(studentPremiumAssignments)
-        .where(
-          and(
-            eq(studentPremiumAssignments.studentId, studentId),
-            eq(
-              studentPremiumAssignments.transactionId,
-              validTransaction.transactionId,
+      // Find a transaction that hasn't been used by this student before
+      let usableTransaction;
+      for (const transaction of validTransactions) {
+        const isDeactivated = await tx
+          .select({
+            id: studentPremiumAssignments.id,
+          })
+          .from(studentPremiumAssignments)
+          .where(
+            and(
+              eq(studentPremiumAssignments.studentId, studentId),
+              eq(
+                studentPremiumAssignments.transactionId,
+                transaction!.transactionId,
+              ),
+              isNotNull(studentPremiumAssignments.deactivatedAt),
             ),
-            isNotNull(studentPremiumAssignments.deactivatedAt),
-          ),
-        );
+          );
 
-      if (isDeactivated.length > 0) {
+        if (isDeactivated.length === 0) {
+          usableTransaction = transaction;
+          break;
+        }
+      }
+
+      if (!usableTransaction) {
         result = {
           error: {
             general:
-              "Siswa sudah pernah menggunakan kuota premium ini. Silakan beli paket baru.",
+              "Tidak ada paket yang tersedia untuk siswa ini. Silakan beli paket baru.",
           },
         };
         return;
@@ -211,7 +219,7 @@ export async function activatePremium(prevState: any, formData: FormData) {
       await tx.insert(studentPremiumAssignments).values({
         id: uuidv7(),
         studentId: studentId,
-        transactionId: validTransaction.transactionId,
+        transactionId: usableTransaction.transactionId,
         createdAt: new Date(),
       });
 
