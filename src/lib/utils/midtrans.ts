@@ -8,7 +8,7 @@ export function createMidtransClient() {
   //   });
 
   return new midtransClient.Snap({
-    isProduction: true, // change to true on production
+    isProduction: false, // change to true on production
     serverKey: process.env.MIDTRANS_SERVER_KEY!,
   });
 }
