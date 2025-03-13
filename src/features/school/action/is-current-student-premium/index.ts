@@ -3,6 +3,8 @@
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import {
   packages,
+  schoolRoleMembers,
+  schoolRoles,
   studentPremiumAssignments,
   transactions,
 } from "@/db/drizzle/schema";
@@ -28,7 +30,74 @@ export const isCurrentStudentPremium = cache(async function (
   const db = createDrizzleConnection();
   const currentDate = new Date();
 
-  // Get premium assignment with transaction details for the specific student
+  // Get role information and school from studentId
+  const memberInfo = await db
+    .select({
+      schoolId: schoolRoleMembers.schoolId,
+      roleName: schoolRoles.name,
+    })
+    .from(schoolRoleMembers)
+    .leftJoin(schoolRoles, eq(schoolRoleMembers.schoolRoleId, schoolRoles.id))
+    .where(eq(schoolRoleMembers.id, studentId))
+    .limit(1);
+
+  if (!memberInfo.length) {
+    return {
+      isPremium: false,
+      premiumAssignmentId: null,
+      premiumExpiresAt: null,
+    };
+  }
+
+  const { schoolId, roleName } = memberInfo[0];
+  const isCoachingRole = roleName === "Coach" || roleName === "Head Coach";
+
+  if (isCoachingRole) {
+    // For coaching roles, check school's latest successful transaction
+    const schoolTransaction = await db
+      .select({
+        transactionUpdatedAt: transactions.updatedAt,
+        packageMonthDuration: packages.monthDuration,
+      })
+      .from(transactions)
+      .leftJoin(packages, eq(transactions.packageId, packages.id))
+      .where(
+        and(
+          eq(transactions.schoolId, schoolId),
+          eq(transactions.status, "success"),
+        ),
+      )
+      .orderBy(transactions.updatedAt)
+      .limit(1);
+
+    if (
+      schoolTransaction.length === 0 ||
+      !schoolTransaction[0].transactionUpdatedAt
+    ) {
+      return {
+        isPremium: false,
+        premiumAssignmentId: null,
+        premiumExpiresAt: null,
+      };
+    }
+
+    const transaction = schoolTransaction[0];
+    const transactionDate = new Date(transaction.transactionUpdatedAt);
+    const expiryDate = new Date(transactionDate);
+    expiryDate.setMonth(
+      expiryDate.getMonth() + Number(transaction.packageMonthDuration || 0),
+    );
+
+    const isPremium = expiryDate > currentDate;
+
+    return {
+      isPremium,
+      premiumAssignmentId: null, // Coaches don't have premium assignments
+      premiumExpiresAt: isPremium ? expiryDate : null,
+    };
+  }
+
+  // For students, use existing premium assignment logic
   const premiumAssignment = await db
     .select({
       id: studentPremiumAssignments.id,

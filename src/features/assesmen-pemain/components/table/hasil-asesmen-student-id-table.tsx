@@ -1,7 +1,12 @@
 "use client";
 
+import { isCurrentStudentPremiumQueryOptions } from "@/features/school/action/is-current-student-premium/query-options";
 import { Alert } from "@mantine/core";
-import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
+import {
+  IconArrowDown,
+  IconArrowUp,
+  IconInfoCircle,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
@@ -24,6 +29,10 @@ export function HasilAsesmenStudentIdTable({
   // Get Assessment scores with proper error handling
   const assessmentScoresQuery = useQuery(
     getAssessmentScoresWithStudentIdQueryOptions(studentId),
+  );
+
+  const isCurrentStudentPremium = useQuery(
+    isCurrentStudentPremiumQueryOptions(studentId),
   );
 
   const columns = useMemo<
@@ -150,7 +159,21 @@ export function HasilAsesmenStudentIdTable({
     manualPagination: false,
     enableRowNumbers: true,
     rowNumberDisplayMode: "static",
-    renderEmptyRowsFallback: () => <Alert>Data asesmen tidak ditemukan</Alert>,
+    renderEmptyRowsFallback: () => {
+      if (isCurrentStudentPremium.data?.isPremium === false) {
+        return (
+          <Alert color="red" icon={<IconInfoCircle />}>
+            Fitur ini hanya tersedia untuk pengguna premium
+          </Alert>
+        );
+      } else {
+        return (
+          <Alert color="red" icon={<IconInfoCircle />}>
+            Data asesmen tidak ditemukan
+          </Alert>
+        );
+      }
+    },
   });
 
   return (

@@ -48,6 +48,7 @@ type DashboardAppshellProps = {
 const PremiumPaths = [
   "/dashboard/hasil-asesmen",
   "/dashboard/metode-latihan-individu",
+  "/dashboard/latihan",
 ];
 
 export function DashboardAppshell({
@@ -90,7 +91,11 @@ export function DashboardAppshell({
     ? premiumStatusQuery.data?.isPremium || false
     : false;
 
-  const isRestrictedPage = isPremium ? false : PremiumPaths.includes(pathname);
+  const isRestrictedPage = isPremium
+    ? false
+    : PremiumPaths.some(
+        (path) => pathname === path || pathname.startsWith(`${path}/`),
+      );
 
   return (
     <>
