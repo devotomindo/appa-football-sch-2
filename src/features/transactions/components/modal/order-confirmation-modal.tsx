@@ -102,6 +102,7 @@ export function OrderConfirmationModalContent({
         rightSection={
           <CheckReferralForm
             referralCode={referralCode}
+            packageId={packageData.id}
             onSuccess={(result) => {
               if (result?.discount) {
                 setDiscount(result.discount);

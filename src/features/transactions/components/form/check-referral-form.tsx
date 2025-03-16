@@ -9,9 +9,11 @@ import { checkReferral } from "../../action/check-referral";
 
 export function CheckReferralForm({
   referralCode,
+  packageId,
   onSuccess,
 }: {
   referralCode: string;
+  packageId: string;
   onSuccess?: (result?: { discount: number }) => void;
 }) {
   const [actionState, actionDispatch, isActionPending] = useActionState(
@@ -24,6 +26,7 @@ export function CheckReferralForm({
     startTransition(() => {
       const formData = new FormData();
       formData.append("referralCode", referralCode);
+      formData.append("packageId", packageId);
 
       actionDispatch(formData);
     });

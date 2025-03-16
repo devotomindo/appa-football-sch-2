@@ -1,12 +1,15 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { createMidtransClient } from "@/lib/utils/midtrans";
-// import { transactions } from "@/db/drizzle/schema";
-import { referrals, transactions } from "@/db/drizzle/schema";
+import {
+  referrals,
+  referralsPackagesAssignments,
+  transactions,
+} from "@/db/drizzle/schema";
 import { getPackageById } from "@/features/daftar-paket/actions/get-package-by-id";
 import { getUserById } from "@/features/user/actions/get-user-by-id";
-import { eq } from "drizzle-orm";
+import { createMidtransClient } from "@/lib/utils/midtrans";
+import { and, eq } from "drizzle-orm";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -46,6 +49,52 @@ export async function createTransaction(prevState: any, formData: FormData) {
     await db.transaction(async (tx) => {
       const { userId, schoolId, packageId, referralCode, finalPrice } =
         validationResult.data;
+
+      // If referral code exists, validate it
+      if (referralCode) {
+        // First get the referral
+        const referralResult = await tx
+          .select({
+            id: referrals.id,
+          })
+          .from(referrals)
+          .where(
+            and(eq(referrals.code, referralCode), eq(referrals.isActive, true)),
+          )
+          .limit(1);
+
+        if (referralResult.length === 0) {
+          result = {
+            error: {
+              general: "Kode referral tidak valid",
+            },
+          };
+          return;
+        }
+
+        // Check if package is assigned to this referral
+        const assignmentExists = await tx
+          .select({
+            id: referralsPackagesAssignments.id,
+          })
+          .from(referralsPackagesAssignments)
+          .where(
+            and(
+              eq(referralsPackagesAssignments.referralId, referralResult[0].id),
+              eq(referralsPackagesAssignments.packageId, packageId),
+            ),
+          )
+          .limit(1);
+
+        if (assignmentExists.length === 0) {
+          result = {
+            error: {
+              general: "Kode referral tidak berlaku untuk paket ini",
+            },
+          };
+          return;
+        }
+      }
 
       const currentTime = new Date();
 
@@ -138,7 +187,8 @@ export async function createTransaction(prevState: any, formData: FormData) {
 
       result = {
         success: true,
-        message: "Transaksi berhasil dibuat",
+        message:
+          "Transaksi berhasil dibuat. Anda akan segera diarahkan ke halaman pembayaran",
         data: {
           orderId: orderId, // Return the same orderId
         },

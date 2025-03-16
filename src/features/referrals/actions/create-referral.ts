@@ -1,7 +1,7 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { referrals } from "@/db/drizzle/schema";
+import { referrals, referralsPackagesAssignments } from "@/db/drizzle/schema";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -11,6 +11,9 @@ const validationSchema = zfd.formData({
   referrerId: zfd.text(z.string().uuid()),
   commission: zfd.numeric(z.number().positive()),
   discount: zfd.numeric(z.number().positive()),
+  packageIds: zfd.repeatable(
+    z.array(zfd.text(z.string().uuid())).min(1, "Pilih minimal satu paket"),
+  ),
 });
 
 export async function createReferral(prevState: any, formData: FormData) {
@@ -29,24 +32,38 @@ export async function createReferral(prevState: any, formData: FormData) {
         referrerId: errorFormatted.referrerId?._errors,
         commission: errorFormatted.commission?._errors,
         discount: errorFormatted.discount?._errors,
+        packageIds: errorFormatted.packageIds?._errors,
       },
     };
   }
 
   try {
-    // Insert new referral
     await db.transaction(async (tx) => {
+      const referralId = uuidv7();
+
+      // Insert referral
       await tx.insert(referrals).values({
-        id: uuidv7(),
+        id: referralId,
         code: validationResult.data.code,
         referrerId: validationResult.data.referrerId,
         commission: validationResult.data.commission,
         discount: validationResult.data.discount,
         isActive: true,
       });
+
+      // Insert package assignments
+      if (validationResult.data.packageIds.length > 0) {
+        await tx.insert(referralsPackagesAssignments).values(
+          validationResult.data.packageIds.map((packageId) => ({
+            id: uuidv7(),
+            referralId,
+            packageId,
+          })),
+        );
+      }
     });
 
-    return { message: "Referral code created" };
+    return { message: "Referral berhasil dibuat" };
   } catch (error) {
     console.error(error);
     return {

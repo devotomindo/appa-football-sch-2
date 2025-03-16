@@ -1,9 +1,8 @@
 "use server";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { referrals } from "@/db/drizzle/schema";
-import { and, eq } from "drizzle-orm";
-// import { transactions } from "@/db/drizzle/schema";
+import { referrals, referralsPackagesAssignments } from "@/db/drizzle/schema";
+import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -12,6 +11,7 @@ export async function checkReferral(prevState: any, formData: FormData) {
   const validationResult = await zfd
     .formData({
       referralCode: zfd.text(z.string()),
+      packageId: zfd.text(z.string()),
     })
     .safeParseAsync(formData);
 
@@ -31,11 +31,12 @@ export async function checkReferral(prevState: any, formData: FormData) {
     let result: any;
 
     await db.transaction(async (tx) => {
-      const { referralCode } = validationResult.data;
+      const { referralCode, packageId } = validationResult.data;
 
-      // Check for voucher validity
-      const referral = await tx
+      // First get the referral
+      const referralResult = await tx
         .select({
+          id: referrals.id,
           discount: referrals.discount,
         })
         .from(referrals)
@@ -45,13 +46,34 @@ export async function checkReferral(prevState: any, formData: FormData) {
         .limit(1);
 
       // If referral code wasn't found or already disabled
-      if (referral.length === 0) {
+      if (referralResult.length === 0) {
         result = {
           error: {
             general: "Kode referral tidak valid",
           },
         };
+        return;
+      }
 
+      // Check if package is assigned to this referral
+      const assignmentExists = await tx
+        .select({
+          exists: sql<boolean>`EXISTS (
+            SELECT 1 FROM ${referralsPackagesAssignments}
+            WHERE ${referralsPackagesAssignments.referralId} = ${referralResult[0].id}
+            AND ${referralsPackagesAssignments.packageId} = ${packageId}
+          )`,
+        })
+        .from(referralsPackagesAssignments)
+        .limit(1);
+
+      // Check if referral can be used for this package
+      if (!assignmentExists[0]?.exists) {
+        result = {
+          error: {
+            general: "Kode referral tidak valid",
+          },
+        };
         return;
       }
 
@@ -59,9 +81,10 @@ export async function checkReferral(prevState: any, formData: FormData) {
       result = {
         message:
           "Kode referral berhasil ditemukan. Diskon akan berlaku setelah konfirmasi pesanan",
-        discount: referral[0].discount,
+        discount: referralResult[0].discount,
       };
     });
+
     return result;
   } catch (error) {
     console.error("Error creating transaction", error);

@@ -360,6 +360,17 @@ export const referrals = pgTable("referrals", {
   }).notNull(),
 });
 
+export const referralsPackagesAssignments = pgTable(
+  "referrals_packages_assignments",
+  {
+    id: uuid("id").primaryKey(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+    referralId: uuid("referral_id").references(() => referrals.id),
+    packageId: uuid("package_id").references(() => packages.id),
+  },
+);
+
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),

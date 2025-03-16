@@ -1,11 +1,22 @@
 "use client";
 
 import { SubmitButton } from "@/components/buttons/submit-button";
+import { getAllPackagesQueryOptions } from "@/features/daftar-paket/actions/get-all-daftar-paket/query-options";
 import { getAllSchoolsQueryOptions } from "@/features/school/action/get-all-schools/query-options";
 import { getAllSchoolMembersBySchoolIdQueryOptions } from "@/features/school/action/get-school-members-by-school-id/query-options";
 import { useEffectEvent } from "@/lib/hooks/useEffectEvent";
 import { formStateNotificationHelper } from "@/lib/notification/notification-helper";
-import { NumberInput, Select, TextInput } from "@mantine/core";
+import {
+  Alert,
+  Checkbox,
+  NumberInput,
+  Select,
+  Skeleton,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   startTransition,
@@ -78,6 +89,19 @@ export function CreateOrUpdateReferralForm({
     lastManualSchoolChange.current = schoolId;
   }, [schoolId, referrerSchoolQuery.data?.schoolId]);
 
+  // Start of implementation of referrals only applied to specific packages
+  // Query all available packages
+  const packagesQuery = useQuery(getAllPackagesQueryOptions());
+
+  // Initialize selectedPackageIds with referralData.assignedPackages if it exists
+  const [selectedPackageIds, setSelectedPackageIds] = useState<string[]>(() => {
+    if (referralData?.assignedPackages) {
+      // Filter out null values and extract IDs
+      return referralData.assignedPackages.map((pkg) => pkg.id);
+    }
+    return [];
+  });
+
   // Use either update or create action based on whether we have referral data
   const [actionState, actionDispatch, isActionPending] = useActionState(
     referralData ? updateReferral : createReferral,
@@ -114,6 +138,12 @@ export function CreateOrUpdateReferralForm({
           formData.append("referrerId", referrerId);
           formData.append("commission", commission.toString());
           formData.append("discount", discount.toString());
+
+          // Append selected package IDs
+          selectedPackageIds.forEach((id) => {
+            formData.append("packageIds", id);
+          });
+
           actionDispatch(formData);
         });
       }}
@@ -128,43 +158,51 @@ export function CreateOrUpdateReferralForm({
         error={actionState?.error?.code}
       />
 
-      <Select
-        label="Sekolah"
-        required
-        value={schoolId}
-        onChange={(value) => setSchoolId(value ?? "")}
-        data={
-          schoolsQuery.data?.map((school) => ({
-            value: school.id,
-            label: school.name,
-          })) ?? []
-        }
-        placeholder={schoolsQuery.isLoading ? "Loading..." : "Pilih sekolah"}
-        disabled={schoolsQuery.isLoading}
-      />
+      {schoolsQuery.isLoading ? (
+        <Skeleton height={36} radius="sm" />
+      ) : (
+        <Select
+          label="Sekolah Referrer"
+          required
+          value={schoolId}
+          onChange={(value) => setSchoolId(value ?? "")}
+          data={
+            schoolsQuery.data?.map((school) => ({
+              value: school.id,
+              label: school.name,
+            })) ?? []
+          }
+          searchable
+          placeholder="Pilih sekolah"
+          disabled={schoolsQuery.isLoading}
+        />
+      )}
 
-      <Select
-        label="Referrer"
-        name="referrerId"
-        required
-        value={referrerId}
-        onChange={(value) => setReferrerId(value ?? "")}
-        error={actionState?.error?.referrerId}
-        disabled={!schoolId || schoolMembersQuery.isLoading}
-        data={
-          schoolMembersQuery.data?.map((member) => ({
-            value: member.userId,
-            label: member.userFullName ?? "Unknown",
-          })) ?? []
-        }
-        placeholder={
-          schoolMembersQuery.isLoading
-            ? "Loading..."
-            : !schoolId
+      {schoolMembersQuery.isLoading ? (
+        <Skeleton height={36} radius="sm" />
+      ) : (
+        <Select
+          label="Referrer"
+          name="referrerId"
+          searchable
+          required
+          value={referrerId}
+          onChange={(value) => setReferrerId(value ?? "")}
+          error={actionState?.error?.referrerId}
+          disabled={!schoolId || schoolMembersQuery.isLoading}
+          data={
+            schoolMembersQuery.data?.map((member) => ({
+              value: member.userId,
+              label: member.userFullName ?? "Unknown",
+            })) ?? []
+          }
+          placeholder={
+            !schoolId
               ? "Pilih sekolah terlebih dahulu"
               : "Pilih anggota sekolah"
-        }
-      />
+          }
+        />
+      )}
 
       <NumberInput
         label="Komisi (Rp)"
@@ -183,6 +221,46 @@ export function CreateOrUpdateReferralForm({
         onChange={setDiscount}
         error={actionState?.error?.discount}
       />
+
+      <div>
+        <Text size="sm" fw={500} mb={4}>
+          Paket yang Berlaku
+        </Text>
+        {actionState?.error?.packageIds && (
+          <Alert
+            color="red"
+            title={actionState.error.packageIds}
+            icon={<IconInfoCircle />}
+            my={8}
+          />
+        )}
+        <Stack gap="xs">
+          {packagesQuery.isLoading ? (
+            <>
+              <Skeleton height={24} radius="sm" />
+              <Skeleton height={24} radius="sm" />
+              <Skeleton height={24} radius="sm" />
+            </>
+          ) : (
+            packagesQuery.data?.map((pkg) => (
+              <Checkbox
+                key={pkg.id}
+                label={pkg.name}
+                checked={selectedPackageIds.includes(pkg.id)}
+                onChange={(event) => {
+                  if (event.currentTarget.checked) {
+                    setSelectedPackageIds((prev) => [...prev, pkg.id]);
+                  } else {
+                    setSelectedPackageIds((prev) =>
+                      prev.filter((id) => id !== pkg.id),
+                    );
+                  }
+                }}
+              />
+            ))
+          )}
+        </Stack>
+      </div>
 
       <div className="mt-4">
         <SubmitButton loading={isActionPending}>Simpan</SubmitButton>
