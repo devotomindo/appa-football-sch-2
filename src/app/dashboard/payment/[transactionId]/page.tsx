@@ -21,8 +21,8 @@ export default async function PaymentPage({
   return (
     <DashboardSectionContainer>
       <Script
-        src="https://app.sandbox.midtrans.com/snap/snap.js" // Sandbox
-        // src="https://app.midtrans.com/snap/snap.js" // Production
+        // src="https://app.sandbox.midtrans.com/snap/snap.js" // Sandbox
+        src="https://app.midtrans.com/snap/snap.js" // Production
         data-client-key={process.env.MIDTRANS_CLIENT_KEY}
         strategy="afterInteractive"
       ></Script>
