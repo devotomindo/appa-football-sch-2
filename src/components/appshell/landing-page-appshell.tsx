@@ -54,12 +54,7 @@ export default function LandingPageAppshell({
             >
               <p className="text-xs font-light lg:text-base">home</p>
             </Link>
-            <Link
-              href={"#Program"}
-              className="transition-all duration-100 ease-in-out hover:text-red-600"
-            >
-              <p className="text-xs font-light lg:text-base">program</p>
-            </Link>
+
             <Link
               href={"#Fasilitas"}
               className="transition-all duration-100 ease-in-out hover:text-red-600"
@@ -75,7 +70,6 @@ export default function LandingPageAppshell({
           </div>
           <div className="hidden flex-row items-center gap-4 md:flex xl:gap-8">
             <Link href={"/sign-up"}>
-              {/* <Text>daftar trial</Text> */}
               <p className="text-xs font-light capitalize lg:text-base">
                 daftar trial
               </p>
@@ -95,11 +89,7 @@ export default function LandingPageAppshell({
               home
             </Text>
           </Link>
-          <Link href={"#Program"} className="hover:text-red-600">
-            <Text fw={""} size="md">
-              program
-            </Text>
-          </Link>
+
           <Link href={"#Fasilitas"} className="hover:text-red-600">
             <Text fw={""} size="md">
               fasilitas

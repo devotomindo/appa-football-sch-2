@@ -8,95 +8,6 @@ import {
   IconBrandWhatsapp,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import Link from "next/link";
-
-const programLatihanData = [
-  {
-    image: "/banner-alt-1.png",
-    programName: "fun, play & move",
-    ageGroup: "5 - 8 tahun",
-    description:
-      "Pada kelompok ini, pemain dikenalkan tentang sepak bola dengan cara memperbanyak sesi bermain dan menciptakan suasana agar peserta merasa senang",
-    programList: ["teknik dasar", "circuit game", "4v4 game", "fair play"],
-    schedule: ["minggu 07.00 - 08.30 WIB"],
-  },
-  {
-    image: "/banner-alt-1.png",
-    programName: "LEARN & DEVELOP",
-    ageGroup: "ku 10 tahun",
-    description:
-      "Pada kelompok ini, pemain sudah mulai dikenalkan dengan teknik kombinasi, pemahaman formasi serta mulai mengikuti kompetisi.",
-    programList: [
-      "Teknik Dasar",
-      "Kombinasi Permainan",
-      "Circuit Game",
-      "7v7 Game",
-      "Fair Play",
-      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
-      "Evaluasi",
-    ],
-    schedule: ["minggu 07.00 - 08.30 WIB"],
-  },
-  {
-    image: "/banner-alt-2.png",
-    programName: "LEARN & DEVELOP",
-    ageGroup: "ku 13 tahun",
-    description:
-      "Pada kelompok ini, pemain diharapkan dapat memiliki kemampuan dasar yang terlatih serta pemahaman formasi yang baik.",
-    programList: [
-      "Teknik Dasar",
-      "Spesialisasi Posisi",
-      "Kombinasi Permainan",
-      "Transisi Permainan",
-      "Circuit Game",
-      "11v11 Game",
-      "Fair Play",
-      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
-      "Evaluasi",
-    ],
-    schedule: ["Rabu 15.30 - 17.30 WIB", "Sabtu 07.00 - 09.00 WIB"],
-  },
-  {
-    image: "/banner-alt-2.png",
-    programName: "FIGHT, WIN & PRIZE",
-    ageGroup: "ku 15 tahun",
-    description:
-      "Pada kelompok ini, pemain dilatih untuk memiliki mental pejuang dan harus bisa memenangkan pertandingan.",
-    programList: [
-      "Teknik Dasar",
-      "Spesialisasi Posisi",
-      "Kombinasi Permainan",
-      "Transisi Permainan",
-      "Circuit Game",
-      "11v11 Game",
-      "Analisis Pertandingan",
-      "Fair Play",
-      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
-      "Evaluasi",
-    ],
-    schedule: ["Selasa 15.30 - 17.30 WIB", "Jumat 15.30 - 17.30 WIB"],
-  },
-  {
-    image: "/banner-alt-2.png",
-    programName: "FIGHT, WIN & PRIZE",
-    ageGroup: "ku 17 tahun",
-    description:
-      "Pada kelompok ini, pemain dilatih untuk memiliki mental pejuang , harus bisa memenangkan pertandingan dan bersiap menuju karir profesional",
-    programList: [
-      "Teknik Dasar",
-      "Spesialisasi Posisi",
-      "Kombinasi Permainan",
-      "Transisi Permainan",
-      "Circuit Game",
-      "11v11 Game",
-      "Analisis Pertandingan",
-      "Fair Play",
-      "Materi Non Teknis ( Gizi, Penanganan Cidera,dll)",
-      "Evaluasi",
-    ],
-    schedule: ["Selasa 15.30 - 17.30 WIB", "Jumat 15.30 - 17.30 WIB"],
-  },
-];
 
 const fasilitasData = [
   {
@@ -191,63 +102,6 @@ export default function LandingPage() {
       </section>
       {/* end of first big header */}
 
-      {/* start of program latihan section */}
-      <section
-        id="Program"
-        className="space-y-28 bg-[#bb000e] px-8 py-28 text-white md:px-20"
-      >
-        <h1 className="text-center text-4xl font-black uppercase">
-          program latihan
-        </h1>
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {programLatihanData.map((data, index) => {
-            return (
-              <div
-                className="flex flex-col items-center gap-10 rounded-3xl bg-black px-2 pb-32 pt-2 text-center"
-                key={index}
-              >
-                <Image
-                  src={data.image}
-                  alt=""
-                  width={"350"}
-                  height={"350"}
-                  className="w-full"
-                />
-                <div className="space-y-2">
-                  <p className="text-xl font-bold uppercase text-[#bb000e]">
-                    {data.programName}
-                  </p>
-                  <p className="font-bold">{data.ageGroup}</p>
-                </div>
-                <p className="h-[200px] font-light">{data.description}</p>
-                <div className="mt-10 h-[250px] space-y-2 capitalize">
-                  <p className="font-bold underline">program</p>
-                  <div className="font-light">
-                    {data.programList.map((program, index) => {
-                      return <p key={index}>{program}</p>;
-                    })}
-                  </div>
-                </div>
-                <div className="mt-44">
-                  <p className="font-light capitalize">sesi berlatih :</p>
-                  {data.schedule.map((schedule, index) => {
-                    return (
-                      <p key={index} className="font-bold capitalize">
-                        {schedule}
-                      </p>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="mx-auto w-fit cursor-pointer rounded-full bg-green-700 px-10 py-5 uppercase text-white transition-colors duration-300 ease-in-out hover:bg-green-800">
-          daftar trial sekarang
-        </div>
-      </section>
-      {/* end of program latihan section */}
-
       {/* start of fasilitas section */}
       <section id="Fasilitas" className="space-y-28 px-8 py-28 md:px-20">
         <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
@@ -301,44 +155,6 @@ export default function LandingPage() {
         </div>
       </section>
       {/* end of testimoni section */}
-
-      {/* start of informasi & berita section */}
-      <section className="space-y-32 px-8 py-20 md:px-20 lg:px-40">
-        <h1 className="text-center text-4xl font-black uppercase tracking-[.25em]">
-          informasi & berita
-        </h1>
-        <div className="grid grid-cols-1 gap-12 drop-shadow-xl md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(3)].map((_, index) => {
-            return (
-              <div className="space-y-5" key={index}>
-                <div className="relative aspect-video w-full">
-                  <Image
-                    src={"/news-1.png"}
-                    alt=""
-                    fill
-                    className="rounded-2xl object-cover"
-                  />
-                </div>
-                <p>Asiana Kampiun Piala Soeratin DKI Jakarta U15</p>
-                <p className="font-extralight">20 Juli 2024</p>
-                <p className="font-extralight">
-                  Usai melalui tahapan group, 16 besar, 8 besar dan semifinal
-                  akhirnya Asiana berhasil berdiri di babak final. Ini menjadi
-                  satu langkah menuju jenjang Piala Soeratin U15 2024 tingkat
-                  nasional. Berlangsung di Stadion Madya Gelora Bung Karno,
-                  Senayan Jakarta, pada 5 Desember 2024.
-                </p>
-                <Link href={"/"} className="">
-                  selengkapnya{">"}
-                  {">"}
-                  {">"}
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-      {/* end of informasi & berita section */}
 
       {/* start of footer section */}
       <footer

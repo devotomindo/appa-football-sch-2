@@ -1,6 +1,7 @@
 "use client";
 import { BlackBackgroundContainer } from "@/components/container/black-backgorund-container";
 import { DashboardSectionContainer } from "@/components/container/dashboard-section-container";
+import { IndonesiaMap } from "@/components/maps/IndonesiaMap";
 import { getAssessmentScoresWithStudentIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-with-student-id/query-options";
 import { HasilAsesmenStudentIdTable } from "@/features/assesmen-pemain/components/table/hasil-asesmen-student-id-table";
 import { getAllLatihanIndividuByStudentIdQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
@@ -66,6 +67,24 @@ export function DashboardView({
       <DashboardSectionContainer>
         <div>Loading...</div>
       </DashboardSectionContainer>
+    );
+  }
+
+  if (userIsAdmin) {
+    return (
+      <div className="">
+        <div className="flex items-center justify-between rounded-xl bg-black p-4 uppercase text-white shadow-lg">
+          <p>statistik pengguna</p>
+          <p>total omzet: 330.000.000</p>
+        </div>
+        <div className="rounded-xl p-4 uppercase shadow-lg">
+          <p>regional pengguna</p>
+          {/* <IndonesiaMap /> */}
+        </div>
+        <div className="h-full w-full">
+          <IndonesiaMap />
+        </div>
+      </div>
     );
   }
 

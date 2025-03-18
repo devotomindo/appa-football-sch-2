@@ -1,3 +1,4 @@
+import { getMembersByRegionQueryOptions } from "@/features-data/members/actions/get-members-by-region/query-options";
 import { getAssessmentScoresWithStudentIdQueryOptions } from "@/features/assesmen-pemain/components/actions/get-assessment-scores-with-student-id/query-options";
 import { getAllLatihanIndividuByStudentIdQueryOptions } from "@/features/daftar-latihan/actions/get-all-latihan-individu/query-options";
 import { getBiodataPemainByStudentIdQueryOptions } from "@/features/daftar-pemain/actions/get-biodata-pemain-by-student-id/query-options";
@@ -53,6 +54,7 @@ export default async function DashboardPage() {
         userData?.schools?.[0]?.studentId,
       ),
     ),
+    queryClient.prefetchQuery(getMembersByRegionQueryOptions()),
   ]);
 
   return (
